@@ -1,0 +1,13 @@
+overwrite: true
+schema: "https://fauxgram.eddienaff.dev/graphql"
+documents: "src/graphql/**/*.ts"
+generates:
+  src/generated/graphql.tsx:
+    plugins:
+      - "typescript"
+      - "typescript-common"
+      - "typescript-client"
+      - "typescript-operations"
+      - "typescript-react-apollo"
+    config:
+      withHooks: true
