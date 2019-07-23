@@ -26,7 +26,7 @@ const domain = `fauxgram.eddienaff.dev`; // process.env.NODE_ENV; // === "produc
 
 const prodGraphqlUrl = `https://${domain}/graphql`;
 
-const prodWebsocketsUrl = `ws://${domain}/subscriptions`;
+const prodWebsocketsUrl = `wss://${domain}/subscriptions`;
 
 function parseCookies(req?: any, options = {}) {
   return cookie.parse(
