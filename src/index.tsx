@@ -22,7 +22,7 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { navigate } from "@reach/router";
 
-const domain = `fauxgram.eddienaff.dev`; // process.env.NODE_ENV; // === "production" ? prodDomain : myLanInfo;
+const domain = `fauxgramapi.eddienaff.dev`; // process.env.NODE_ENV; // === "production" ? prodDomain : myLanInfo;
 
 const prodGraphqlUrl = `https://${domain}/graphql`;
 
