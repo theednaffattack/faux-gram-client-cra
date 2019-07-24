@@ -4,7 +4,9 @@ import posed, { PoseGroup } from "react-pose";
 import { space, width } from "styled-system";
 import styled from "styled-components";
 
-import { IPosedRouterProps } from "../types/types";
+import flexbox from "@styled-system/flexbox";
+
+import { IPosedRouterProps } from "./types";
 import { Flex } from "./styled-rebass";
 
 import Home from "../pages/home";
@@ -29,9 +31,10 @@ const RouteContainer = posed(Flex)({
   exit: { opacity: 0 }
 });
 
-const StyledRouter = styled(Router)`
+const StyledRouter: React.FC<IPosedRouterProps> = styled(Router)`
   ${space}
   ${width}
+  ${flexbox}
 `;
 
 const PosedRouter = ({ children }: IPosedRouterProps) => (
@@ -42,8 +45,14 @@ const PosedRouter = ({ children }: IPosedRouterProps) => (
           width={1}
           key={location.key}
           style={{ overflowX: "hidden" }}
+          flex="1 1 auto"
         >
-          <StyledRouter location={location} width={1}>
+          <StyledRouter
+            location={location}
+            width={1}
+            flex="1 1 auto"
+            // style={{ border: "2px crimson solid" }}
+          >
             {children}
           </StyledRouter>
         </RouteContainer>
