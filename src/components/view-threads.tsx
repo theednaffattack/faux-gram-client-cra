@@ -20,7 +20,13 @@ function ViewThreads(props: IViewThreadsProps) {
           loading: loadingThread
         } = apolloBag;
         return (
-          <Flex minHeight="90vh" width={[1, 1, 1]}>
+          <Flex
+            flexDirection="column"
+            flex="1 1 auto"
+            width={[1, 1, 1]}
+            style={{ height: "100%" }}
+            minHeight="95vh"
+          >
             <ViewThreadStateContainer
               data={dataThread}
               loading={loadingThread}

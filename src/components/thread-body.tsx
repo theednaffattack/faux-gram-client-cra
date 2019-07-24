@@ -56,6 +56,8 @@ export const ThreadInput: React.FC<IThreadInputProps> = styled.input`
 }
 `;
 
+const breakWidths = [0, 0, 0, 0, 1 / 5];
+
 interface IThreadBodyProps {
   data: any;
   handleThreadMenuClick: any;
@@ -78,7 +80,7 @@ function ThreadBody({
       bg="thread_bg"
       flex="1 1 auto"
       flexDirection="column"
-      width={[1 / 5, 1 / 5, 1 / 5]}
+      width={breakWidths}
     >
       <Flex bg="thread_header" flexDirection="column">
         <Flex alignItems="center">
@@ -157,7 +159,7 @@ function ThreadBody({
       </Flex>
       <AbFlex
         position="absolute"
-        width={[1, 1, 1 / 5]}
+        width={breakWidths}
         bottom={0}
         p={3}
         alignSelf="flex-end"

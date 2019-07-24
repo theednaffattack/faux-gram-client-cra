@@ -16,7 +16,12 @@ import {
   MinWidthProps,
   MaxHeightProps,
   BottomProps,
-  PositionProps
+  PositionProps,
+  TopProps,
+  RightProps,
+  LeftProps,
+  OverflowProps,
+  FlexboxProps
 } from "styled-system";
 import {
   DetailedHTMLProps,
@@ -45,9 +50,22 @@ export interface IAbFlexProps
     BordersProps,
     FlexProps,
     PositionProps,
-    BottomProps {}
+    BottomProps,
+    TopProps,
+    RightProps,
+    LeftProps,
+    OverflowProps {}
 
 export interface IFlexShadowProps extends FlexProps, BoxShadowProps {}
+
+export interface IPosedRouterProps
+  extends FlexboxProps,
+    SpaceProps,
+    WidthProps {
+  children: any;
+  location?: any;
+  style?: any;
+}
 
 export type TMaxFlexProps = BordersProps &
   FlexProps &

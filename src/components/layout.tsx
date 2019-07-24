@@ -19,13 +19,32 @@ const Layout: React.FunctionComponent<ILayoutProps> = ({
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
     </Head> */}
     <LayoutHeader />
-    <Flex flexDirection="column" minHeight="90vh" width={1} alignItems="center">
-      <Flex width={[1, 1, 1, "960px"]}>
-        <Location>{({ location }) => <div>{location.key}</div>}</Location>
-        {children}
-      </Flex>
-    </Flex>
-    <LayoutFooter />
+    <Location>
+      {({ location }: any) => {
+        if (location.pathname === "/messages") {
+          return (
+            <Flex flex="1 1 auto" width={[1, 1, 1, 1]} flexDirection="column">
+              {children}
+            </Flex>
+          );
+        }
+
+        if (location.pathname !== "/messages") {
+          return <Flex width={[1, 1, 1, "960px"]}>{children}</Flex>;
+        }
+      }}
+    </Location>
+    <Location>
+      {({ location }: any) => {
+        if (location.pathname === "/messages") {
+          return "";
+        }
+
+        if (location.pathname !== "/messages") {
+          return <LayoutFooter />;
+        }
+      }}
+    </Location>
   </Flex>
 );
 

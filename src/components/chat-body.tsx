@@ -11,6 +11,8 @@ import { IChatBodyProps } from "./types";
 import UserProfileImage from "./user-profile-image";
 import AddressBookMutation from "./address-book-mutation";
 
+const breakWidths = [1, 1, 1, 1, 4 / 5];
+
 const ChatBody = ({
   chatEmoji,
   chatInput,
@@ -65,18 +67,14 @@ const ChatBody = ({
   return (
     // CHAT
     <Flex
-      width={[4 / 5, 4 / 5, 4 / 5]}
+      width={breakWidths}
       flexDirection="column"
       alignItems="center"
+      flex="1 1 auto"
     >
       {/* <AuthenticatedHeader bg="#5d5c8d" /> */}
-      <Flex
-        flex="0 0 auto"
-        bg="chat_header"
-        width={[1, 1, 1]}
-        alignItems="center"
-      >
-        <Flex width={[1, 1, 1]} flexDirection="column" mr="auto">
+      <Flex flex="0 0 auto" bg="chat_header" width={1} alignItems="center">
+        <Flex width={1} flexDirection="column" mr="auto">
           <Flex>
             {selectedThreadIndex
               ? dataMessageThreads.getMessageThreads[
@@ -221,7 +219,7 @@ const ChatBody = ({
       </Flex>
       <AbFlex
         position="absolute"
-        width={[1, 1, 4 / 5]}
+        width={breakWidths}
         bottom={0}
         alignItems="flex-end"
         p={0}

@@ -203,27 +203,31 @@ export class ViewThreadStateContainer extends React.Component<
 
     return (
       <AbFlex
-        top={0}
-        right={0}
-        bottom={0}
-        left={0}
+        // top={0}
+        // right={0}
+        // bottom={0}
+        // left={0}
         bg="black"
         color="thread_text"
-        position="absolute"
-        // width={[1, 1, 1]}
+        // position="absolute"
+        width={[1, 1, 1]}
         flexDirection="column"
         pb="49px"
-        style={{
-          overflow: "hidden"
-        }}
+        border="2px yellow solid"
+        // height="100%"
+        flex="1 1 auto"
+        // overflow="hidden"
+        // style={{
+        //   overflow: "hidden"
+        // }}
       >
         <Flex
           bg="white"
           flex="1 1 auto"
           width={[1, 1, 1]}
-          style={{
-            overflow: "hidden"
-          }}
+          // style={{
+          //   overflow: "hidden"
+          // }}
         >
           <ThreadBody
             data={data}

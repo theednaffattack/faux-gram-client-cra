@@ -18,7 +18,7 @@ body {
 const blue = "#07c";
 
 export const theme = {
-  breakpoints: ["40em", "52em", "64em"],
+  breakpoints: ["37.5em", "40em", "52em", "64em", "80em"],
   fontSizes: [12, 14, 16, 20, 24, 32, 48, 64],
   colors: {
     blue,

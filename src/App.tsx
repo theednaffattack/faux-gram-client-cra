@@ -8,9 +8,14 @@ import Layout from "./components/layout";
 
 const App = () => (
   <Layout>
-    <Flex flexDirection="column" id="site-container" width={1}>
+    <Flex flexDirection="column" id="site-container" flex="1 1 auto" width={1}>
       <GlobalStyle />
-      <Flex flexDirection="row" id="content-container" width={1}>
+      <Flex
+        flexDirection="row"
+        id="content-container"
+        flex="1 1 auto"
+        width={1}
+      >
         <Routes />
       </Flex>
     </Flex>

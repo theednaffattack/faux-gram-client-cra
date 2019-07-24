@@ -25,7 +25,11 @@ import {
   minWidth,
   maxHeight,
   bottom,
-  position
+  position,
+  left,
+  right,
+  top,
+  overflow
 } from "styled-system";
 import styled from "styled-components";
 import IconBase from "react-geomicons";
@@ -109,7 +113,11 @@ export const Flex: React.FC<TFlexProps> = styled(FlexBase)`
 
 export const AbFlex: React.FC<IAbFlexProps> = styled(FlexBase)`
   ${position}
+  ${top}
+  ${right}
+  ${left}
   ${bottom}
+  ${overflow}
 `;
 
 export const MaxFlex: React.FC<TMaxFlexProps> = styled(FlexBase)`
