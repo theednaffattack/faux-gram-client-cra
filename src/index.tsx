@@ -33,6 +33,10 @@ interface IEnvironmentConfig {
   httpProtocol: string[];
 }
 
+const homeHost = "192.168.1.10:4000";
+
+const genericHost = "0.0.0.0:4000";
+
 interface IConfigurations {
   [key: string]: IEnvironmentConfig;
 }
@@ -49,7 +53,7 @@ const configurations: IConfigurations = {
     httpProtocol: ["http", "ws"],
     ssl: false,
     port: 4000,
-    hostname: "192.168.1.10:4000"
+    hostname: homeHost
   }
 };
 
