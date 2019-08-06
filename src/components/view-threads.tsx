@@ -13,29 +13,32 @@ function ViewThreads(props: IViewThreadsProps) {
   const { me } = props;
   return (
     <GetMessageThreadsComponent>
-      {({ subscribeToMore, ...apolloBag }) => {
-        const {
-          data: dataThread,
-          error: errorThread,
-          loading: loadingThread
-        } = apolloBag;
+      {({
+        subscribeToMore,
+        data: dataThread,
+        error: errorThread,
+        loading: loadingThread,
+        ...apolloBag
+      }) => {
         return (
           <Flex
             flexDirection="column"
             flex="1 1 auto"
             width={[1, 1, 1]}
-            style={{ height: "100%" }}
-            minHeight="95vh"
+            style={{ height: "100%", position: "relative" }}
           >
-            <ViewThreadStateContainer
-              data={dataThread}
-              loading={loadingThread}
-              error={errorThread}
-              // threadLength={dataThread.getMessageThreads.length}
-              subscribeToMore={subscribeToMore}
-              me={me}
-              {...apolloBag}
-            />
+            {loadingThread ? (
+              <div>Loading...</div>
+            ) : (
+              <ViewThreadStateContainer
+                data={dataThread}
+                loading={loadingThread}
+                error={errorThread}
+                subscribeToMore={subscribeToMore}
+                me={me}
+                {...apolloBag}
+              />
+            )}
           </Flex>
         );
       }}
