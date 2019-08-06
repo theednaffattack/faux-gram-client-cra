@@ -1,5 +1,5 @@
 overwrite: true
-schema: "https://fauxgram.eddienaff.dev/graphql"
+schema: "http://192.168.1.10:4000/graphql"
 documents: "src/graphql/**/*.ts"
 generates:
   src/generated/graphql.tsx:
@@ -9,5 +9,10 @@ generates:
       - "typescript-client"
       - "typescript-operations"
       - "typescript-react-apollo"
+      # - "typescript-resolvers"
     config:
+      noNamespaces: true
       withHooks: true
+      addUnderscoreToArgsType: true
+      # namingConvention:
+      #   enumValues: keep
