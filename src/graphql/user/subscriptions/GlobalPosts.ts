@@ -6,6 +6,7 @@ export const GLOBAL_POSTS = gql`
       id
       title
       text
+      created_at
       images {
         id
         uri

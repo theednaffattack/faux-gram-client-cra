@@ -4,6 +4,7 @@ export const MESSAGE_THREADS = gql`
   subscription MessageThreads($data: AddMessageToThreadInput_v2!) {
     messageThreads(data: $data) {
       success
+      threadId
       message {
         id
         created_at

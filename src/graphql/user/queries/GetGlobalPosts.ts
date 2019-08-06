@@ -14,6 +14,7 @@ export const GET_GLOBAL_POSTS = gql`
       user {
         id
         firstName
+        lastName
       }
     }
   }

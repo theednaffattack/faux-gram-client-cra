@@ -6,6 +6,10 @@ export const CreatePostMutation = gql`
       id
       title
       text
+      images {
+        id
+        uri
+      }
     }
   }
 `;
