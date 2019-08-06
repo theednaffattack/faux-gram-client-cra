@@ -1,11 +1,11 @@
 import React from "react";
-import { Heading } from "rebass";
 
-import { Flex, StyledUl, StyledLi, NavLink } from "./styled-rebass";
+import { Button, Heading, Flex, StyledLi, LinkLink } from "./styled-rebass";
+import HeaderDropdown from "./header-dropdown";
 
 const rootTitle = "Faux Gram: ";
 
-const pages = [
+export const pages = [
   {
     name: `home`,
     href: "/",
@@ -25,10 +25,10 @@ const pages = [
     title: `${rootTitle}messages`
   },
   {
-    name: "dropzone",
-    href: `/dropzone`,
-    linkText: `Dropzone`,
-    title: `${rootTitle}dropzone`
+    name: "post",
+    href: `/post`,
+    linkText: `Post Snaps`,
+    title: `${rootTitle}post`
   },
   {
     name: "feed",
@@ -52,40 +52,34 @@ const pages = [
 
 const myPages = pages.map((page, index) => {
   return (
-    <StyledLi key={index} mx={4}>
-      <NavLink to={page.href} style={{ color: "white" }}>
-        {page.linkText}
-      </NavLink>
+    <StyledLi key={index} mx={4} color="white">
+      <LinkLink to={page.href}>{page.linkText}</LinkLink>
     </StyledLi>
   );
 });
 
-function LayoutHeader() {
+export interface ILayoutHeader {
+  toggleSidebarOpenOrClosed: any;
+}
+
+function LayoutHeader({ toggleSidebarOpenOrClosed }: ILayoutHeader) {
   return (
-    <Flex
-      flexDirection="row"
-      alignItems="center"
-      bg="rebeccapurple"
-      color="white"
-      width={[1, 1, 1]}
-      px={[1, 1, 4]}
-      as="nav"
-    >
-      <Heading as="h1">Faux Gram</Heading>
-      <StyledUl id="site-nav">
-        {myPages}
-        {/* <StyledLi mx={4}>
-          <NavLink to="/" style={{ color: "white" }}>
-            Home
-          </NavLink>
-        </StyledLi>
-        <StyledLi>
-          <NavLink to="/about" style={{ color: "white" }}>
-            About
-          </NavLink>
-        </StyledLi> */}
-      </StyledUl>
-    </Flex>
+    <HeaderDropdown />
+    // <Flex
+    //   flexDirection="row"
+    //   alignItems="center"
+    //   bg="rebeccapurple"
+    //   color="white"
+    //   width={[1, 1, "960px"]}
+    //   px={[1, 1, 4]}
+    //   as="nav"
+    // >
+    //   <Button type="button" onClick={toggleSidebarOpenOrClosed}>
+    //     SIDEBAR
+    //   </Button>
+    //   <Heading as="h1">Faux Gram</Heading>
+    //   Content
+    // </Flex>
   );
 }
 
