@@ -1,6 +1,6 @@
 import React from "react";
 import { FixedSizeList as List } from "react-window";
-import { Box, Flex } from "./styled-rebass";
+import { Flex } from "./styled-rebass";
 import { LastMessage } from "./other-functions";
 
 interface IRowProps {
