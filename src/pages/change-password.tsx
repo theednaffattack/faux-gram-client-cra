@@ -3,16 +3,9 @@ import React from "react";
 
 import { InputField } from "../components/fields/input-field";
 import { ChangePasswordComponent } from "../generated/graphql";
+import { IPageProps } from "./types";
 
-const ChangePassword = ({
-  path,
-  token,
-  navigate
-}: {
-  path: string;
-  token?: string;
-  navigate?: any;
-}) => {
+const ChangePassword = ({ navigate, path, primary }: IPageProps) => {
   return (
     <ChangePasswordComponent>
       {changePassword => (
