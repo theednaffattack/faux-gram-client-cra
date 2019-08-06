@@ -1,27 +1,40 @@
+import { navigate } from "@reach/router";
 import React from "react";
 
 import { MeComponent, HelloWorldComponent } from "../generated/graphql";
-import ViewThreads from "../components/view-threads";
 import { IPageProps } from "./types";
-
-// function StrData(args: any) {
-//   return <pre>{JSON.stringify(args, null, 2)}</pre>;
-// }
+import GetOnlyThreads from "../components/get-only-threads";
 
 const Messages: React.FC<IPageProps> = ({ path }: IPageProps) => {
   return (
     <HelloWorldComponent>
-      {helloData => (
-        <MeComponent>
-          {({ data, loading, error }) => {
-            if (loading) return <div>loading...</div>;
-            if (error) return <div>error: {error}</div>;
-            if (data && data.me) {
-              return <ViewThreads me={data.me.id} data={data} />; // <StrData args={data} />; //
+      {({ data: dataHello, error: errorHello, loading: loadingHello }) => {
+        if (errorHello) {
+          navigate("/login", {
+            state: {
+              authenticated: false,
+              flashMessage: "You are not authenticated"
             }
-          }}
-        </MeComponent>
-      )}
+          });
+        }
+        if (loadingHello) {
+          return <div>loading...</div>;
+        }
+        if (!dataHello) {
+          return <div>Something's wrong</div>;
+        }
+        return (
+          <MeComponent>
+            {({ data, loading, error }) => {
+              if (loading) return <div>loading...</div>;
+              if (error) return <div>error: {error}</div>;
+              if (data && data.me) {
+                return <GetOnlyThreads />;
+              }
+            }}
+          </MeComponent>
+        );
+      }}
     </HelloWorldComponent>
   );
 };
