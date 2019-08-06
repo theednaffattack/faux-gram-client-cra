@@ -13,6 +13,6 @@ generates:
     config:
       noNamespaces: true
       withHooks: true
-      addUnderscoreToArgsType: true
+      # addUnderscoreToArgsType: true
       # namingConvention:
       #   enumValues: keep
