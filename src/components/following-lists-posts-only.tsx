@@ -1,29 +1,23 @@
 import React from "react";
-import {
-  Box as BoxBase,
-  Card as CardBase,
-  Flex as FlexBase,
-  Heading,
-  Text
-} from "rebass";
-import styled from "styled-components";
-import { borders, display, overflow } from "styled-system";
 import posed, { PoseGroup } from "react-pose";
 
+import { Box, Card, Flex, Heading, Text } from "./styled-rebass";
+
 import UnFollowButton from "./unfollow-button";
+import UserProfileImageCards from "./user-profile-image-cards";
 
-const Box = styled(BoxBase)`
-  ${borders}
-`;
+// const Box = styled(BoxBase)`
+//   ${borders}
+// `;
 
-const Flex = styled(FlexBase)`
-  ${borders}
-`;
+// const Flex = styled(FlexBase)`
+//   ${borders}
+// `;
 
-const Card = styled(CardBase)`
-  ${display}
-  ${overflow}
-`;
+// const Card = styled(CardBase)`
+//   ${display}
+//   ${overflow}
+// `;
 
 const staggerDuration = 100;
 
@@ -58,12 +52,11 @@ export const FollowingList = ({ data, mounted }: IFollowingListProps) => (
             my={[3, 3, 3]}
             mx={[3, 3, 3]}
             borderRadius="15px"
+            boxShadow="0 0 16px rgba(0, 0, 0, .25)"
             width={[1, "350px", "350px"]}
             // border="lime"
-            boxShadow="0 0 16px rgba(0, 0, 0, .25)"
             display="flex"
-            overflow="hidden"
-            style={{ opacity: 0 }}
+            style={{ opacity: 0, overflow: "hidden" }}
           >
             <Flex width={[1, 1, 1]} flexDirection="column">
               <Box
@@ -72,9 +65,7 @@ export const FollowingList = ({ data, mounted }: IFollowingListProps) => (
                   minHeight: "250px",
                   maxHeight: "250px",
                   overflow: "hidden",
-                  backgroundImage: `url(http://192.168.1.10:4000/temp/${
-                    post.images[0].uri
-                  })`,
+                  backgroundImage: `url(${post.images[0].uri})`,
                   backgroundPosition: "center",
                   backgroundSize: "cover",
                   backgroundRepeat: "no-repeat"
@@ -89,7 +80,15 @@ export const FollowingList = ({ data, mounted }: IFollowingListProps) => (
                     alignItems="center"
                     flexDirection="column"
                   >
-                    {post.user.firstName}
+                    <Flex flexDirection="row" my={2} p={3} width={1}>
+                      <UserProfileImageCards
+                        flexInstruction="column"
+                        user={post.user}
+                        buttonThing={false}
+                        color="blue"
+                        handleRemoveInviteeToThread={console.log}
+                      />
+                    </Flex>
                     <UnFollowButton
                       oldData={data}
                       followingId={post.user.id}
