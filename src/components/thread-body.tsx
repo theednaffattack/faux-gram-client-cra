@@ -78,9 +78,15 @@ function ThreadBody({
   return (
     <Flex
       bg="thread_bg"
-      flex="1 1 auto"
+      // flex="1 1 auto"
+
       flexDirection="column"
       width={breakWidths}
+      style={{
+        position: "absolute",
+        top: 0,
+        bottom: 0
+      }}
     >
       <Flex bg="thread_header" flexDirection="column">
         <Flex alignItems="center">
