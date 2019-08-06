@@ -2,6 +2,10 @@ import { createGlobalStyle } from "styled-components";
 
 // Global styles but theme- and update-able!
 export const GlobalStyle = createGlobalStyle`
+html, 
+body {
+    height: 100%;
+}
 html {
   box-sizing: border-box;
 }  
