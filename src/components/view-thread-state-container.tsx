@@ -1,9 +1,7 @@
 import React from "react";
 
-import { Flex, AbFlex } from "./styled-rebass";
+import { AbFlex, Flex } from "./styled-rebass";
 import { MESSAGE_THREADS } from "../graphql/user/subscriptions/MessageThreads";
-import ThreadBody from "./thread-body";
-import ChatBody from "./chat-body";
 // import { User } from "../generated/graphql";
 
 export interface IViewThreadStateContainerProps {
@@ -23,6 +21,7 @@ export interface IViewThreadStateContainerState {
   chatEmoji: string;
   showMessagingAddressBook: boolean;
   newThreadInvitees: string[];
+  selectedThreadId: string;
 }
 
 export class ViewThreadStateContainer extends React.Component<
@@ -53,13 +52,14 @@ export class ViewThreadStateContainer extends React.Component<
     this.messagesEnd = React.createRef();
   }
   state = {
-    selectedThread: null,
+    selectedThread: 0,
     myThreadId: "97798d95-04d9-4147-8913-30b7124abc95",
     emojiPickerVisible: false,
     chatInput: "",
     chatEmoji: "",
     showMessagingAddressBook: false,
-    newThreadInvitees: []
+    newThreadInvitees: [],
+    selectedThreadId: ""
   };
 
   handleSelectEmojiClick() {}
@@ -135,7 +135,10 @@ export class ViewThreadStateContainer extends React.Component<
 
   componentDidMount() {
     let threadIdList;
-    if (this.props.data.getMessageThreads) {
+    if (!this.props.loading && this.props.data.getMessageThreads) {
+      this.setState({
+        selectedThreadId: this.props.data.getMessageThreads[0].id
+      });
       threadIdList = this.props.data.getMessageThreads.map(
         (thread: any) => thread.id
       );
@@ -158,9 +161,10 @@ export class ViewThreadStateContainer extends React.Component<
             updateQuery: (prev: any, { subscriptionData }: any) => {
               if (!subscriptionData.data) return prev;
 
-              let newMessageThreads = prev.getMessageThreads.map(
+              let newMessageThreads = [...prev.getMessageThreads].map(
                 (messageThread: any) => {
                   // do stuff
+
                   let messageThreadTrans = messageThread;
                   if (threadIdThing === messageThread.id) {
                     messageThreadTrans.messages.push(
@@ -173,7 +177,17 @@ export class ViewThreadStateContainer extends React.Component<
               if (!newMessageThreads) {
                 throw Error("No message threads in previous cache!");
               }
-              return prev;
+
+              let newThreadList = [
+                ...prev.getMessageThreads,
+                ...newMessageThreads
+              ];
+
+              let returnObj = {
+                getMessageThreads: [...prev.getMessageThreads, ...newThreadList]
+              };
+
+              return { getMessageThreads: [...newThreadList] };
             }
           }
           // )
@@ -185,7 +199,11 @@ export class ViewThreadStateContainer extends React.Component<
       this.scrollToBottom();
     }
   }
-  componentDidUpdate() {
+  componentDidUpdate(prevProps: any) {
+    if (prevProps.data !== this.props.data) {
+      console.log({ oldData: prevProps.data, newData: this.props.data });
+    }
+
     if (this.messagesEnd.current) {
       this.scrollToBottom();
     }
@@ -193,92 +211,44 @@ export class ViewThreadStateContainer extends React.Component<
 
   render() {
     const { data } = this.props;
-    // const threadIndex = this.state.selectedThread;
-    // const threads = this.props.data.getMessageThreads;
 
-    // const selectedThreadId = 0;
-    // this.state.selectedThread
-    //   ? this.props.data.getMessageThreads[this.state.selectedThread].id
-    //   : null;
+    let selectedIndex;
+    if (
+      this.state.selectedThread != null &&
+      this.props.data.getMessageThreads
+    ) {
+      selectedIndex = this.props.data.getMessageThreads[
+        this.state.selectedThread || 0
+      ].id;
+    }
 
     return (
       <AbFlex
-        // top={0}
-        // right={0}
-        // bottom={0}
-        // left={0}
+        top={0}
+        bottom={0}
         bg="black"
         color="thread_text"
-        // position="absolute"
+        position="absolute"
         width={[1, 1, 1]}
         flexDirection="column"
-        pb="49px"
-        border="2px yellow solid"
-        // height="100%"
         flex="1 1 auto"
-        // overflow="hidden"
-        // style={{
-        //   overflow: "hidden"
-        // }}
+        style={{
+          height: "100%"
+        }}
       >
         <Flex
           bg="white"
           flex="1 1 auto"
+          flexDirection="column"
           width={[1, 1, 1]}
-          // style={{
-          //   overflow: "hidden"
-          // }}
         >
-          <ThreadBody
-            data={data}
-            selectedThreadIndex={this.state.selectedThread}
-            handleThreadMenuClick={this.handleThreadMenuClick}
-            handleThreadSelection={this.handleThreadSelection}
-            selectedThread={this.state.selectedThread}
-            handleThreadAddThreadClick={this.handleThreadAddThreadClick}
-          />
-
-          <ChatBody
-            loadingMessageThreads={this.props.loading}
-            dataMessageThreads={this.props.data}
-            chatEmoji={this.state.chatEmoji}
-            chatInput={this.state.chatInput}
-            selectedThreadIndex={this.state.selectedThread}
-            selectedThreadId={
-              (this.state.selectedThread === 0 &&
-                this.props.data.getMessageThreads) ||
-              (this.state.selectedThread && this.props.data.getMessageThreads)
-                ? this.props.data.getMessageThreads[
-                    this.state.selectedThread || 100
-                  ].id
-                : null
-            }
-            showMessagingAddressBook={this.state.showMessagingAddressBook}
-            handleThreadAddThreadClick={this.handleThreadAddThreadClick}
-            disabled={
-              this.state.selectedThread === 0 ||
-              this.state.newThreadInvitees.length > 0 ||
-              this.state.selectedThread
-                ? false
-                : true
-            }
-            newThreadDisabled={
-              this.state.newThreadInvitees.length > 0 ? false : true
-            }
-            emojiPickerVisible={this.state.emojiPickerVisible}
-            handleChatMenuClick={this.handleChatMenuClick}
-            handleAddInviteeToThread={this.handleAddInviteeToThread}
-            handleRemoveInviteeToThread={this.handleRemoveInviteeToThread}
-            newThreadInvitees={this.state.newThreadInvitees}
-            me={this.props.me}
-            handleEngageMicrophoneClick={this.handleEngageMicrophoneClick}
-            handleOpenEmojiMenuClick={this.handleOpenEmojiMenuClick}
-            handleSelectEmojiClick={this.handleSelectEmojiClick}
-            handleChatFieldChange={this.handleChatFieldChange}
-            handleThreadSelection={this.handleThreadSelection}
-            handleUploadFileClick={this.handleUploadFileClick}
-            messagesEndRef={this.messagesEnd}
-          />
+          {data.getMessageThreads.map((thread: any) => (
+            <div>
+              {thread.id}
+              {"  :  "}
+              {thread.invitees.length}
+            </div>
+          ))}
         </Flex>
       </AbFlex>
     );
