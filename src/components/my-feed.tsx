@@ -2,7 +2,7 @@ import React from "react";
 
 import { Heading } from "./styled-rebass";
 import { MyFollowingPostsComponent } from "../generated/graphql";
-import { FOLLOWING_POSTS } from "../graphql/user/subscriptions/FollowingPosts";
+import { FOLLOWING_POSTS } from "./FollowingPosts";
 import FollowingPosts from "./following-posts";
 import { updateFunctionMyFollows } from "./update-my-follows";
 
@@ -18,7 +18,8 @@ const Feed = ({ me }: any) => (
           loading={loading}
           error={error}
           subscribeToMore={subscribeToMore}
-          subscribeToNewPosts={() =>
+          subscribeToNewPosts={() => {
+            console.log("SUB RUNNING");
             subscribeToMore({
               document: FOLLOWING_POSTS,
               variables: {
@@ -27,10 +28,21 @@ const Feed = ({ me }: any) => (
                   message: "init"
                 }
               },
-              updateQuery: (prev, { subscriptionData }) =>
-                updateFunctionMyFollows(prev, { subscriptionData })
-            })
-          }
+              updateQuery: (prev, { subscriptionData }) => {
+                console.log("view prev", prev);
+                return Object.assign({}, prev, {
+                  // @ts-ignore
+                  myFollowingPosts: [
+                    // @ts-ignore
+                    subscriptionData.data.followingPosts,
+                    // @ts-ignore
+                    ...prev.myFollowingPosts
+                  ]
+                });
+              }
+              // updateFunctionMyFollows(prev, { subscriptionData })
+            });
+          }}
         />
       )}
     </MyFollowingPostsComponent>
