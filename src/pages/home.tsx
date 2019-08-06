@@ -8,6 +8,7 @@ import TrySvg from "../components/try-svg";
 import LoginButton from "../components/login-button";
 import { Container, PButton } from "../components/posed-components";
 import { navigate } from "@reach/router";
+import { IPageProps } from "./types";
 
 const InnerFlex = styled(FlexBase)`
   ${minHeight}
@@ -15,11 +16,11 @@ const InnerFlex = styled(FlexBase)`
   background-size: cover;
 `;
 
-export interface IHomeProps {
-  path: string;
-}
+// export interface IHomeProps {
+//   path: string;
+// }
 
-const Home: React.FunctionComponent<IHomeProps> = ({ path }: IHomeProps) => {
+const Home: React.FunctionComponent<IPageProps> = ({ path }) => {
   return (
     <Flex flexDirection="column" width={1}>
       <InnerFlex flexDirection="column" width={[1, 1, 1, 1]}>
