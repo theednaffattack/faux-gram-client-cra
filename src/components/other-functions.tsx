@@ -10,12 +10,14 @@ export function LastMessage({ message }: any) {
         <Icon name="user" fill="white" size="2em" />
       </Flex>
 
-      <Flex width={1} p={3} flexDirection="column">
-        <Text fontWeight={600}>
+      <Flex width={1} p={3} flexDirection="row" alignItems="center">
+        <Text fontWeight={600} fontSize="1em">
           {message.messages[message.messages.length - 1].sentBy.firstName}{" "}
           {message.messages[message.messages.length - 1].sentBy.lastName}
         </Text>
-        <Text>{message.messages[message.messages.length - 1].message}</Text>
+        <Text ml={2} fontSize="1em">
+          {message.messages[message.messages.length - 1].message}
+        </Text>
       </Flex>
     </Flex>
   );
@@ -24,10 +26,7 @@ export function LastMessage({ message }: any) {
 export function MappedMessage(data: any) {
   return data.data.map((message: any, index: any) => {
     return (
-      <div
-        key={`${message.__typename}-${message.id}`}
-        style={{ border: "2px crimson dashed" }}
-      >
+      <div key={`${message.__typename}-${message.id}`}>
         <Text>{message.id}</Text>
         <Text>{message.user.firstName}</Text>
         <Text>{message.message}</Text>
