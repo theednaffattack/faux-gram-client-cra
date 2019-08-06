@@ -58,6 +58,19 @@ export interface IAbFlexProps
 
 export interface IFlexShadowProps extends FlexProps, BoxShadowProps {}
 
+export interface IFlexUserProfileWrapProps
+  extends FlexProps,
+    BorderRadiusProps,
+    BoxShadowProps,
+    OverflowProps,
+    MaxHeightProps,
+    MaxWidthProps {}
+
+// bg="thread_footer"
+// alignItems="center"
+// justifyContent="center"
+// boxShadow="0 2px 16px rgba(0, 0, 0, 0.25)"
+
 export interface IPosedRouterProps
   extends FlexboxProps,
     SpaceProps,
@@ -90,7 +103,8 @@ export type TStyledLi = DetailedHTMLProps<
   LiHTMLAttributes<HTMLLIElement>,
   HTMLLIElement
 > &
-  SpaceProps;
+  SpaceProps &
+  ColorProps;
 
 export interface ITrySvgProps {
   fill: string;
@@ -129,11 +143,31 @@ export interface IRegisterFormBodyProps {
   handleSubmit: any;
 }
 
-export interface ICardProps extends CardProps, MaxWidthProps {}
+export interface ICardProps
+  extends CardProps,
+    MaxWidthProps,
+    FontSizeProps,
+    FontWeightProps,
+    WidthProps,
+    SpaceProps,
+    BorderRadiusProps,
+    BoxShadowProps {}
+
+// fontSize={6}
+// fontWeight="bold"
+// width={[1, 1, 1 / 2]}
+// p={5}
+// my={5}
+// bg="#f6f6ff"
+// borderRadius={8}
+// boxShadow="0 2px 16px rgba(0, 0, 0, 0.25)"
 
 export interface IImagePreviewProps {
   files?: string[];
   imageFiles: string[];
+}
+export interface IImagePreviewSingleProps {
+  imageFile: any;
 }
 
 export interface IDropZoneProps {
@@ -147,10 +181,30 @@ export interface IDropZoneProps {
   signS3: any;
 }
 
-export interface IDropZoneState {
+export interface IDropZoneContainerProps {
+  mutate: any;
+  me: any;
+  mutateSignS3: any;
+
+  dataCreatePost: any;
+  errorCreatePost: any;
+  loadingCreatePost: any;
+}
+
+// safe to delete? I think I just renamed this,
+// but can't really remember
+// export interface IDropZoneState {
+//   highlight: boolean;
+//   files: any[];
+//   name: string;
+// }
+
+export interface IDropZoneContainerState {
   highlight: boolean;
   files: any[];
   name: string;
+  disabled: boolean;
+  fileInputKey: string;
 }
 
 export interface IUnFollowButtonProps extends ButtonProps {
@@ -169,6 +223,7 @@ export interface IFollowButtonProps {
 }
 
 export interface IChatBodyProps {
+  data: any;
   chatEmoji: string;
   chatInput: string;
   dataMessageThreads: any;
@@ -202,6 +257,14 @@ export interface IUserProfileImage {
   color: string;
   handleRemoveInviteeToThread: any;
   isMe: boolean;
+  buttonThing: boolean;
+}
+
+export interface IUserProfileImageCards {
+  user: any;
+  flexInstruction: "row" | "column";
+  color: string;
+  handleRemoveInviteeToThread: any;
   buttonThing: boolean;
 }
 
