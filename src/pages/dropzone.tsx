@@ -1,18 +1,8 @@
 import { Flex, Heading, Text } from "rebass";
 
-// import Layout from "../components/layout";
 import { MeComponent, SignS3Component } from "../generated/graphql";
 import React from "react";
-import DropZone from "../components/dropzone";
 import { IPageProps } from "./types";
-
-// import AudioRecorder from "react-audio-recorder";
-// import dynamic from "next/dynamic";
-// import { isBrowser } from "../lib/isBrowser";
-
-// const AudioRecorder = dynamic(() => import("react-audio-recorder") as any, {
-//   ssr: false
-// });
 
 const DropPage: React.FC<IPageProps> = ({ path }: IPageProps) => (
   <MeComponent>
@@ -51,18 +41,7 @@ const DropPage: React.FC<IPageProps> = ({ path }: IPageProps) => (
               signS3,
               { data: dataSignS3, error: errorSignS3, loading: loadingSignS3 }
             ) => {
-              return (
-                <DropZone
-                  disabled={false}
-                  signS3={signS3}
-                  data={dataSignS3}
-                  error={errorSignS3}
-                  loading={loadingSignS3}
-                  mutation={signS3}
-                  onFilesAdded={console.log}
-                  me={dataMe.me}
-                />
-              );
+              return <div>Had to move the component</div>;
             }}
           </SignS3Component>
         </Flex>
