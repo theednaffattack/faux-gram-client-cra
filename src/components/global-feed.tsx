@@ -5,6 +5,7 @@ import { FollowUserComponent } from "../generated/graphql";
 import { GetGlobalPostsComponent } from "../generated/graphql";
 import { DisplayPosts } from "./display-posts";
 import { GLOBAL_POSTS } from "../graphql/user/subscriptions/GlobalPosts";
+import { GET_GLOBAL_POSTS } from "../graphql/user/queries/GetGlobalPosts";
 // import InteriorLayout from "../../components/AuthHeader";
 
 export const subscribeFunction = (subscribeGlblPosts: any) => {
@@ -21,7 +22,7 @@ export const subscribeFunction = (subscribeGlblPosts: any) => {
       }
     });
   } catch (error) {
-    return console.error(error);
+    return console.error("subscriptionFunction ERROR", error);
   }
 };
 
@@ -70,6 +71,7 @@ const Feed = ({ me }: any) => (
                         document: GLOBAL_POSTS,
                         updateQuery: (prev, { subscriptionData }) => {
                           if (!subscriptionData.data) return prev;
+
                           // @ts-ignore
                           const newItem = subscriptionData.data.globalPosts!;
                           return Object.assign({}, prev, {
