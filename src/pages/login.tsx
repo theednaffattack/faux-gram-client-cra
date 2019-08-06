@@ -13,6 +13,7 @@ import { SignUpLink } from "../components/sign-up-link";
 import { CheckBox } from "../components/fields/checkbox";
 import { navigate } from "@reach/router";
 import { IPageProps } from "./types";
+import { PosedFlash } from "../components/posed-components";
 
 type TCardProps = CardProps & MaxWidthProps;
 
@@ -20,9 +21,11 @@ const Card: React.FC<TCardProps> = styled(CardBase)`
   ${maxWidth}
 `;
 
-export default ({ path }: IPageProps) => {
+export default (props: any) => {
+  const flash =
+    props.location && !props.location.authenticated ? "not authenticated" : "";
   return (
-    <Flex minHeight="100vh">
+    <Flex minHeight="100vh" flexDirection="column">
       <Flex width={[1]} minHeight="100vh">
         <Flex
           mt={[0, 5, 0]}
@@ -31,6 +34,15 @@ export default ({ path }: IPageProps) => {
           justifyContent="center"
           alignItems="center"
         >
+          <PosedFlash
+            justifyContent="center"
+            alignItems="center"
+            border="crimson"
+            p={4}
+            pose={flash ? "enter" : "exit"}
+          >
+            {flash}
+          </PosedFlash>
           <Card
             mx={3}
             width={1}
