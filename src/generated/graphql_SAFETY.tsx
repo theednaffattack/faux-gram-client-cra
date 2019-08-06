@@ -2,7 +2,12 @@ import gql from "graphql-tag";
 import * as ReactApollo from "react-apollo";
 import * as React from "react";
 import * as ReactApolloHooks from "react-apollo-hooks";
-// export type Maybe<T> = T | null;
+import {
+  GraphQLResolveInfo,
+  GraphQLScalarType,
+  GraphQLScalarTypeConfig
+} from "graphql";
+export type Maybe<T> = T | null;
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -51,12 +56,6 @@ export type AddMessageToThreadInput_V2 = {
 //   user: Scalars["String"];
 // };
 
-// export type GetMessagesByThreadIdInput = {
-//   threadId: Scalars["String"];
-//   skip?: Maybe<Scalars["Int"]>;
-//   take?: Maybe<Scalars["Int"]>;
-// };
-
 // export type GetMessagesFromUserInput = {
 //   sentBy: Scalars["String"];
 //   user: Scalars["String"];
@@ -75,11 +74,6 @@ export type Image = {
   message?: Maybe<Message>;
   user: User;
 };
-
-// export type ImageSubInput = {
-//   filename: Scalars["String"];
-//   filetype: Scalars["String"];
-// };
 
 export type Message = {
   __typename?: "Message";
@@ -199,7 +193,8 @@ export type Mutation_AddMessageToThreadArgs = {
 };
 
 export type Mutation_SignS3Args = {
-  files: Array<ImageSubInput>;
+  filename: Scalars["String"];
+  filetype: Scalars["String"];
 };
 
 // export type PasswordInput = {
@@ -222,18 +217,7 @@ export type Post = {
 //   title?: Maybe<Scalars["String"]>;
 //   user: Scalars["ID"];
 //   images?: Maybe<Array<Maybe<Scalars["String"]>>>;
-// };
-
-// export type PostInputOld = {
-//   text: Scalars["String"];
-//   title?: Maybe<Scalars["String"]>;
-//   user: Scalars["ID"];
-//   images?: Maybe<Array<Maybe<Scalars["String"]>>>;
-// };
-
-// export type PostSubInput = {
-//   sentBy: Scalars["String"];
-//   message: Scalars["String"];
+//   picture: Scalars["Upload"];
 // };
 
 export type PostSubType = {
@@ -270,17 +254,16 @@ export type Query = {
   getAllMyMessages?: Maybe<User>;
   getMessageThreads?: Maybe<Array<Maybe<Thread>>>;
   getListToCreateThread?: Maybe<TransUserReturn>;
-  getOnlyThreads?: Maybe<Array<Maybe<Thread>>>;
-  getMessagesByThreadId?: Maybe<Array<Maybe<Message>>>;
 };
 
 export type Query_GetMyMessagesFromUserArgs = {
   input: GetMessagesFromUserInput;
 };
 
-export type Query_GetMessagesByThreadIdArgs = {
-  input: GetMessagesByThreadIdInput;
-};
+// export type QuickPostSubsInput = {
+//   sentBy: Scalars["String"];
+//   message: Scalars["String"];
+// };
 
 // export type RegisterInput = {
 //   password: Scalars["String"];
@@ -293,11 +276,6 @@ export type Query_GetMessagesByThreadIdArgs = {
 
 export type SignedS3Payload = {
   __typename?: "SignedS3Payload";
-  signatures: Array<SignedS3SubPayload>;
-};
-
-export type SignedS3SubPayload = {
-  __typename?: "SignedS3SubPayload";
   url: Scalars["String"];
   signedRequest: Scalars["String"];
 };
@@ -311,7 +289,7 @@ export type Subscription = {
 };
 
 export type Subscription_FollowingPostsArgs = {
-  data: PostSubInput;
+  data: QuickPostSubsInput;
 };
 
 export type Subscription_NewMessageArgs = {
@@ -326,7 +304,7 @@ export type Subscription_MessageThreadsArgs = {
 export type Thread = {
   __typename?: "Thread";
   id?: Maybe<Scalars["ID"]>;
-  messages?: Maybe<Array<Maybe<Message>>>;
+  messages: Array<Message>;
   user: User;
   invitees: Array<User>;
   created_at?: Maybe<Scalars["DateTime"]>;
@@ -364,20 +342,12 @@ export type User = {
   thread_invitations?: Maybe<Array<Maybe<Thread>>>;
   following?: Maybe<Array<Maybe<User>>>;
 };
-export type Maybe<T> = T | null;
+// export type Maybe<T> = T | null;
 
 export interface GetMessagesFromUserInput {
   sentBy: string;
 
   user: string;
-}
-
-export interface GetMessagesByThreadIdInput {
-  threadId: string;
-
-  skip?: number;
-
-  take?: number;
 }
 
 export interface ProductInput {
@@ -412,6 +382,8 @@ export interface PostInput {
   user: string;
 
   images?: Maybe<(Maybe<string>)[]>;
+
+  picture: Upload;
 }
 
 export interface FollowUserInput {
@@ -422,13 +394,7 @@ export interface UnFollowUserInput {
   userIDToUnFollow: string;
 }
 
-export interface ImageSubInput {
-  filename: string;
-
-  filetype: string;
-}
-
-export interface PostSubInput {
+export interface QuickPostSubsInput {
   sentBy: string;
 
   message: string;
@@ -464,16 +430,6 @@ export interface PasswordInput {
   password: string;
 }
 
-export interface PostInputOld {
-  text: string;
-
-  title?: Maybe<string>;
-
-  user: string;
-
-  images?: Maybe<(Maybe<string>)[]>;
-}
-
 /** The javascript `Date` as string. Type represents date and time as the ISO Date string. */
 export type DateTime = any;
 
@@ -492,11 +448,11 @@ export type AddMessageToThreadVariables = {
   images?: Maybe<(Maybe<Upload>)[]>;
 };
 
-// export type AddMessageToThreadMutation = {
-//   __typename?: "Mutation";
+export type AddMessageToThreadMutation = {
+  __typename?: "Mutation";
 
-//   addMessageToThread: AddMessageToThreadAddMessageToThread;
-// };
+  addMessageToThread: AddMessageToThreadAddMessageToThread;
+};
 
 export type AddMessageToThreadAddMessageToThread = {
   __typename?: "AddMessagePayload";
@@ -573,11 +529,11 @@ export type AddNewMessageVariables = {
   message: string;
 };
 
-// export type AddNewMessageMutation = {
-//   __typename?: "Mutation";
+export type AddNewMessageMutation = {
+  __typename?: "Mutation";
 
-//   addNewMessage: boolean;
-// };
+  addNewMessage: boolean;
+};
 
 export type CreateMessageThreadVariables = {
   sentTo: string;
@@ -586,11 +542,11 @@ export type CreateMessageThreadVariables = {
   invitees: string[];
 };
 
-// export type CreateMessageThreadMutation = {
-//   __typename?: "Mutation";
+export type CreateMessageThreadMutation = {
+  __typename?: "Mutation";
 
-//   createMessageThread: CreateMessageThreadCreateMessageThread;
-// };
+  createMessageThread: CreateMessageThreadCreateMessageThread;
+};
 
 export type CreateMessageThreadCreateMessageThread = {
   __typename?: "Thread";
@@ -599,7 +555,7 @@ export type CreateMessageThreadCreateMessageThread = {
 
   invitees: CreateMessageThreadInvitees[];
 
-  messages: Maybe<(Maybe<CreateMessageThreadMessages>)[]>;
+  messages: CreateMessageThreadMessages[];
 };
 
 export type CreateMessageThreadInvitees = {
@@ -657,23 +613,18 @@ export type CreateMessageThreadUser = {
 };
 
 export type SignS3Variables = {
-  files: ImageSubInput[];
+  filename: string;
+  filetype: string;
 };
 
-// export type SignS3Mutation = {
-//   __typename?: "Mutation";
+export type SignS3Mutation = {
+  __typename?: "Mutation";
 
-//   signS3: SignS3SignS3;
-// };
+  signS3: SignS3SignS3;
+};
 
 export type SignS3SignS3 = {
   __typename?: "SignedS3Payload";
-
-  signatures: SignS3Signatures[];
-};
-
-export type SignS3Signatures = {
-  __typename?: "SignedS3SubPayload";
 
   url: string;
 
@@ -682,11 +633,11 @@ export type SignS3Signatures = {
 
 export type GetAllMyMessagesVariables = {};
 
-// export type GetAllMyMessagesQuery = {
-//   __typename?: "Query";
+export type GetAllMyMessagesQuery = {
+  __typename?: "Query";
 
-//   getAllMyMessages: Maybe<GetAllMyMessagesGetAllMyMessages>;
-// };
+  getAllMyMessages: Maybe<GetAllMyMessagesGetAllMyMessages>;
+};
 
 export type GetAllMyMessagesGetAllMyMessages = {
   __typename?: "User";
@@ -738,11 +689,11 @@ export type GetAllMyMessagesUser = {
 
 export type GetListToCreateThreadVariables = {};
 
-// export type GetListToCreateThreadQuery = {
-//   __typename?: "Query";
+export type GetListToCreateThreadQuery = {
+  __typename?: "Query";
 
-//   getListToCreateThread: Maybe<GetListToCreateThreadGetListToCreateThread>;
-// };
+  getListToCreateThread: Maybe<GetListToCreateThreadGetListToCreateThread>;
+};
 
 export type GetListToCreateThreadGetListToCreateThread = {
   __typename?: "TransUserReturn";
@@ -764,55 +715,13 @@ export type GetListToCreateThreadThoseICanMessage = {
   lastName: string;
 };
 
-export type GetMessagesByThreadIdVariables = {
-  input: GetMessagesByThreadIdInput;
-};
-
-// export type GetMessagesByThreadIdQuery = {
-//   __typename?: "Query";
-
-//   getMessagesByThreadId: Maybe<
-//     (Maybe<GetMessagesByThreadIdGetMessagesByThreadId>)[]
-//   >;
-// };
-
-export type GetMessagesByThreadIdGetMessagesByThreadId = {
-  __typename?: "Message";
-
-  id: string;
-
-  created_at: Maybe<DateTime>;
-
-  message: string;
-
-  user: GetMessagesByThreadIdUser;
-
-  sentBy: GetMessagesByThreadIdSentBy;
-};
-
-export type GetMessagesByThreadIdUser = {
-  __typename?: "User";
-
-  id: string;
-
-  firstName: string;
-};
-
-export type GetMessagesByThreadIdSentBy = {
-  __typename?: "User";
-
-  id: string;
-
-  firstName: string;
-};
-
 export type GetMessageThreadsVariables = {};
 
-// export type GetMessageThreadsQuery = {
-//   __typename?: "Query";
+export type GetMessageThreadsQuery = {
+  __typename?: "Query";
 
-//   getMessageThreads: Maybe<(Maybe<GetMessageThreadsGetMessageThreads>)[]>;
-// };
+  getMessageThreads: Maybe<(Maybe<GetMessageThreadsGetMessageThreads>)[]>;
+};
 
 export type GetMessageThreadsGetMessageThreads = {
   __typename?: "Thread";
@@ -821,7 +730,7 @@ export type GetMessageThreadsGetMessageThreads = {
 
   invitees: GetMessageThreadsInvitees[];
 
-  messages: Maybe<(Maybe<GetMessageThreadsMessages>)[]>;
+  messages: GetMessageThreadsMessages[];
 };
 
 export type GetMessageThreadsInvitees = {
@@ -882,11 +791,11 @@ export type GetMyMessagesFromUserVariables = {
   input: GetMessagesFromUserInput;
 };
 
-// export type GetMyMessagesFromUserQuery = {
-//   __typename?: "Query";
+export type GetMyMessagesFromUserQuery = {
+  __typename?: "Query";
 
-//   getMyMessagesFromUser: Maybe<GetMyMessagesFromUserGetMyMessagesFromUser[]>;
-// };
+  getMyMessagesFromUser: Maybe<GetMyMessagesFromUserGetMyMessagesFromUser[]>;
+};
 
 export type GetMyMessagesFromUserGetMyMessagesFromUser = {
   __typename?: "Message";
@@ -910,42 +819,16 @@ export type GetMyMessagesFromUserSentBy = {
   lastName: string;
 };
 
-export type GetOnlyThreadsVariables = {};
-
-// export type GetOnlyThreadsQuery = {
-//   __typename?: "Query";
-
-//   getOnlyThreads: Maybe<(Maybe<GetOnlyThreadsGetOnlyThreads>)[]>;
-// };
-
-export type GetOnlyThreadsGetOnlyThreads = {
-  __typename?: "Thread";
-
-  id: Maybe<string>;
-
-  user: GetOnlyThreadsUser;
-
-  created_at: Maybe<DateTime>;
-};
-
-export type GetOnlyThreadsUser = {
-  __typename?: "User";
-
-  id: string;
-
-  firstName: string;
-};
-
 export type NewMessageVariables = {
   message: string;
   sentTo: string;
 };
 
-// export type NewMessageSubscription = {
-//   __typename?: "Subscription";
+export type NewMessageSubscription = {
+  __typename?: "Subscription";
 
-//   newMessage: NewMessageNewMessage;
-// };
+  newMessage: NewMessageNewMessage;
+};
 
 export type NewMessageNewMessage = {
   __typename?: "MessageSubType";
@@ -987,11 +870,11 @@ export type ChangePasswordVariables = {
   data: ChangePasswordInput;
 };
 
-// export type ChangePasswordMutation = {
-//   __typename?: "Mutation";
+export type ChangePasswordMutation = {
+  __typename?: "Mutation";
 
-//   changePassword: Maybe<ChangePasswordChangePassword>;
-// };
+  changePassword: Maybe<ChangePasswordChangePassword>;
+};
 
 export type ChangePasswordChangePassword = {
   __typename?: "User";
@@ -1011,21 +894,21 @@ export type ConfirmUserVariables = {
   token: string;
 };
 
-// export type ConfirmUserMutation = {
-//   __typename?: "Mutation";
+export type ConfirmUserMutation = {
+  __typename?: "Mutation";
 
-//   confirmUser: boolean;
-// };
+  confirmUser: boolean;
+};
 
 export type CreatePostVariables = {
   data: PostInput;
 };
 
-// export type CreatePostMutation = {
-//   __typename?: "Mutation";
+export type CreatePostMutation = {
+  __typename?: "Mutation";
 
-//   createPost: CreatePostCreatePost;
-// };
+  createPost: CreatePostCreatePost;
+};
 
 export type CreatePostCreatePost = {
   __typename?: "Post";
@@ -1035,48 +918,38 @@ export type CreatePostCreatePost = {
   title: Maybe<string>;
 
   text: Maybe<string>;
-
-  images: Maybe<CreatePostImages[]>;
-};
-
-export type CreatePostImages = {
-  __typename?: "Image";
-
-  id: string;
-
-  uri: string;
 };
 
 export type FollowUserVariables = {
   data: FollowUserInput;
 };
 
-// export type FollowUserMutation = {
-//   __typename?: "Mutation";
+export type FollowUserMutation = {
+  __typename?: "Mutation";
 
-//   followUser: boolean;
-// };
+  followUser: boolean;
+};
 
 export type ForgotPasswordVariables = {
   email: string;
 };
 
-// export type ForgotPasswordMutation = {
-//   __typename?: "Mutation";
+export type ForgotPasswordMutation = {
+  __typename?: "Mutation";
 
-//   forgotPassword: boolean;
-// };
+  forgotPassword: boolean;
+};
 
 export type LoginVariables = {
   email: string;
   password: string;
 };
 
-// export type LoginMutation = {
-//   __typename?: "Mutation";
+export type LoginMutation = {
+  __typename?: "Mutation";
 
-//   login: Maybe<LoginLogin>;
-// };
+  login: Maybe<LoginLogin>;
+};
 
 export type LoginLogin = {
   __typename?: "User";
@@ -1094,21 +967,21 @@ export type LoginLogin = {
 
 export type LogoutVariables = {};
 
-// export type LogoutMutation = {
-//   __typename?: "Mutation";
+export type LogoutMutation = {
+  __typename?: "Mutation";
 
-//   logout: boolean;
-// };
+  logout: boolean;
+};
 
 export type RegisterVariables = {
   data: RegisterInput;
 };
 
-// export type RegisterMutation = {
-//   __typename?: "Mutation";
+export type RegisterMutation = {
+  __typename?: "Mutation";
 
-//   register: RegisterRegister;
-// };
+  register: RegisterRegister;
+};
 
 export type RegisterRegister = {
   __typename?: "User";
@@ -1128,19 +1001,19 @@ export type UnFollowUserVariables = {
   data: UnFollowUserInput;
 };
 
-// export type UnFollowUserMutation = {
-//   __typename?: "Mutation";
+export type UnFollowUserMutation = {
+  __typename?: "Mutation";
 
-//   unFollowUser: boolean;
-// };
+  unFollowUser: boolean;
+};
 
 export type GetAllMyImagesVariables = {};
 
-// export type GetAllMyImagesQuery = {
-//   __typename?: "Query";
+export type GetAllMyImagesQuery = {
+  __typename?: "Query";
 
-//   GetAllMyImages: GetAllMyImagesGetAllMyImages[];
-// };
+  GetAllMyImages: GetAllMyImagesGetAllMyImages[];
+};
 
 export type GetAllMyImagesGetAllMyImages = {
   __typename?: "Image";
@@ -1152,11 +1025,11 @@ export type GetAllMyImagesGetAllMyImages = {
 
 export type GetGlobalPostsVariables = {};
 
-// export type GetGlobalPostsQuery = {
-//   __typename?: "Query";
+export type GetGlobalPostsQuery = {
+  __typename?: "Query";
 
-//   getGlobalPosts: Maybe<GetGlobalPostsGetGlobalPosts[]>;
-// };
+  getGlobalPosts: Maybe<GetGlobalPostsGetGlobalPosts[]>;
+};
 
 export type GetGlobalPostsGetGlobalPosts = {
   __typename?: "Post";
@@ -1188,19 +1061,17 @@ export type GetGlobalPostsUser = {
   id: string;
 
   firstName: string;
-
-  lastName: string;
 };
 
 export type GetThoseIFollowAndTheirPostsResolverVariables = {};
 
-// export type GetThoseIFollowAndTheirPostsResolverQuery = {
-//   __typename?: "Query";
+export type GetThoseIFollowAndTheirPostsResolverQuery = {
+  __typename?: "Query";
 
-//   getThoseIFollowAndTheirPostsResolver: Maybe<
-//     GetThoseIFollowAndTheirPostsResolverGetThoseIFollowAndTheirPostsResolver
-//   >;
-// };
+  getThoseIFollowAndTheirPostsResolver: Maybe<
+    GetThoseIFollowAndTheirPostsResolverGetThoseIFollowAndTheirPostsResolver
+  >;
+};
 
 export type GetThoseIFollowAndTheirPostsResolverGetThoseIFollowAndTheirPostsResolver = {
   __typename?: "User";
@@ -1252,19 +1123,19 @@ export type GetThoseIFollowAndTheirPostsResolverImages = {
 
 export type HelloWorldVariables = {};
 
-// export type HelloWorldQuery = {
-//   __typename?: "Query";
+export type HelloWorldQuery = {
+  __typename?: "Query";
 
-//   helloWorld: string;
-// };
+  helloWorld: string;
+};
 
 export type MeVariables = {};
 
-// export type MeQuery = {
-//   __typename?: "Query";
+export type MeQuery = {
+  __typename?: "Query";
 
-//   me: Maybe<MeMe>;
-// };
+  me: Maybe<MeMe>;
+};
 
 export type MeMe = {
   __typename?: "User";
@@ -1282,11 +1153,11 @@ export type MeMe = {
 
 export type MyFollowingPostsVariables = {};
 
-// export type MyFollowingPostsQuery = {
-//   __typename?: "Query";
+export type MyFollowingPostsQuery = {
+  __typename?: "Query";
 
-//   myFollowingPosts: Maybe<MyFollowingPostsMyFollowingPosts[]>;
-// };
+  myFollowingPosts: Maybe<MyFollowingPostsMyFollowingPosts[]>;
+};
 
 export type MyFollowingPostsMyFollowingPosts = {
   __typename?: "Post";
@@ -1323,14 +1194,14 @@ export type MyFollowingPostsUser = {
 };
 
 export type FollowingPostsVariables = {
-  data: PostSubInput;
+  data: QuickPostSubsInput;
 };
 
-// export type FollowingPostsSubscription = {
-//   __typename?: "Subscription";
+export type FollowingPostsSubscription = {
+  __typename?: "Subscription";
 
-//   followingPosts: FollowingPostsFollowingPosts;
-// };
+  followingPosts: FollowingPostsFollowingPosts;
+};
 
 export type FollowingPostsFollowingPosts = {
   __typename?: "PostSubType";
@@ -1368,11 +1239,11 @@ export type FollowingPostsUser = {
 
 export type GlobalPostsVariables = {};
 
-// export type GlobalPostsSubscription = {
-//   __typename?: "Subscription";
+export type GlobalPostsSubscription = {
+  __typename?: "Subscription";
 
-//   globalPosts: Maybe<GlobalPostsGlobalPosts>;
-// };
+  globalPosts: Maybe<GlobalPostsGlobalPosts>;
+};
 
 export type GlobalPostsGlobalPosts = {
   __typename?: "Post";
@@ -1382,8 +1253,6 @@ export type GlobalPostsGlobalPosts = {
   title: Maybe<string>;
 
   text: Maybe<string>;
-
-  created_at: Maybe<DateTime>;
 
   images: Maybe<GlobalPostsImages[]>;
 
@@ -1412,18 +1281,16 @@ export type MessageThreadsVariables = {
   data: AddMessageToThreadInputV2;
 };
 
-// export type MessageThreadsSubscription = {
-//   __typename?: "Subscription";
+export type MessageThreadsSubscription = {
+  __typename?: "Subscription";
 
-//   messageThreads: MessageThreadsMessageThreads;
-// };
+  messageThreads: MessageThreadsMessageThreads;
+};
 
 export type MessageThreadsMessageThreads = {
   __typename?: "AddMessagePayload";
 
   success: boolean;
-
-  threadId: string;
 
   message: MessageThreadsMessage;
 };
@@ -1480,34 +1347,34 @@ export type AddMessageToThreadMutationVariables = {
   images?: Maybe<Array<Maybe<Scalars["Upload"]>>>;
 };
 
-export type AddMessageToThreadMutation = { __typename?: "Mutation" } & {
-  addMessageToThread: { __typename?: "AddMessagePayload" } & Pick<
-    AddMessagePayload,
-    "success" | "threadId"
-  > & {
-      invitees: Array<
-        { __typename?: "User" } & Pick<User, "id" | "firstName" | "lastName">
-      >;
-      message: { __typename?: "Message" } & Pick<Message, "id" | "message"> & {
-          images: Maybe<
-            Array<Maybe<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>>
-          >;
-          sentBy: { __typename?: "User" } & Pick<User, "id" | "firstName">;
-          user: { __typename?: "User" } & Pick<User, "id" | "firstName">;
-        };
-      user: { __typename?: "User" } & Pick<User, "id" | "firstName">;
-    };
-};
+// export type AddMessageToThreadMutation = { __typename?: "Mutation" } & {
+//   addMessageToThread: { __typename?: "AddMessagePayload" } & Pick<
+//     AddMessagePayload,
+//     "success" | "threadId"
+//   > & {
+//       invitees: Array<
+//         { __typename?: "User" } & Pick<User, "id" | "firstName" | "lastName">
+//       >;
+//       message: { __typename?: "Message" } & Pick<Message, "id" | "message"> & {
+//           images: Maybe<
+//             Array<Maybe<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>>
+//           >;
+//           sentBy: { __typename?: "User" } & Pick<User, "id" | "firstName">;
+//           user: { __typename?: "User" } & Pick<User, "id" | "firstName">;
+//         };
+//       user: { __typename?: "User" } & Pick<User, "id" | "firstName">;
+//     };
+// };
 
 export type AddNewMessageMutationVariables = {
   sentTo: Scalars["String"];
   message: Scalars["String"];
 };
 
-export type AddNewMessageMutation = { __typename?: "Mutation" } & Pick<
-  Mutation,
-  "addNewMessage"
->;
+// export type AddNewMessageMutation = { __typename?: "Mutation" } & Pick<
+//   Mutation,
+//   "addNewMessage"
+// >;
 
 export type CreateMessageThreadMutationVariables = {
   sentTo: Scalars["String"];
@@ -1516,484 +1383,425 @@ export type CreateMessageThreadMutationVariables = {
   invitees: Array<Scalars["ID"]>;
 };
 
-export type CreateMessageThreadMutation = { __typename?: "Mutation" } & {
-  createMessageThread: { __typename?: "Thread" } & Pick<Thread, "id"> & {
-      invitees: Array<
-        { __typename?: "User" } & Pick<User, "id" | "firstName" | "lastName">
-      >;
-      messages: Maybe<
-        Array<
-          Maybe<
-            { __typename?: "Message" } & Pick<
-              Message,
-              "id" | "created_at" | "message"
-            > & {
-                images: Maybe<
-                  Array<
-                    Maybe<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>
-                  >
-                >;
-                sentBy: { __typename?: "User" } & Pick<
-                  User,
-                  "id" | "firstName" | "lastName"
-                >;
-                user: { __typename?: "User" } & Pick<
-                  User,
-                  "id" | "firstName" | "lastName"
-                >;
-              }
-          >
-        >
-      >;
-    };
-};
+// export type CreateMessageThreadMutation = { __typename?: "Mutation" } & {
+//   createMessageThread: { __typename?: "Thread" } & Pick<Thread, "id"> & {
+//       invitees: Array<
+//         { __typename?: "User" } & Pick<User, "id" | "firstName" | "lastName">
+//       >;
+//       messages: Array<
+//         { __typename?: "Message" } & Pick<
+//           Message,
+//           "id" | "created_at" | "message"
+//         > & {
+//             images: Maybe<
+//               Array<Maybe<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>>
+//             >;
+//             sentBy: { __typename?: "User" } & Pick<
+//               User,
+//               "id" | "firstName" | "lastName"
+//             >;
+//             user: { __typename?: "User" } & Pick<
+//               User,
+//               "id" | "firstName" | "lastName"
+//             >;
+//           }
+//       >;
+//     };
+// };
 
 export type SignS3MutationVariables = {
-  files: Array<ImageSubInput>;
+  filename: Scalars["String"];
+  filetype: Scalars["String"];
 };
 
-export type SignS3Mutation = { __typename?: "Mutation" } & {
-  signS3: { __typename?: "SignedS3Payload" } & {
-    signatures: Array<
-      { __typename?: "SignedS3SubPayload" } & Pick<
-        SignedS3SubPayload,
-        "url" | "signedRequest"
-      >
-    >;
-  };
-};
+// export type SignS3Mutation = { __typename?: "Mutation" } & {
+//   signS3: { __typename?: "SignedS3Payload" } & Pick<
+//     SignedS3Payload,
+//     "url" | "signedRequest"
+//   >;
+// };
 
 export type GetAllMyMessagesQueryVariables = {};
 
-export type GetAllMyMessagesQuery = { __typename?: "Query" } & {
-  getAllMyMessages: Maybe<
-    { __typename?: "User" } & Pick<User, "id" | "firstName" | "lastName"> & {
-        mappedMessages: Array<
-          { __typename?: "Message" } & Pick<
-            Message,
-            "id" | "created_at" | "updated_at" | "message"
-          > & {
-              sentBy: { __typename?: "User" } & Pick<
-                User,
-                "id" | "firstName" | "lastName"
-              >;
-              user: { __typename?: "User" } & Pick<
-                User,
-                "id" | "firstName" | "lastName"
-              >;
-            }
-        >;
-      }
-  >;
-};
+// export type GetAllMyMessagesQuery = { __typename?: "Query" } & {
+//   getAllMyMessages: Maybe<
+//     { __typename?: "User" } & Pick<User, "id" | "firstName" | "lastName"> & {
+//         mappedMessages: Array<
+//           { __typename?: "Message" } & Pick<
+//             Message,
+//             "id" | "created_at" | "updated_at" | "message"
+//           > & {
+//               sentBy: { __typename?: "User" } & Pick<
+//                 User,
+//                 "id" | "firstName" | "lastName"
+//               >;
+//               user: { __typename?: "User" } & Pick<
+//                 User,
+//                 "id" | "firstName" | "lastName"
+//               >;
+//             }
+//         >;
+//       }
+//   >;
+// };
 
 export type GetListToCreateThreadQueryVariables = {};
 
-export type GetListToCreateThreadQuery = { __typename?: "Query" } & {
-  getListToCreateThread: Maybe<
-    { __typename?: "TransUserReturn" } & Pick<
-      TransUserReturn,
-      "id" | "firstName"
-    > & {
-        thoseICanMessage: Maybe<
-          Array<
-            { __typename?: "User" } & Pick<
-              User,
-              "id" | "firstName" | "lastName"
-            >
-          >
-        >;
-      }
-  >;
-};
-
-export type GetMessagesByThreadIdQueryVariables = {
-  input: GetMessagesByThreadIdInput;
-};
-
-export type GetMessagesByThreadIdQuery = { __typename?: "Query" } & {
-  getMessagesByThreadId: Maybe<
-    Array<
-      Maybe<
-        { __typename?: "Message" } & Pick<
-          Message,
-          "id" | "created_at" | "message"
-        > & {
-            user: { __typename?: "User" } & Pick<User, "id" | "firstName">;
-            sentBy: { __typename?: "User" } & Pick<User, "id" | "firstName">;
-          }
-      >
-    >
-  >;
-};
+// export type GetListToCreateThreadQuery = { __typename?: "Query" } & {
+//   getListToCreateThread: Maybe<
+//     { __typename?: "TransUserReturn" } & Pick<
+//       TransUserReturn,
+//       "id" | "firstName"
+//     > & {
+//         thoseICanMessage: Maybe<
+//           Array<
+//             { __typename?: "User" } & Pick<
+//               User,
+//               "id" | "firstName" | "lastName"
+//             >
+//           >
+//         >;
+//       }
+//   >;
+// };
 
 export type GetMessageThreadsQueryVariables = {};
 
-export type GetMessageThreadsQuery = { __typename?: "Query" } & {
-  getMessageThreads: Maybe<
-    Array<
-      Maybe<
-        { __typename?: "Thread" } & Pick<Thread, "id"> & {
-            invitees: Array<
-              { __typename?: "User" } & Pick<
-                User,
-                "id" | "firstName" | "lastName"
-              >
-            >;
-            messages: Maybe<
-              Array<
-                Maybe<
-                  { __typename?: "Message" } & Pick<
-                    Message,
-                    "id" | "created_at" | "message"
-                  > & {
-                      images: Maybe<
-                        Array<
-                          Maybe<
-                            { __typename?: "Image" } & Pick<Image, "id" | "uri">
-                          >
-                        >
-                      >;
-                      sentBy: { __typename?: "User" } & Pick<
-                        User,
-                        "id" | "firstName" | "lastName"
-                      >;
-                      user: { __typename?: "User" } & Pick<
-                        User,
-                        "id" | "firstName" | "lastName"
-                      >;
-                    }
-                >
-              >
-            >;
-          }
-      >
-    >
-  >;
-};
+// export type GetMessageThreadsQuery = { __typename?: "Query" } & {
+//   getMessageThreads: Maybe<
+//     Array<
+//       Maybe<
+//         { __typename?: "Thread" } & Pick<Thread, "id"> & {
+//             invitees: Array<
+//               { __typename?: "User" } & Pick<
+//                 User,
+//                 "id" | "firstName" | "lastName"
+//               >
+//             >;
+//             messages: Array<
+//               { __typename?: "Message" } & Pick<
+//                 Message,
+//                 "id" | "created_at" | "message"
+//               > & {
+//                   images: Maybe<
+//                     Array<
+//                       Maybe<
+//                         { __typename?: "Image" } & Pick<Image, "id" | "uri">
+//                       >
+//                     >
+//                   >;
+//                   sentBy: { __typename?: "User" } & Pick<
+//                     User,
+//                     "id" | "firstName" | "lastName"
+//                   >;
+//                   user: { __typename?: "User" } & Pick<
+//                     User,
+//                     "id" | "firstName" | "lastName"
+//                   >;
+//                 }
+//             >;
+//           }
+//       >
+//     >
+//   >;
+// };
 
 export type GetMyMessagesFromUserQueryVariables = {
   input: GetMessagesFromUserInput;
 };
 
-export type GetMyMessagesFromUserQuery = { __typename?: "Query" } & {
-  getMyMessagesFromUser: Maybe<
-    Array<
-      { __typename?: "Message" } & Pick<
-        Message,
-        "id" | "message" | "created_at"
-      > & {
-          sentBy: { __typename?: "User" } & Pick<
-            User,
-            "id" | "firstName" | "lastName"
-          >;
-        }
-    >
-  >;
-};
-
-export type GetOnlyThreadsQueryVariables = {};
-
-export type GetOnlyThreadsQuery = { __typename?: "Query" } & {
-  getOnlyThreads: Maybe<
-    Array<
-      Maybe<
-        { __typename?: "Thread" } & Pick<Thread, "id" | "created_at"> & {
-            user: { __typename?: "User" } & Pick<User, "id" | "firstName">;
-          }
-      >
-    >
-  >;
-};
+// export type GetMyMessagesFromUserQuery = { __typename?: "Query" } & {
+//   getMyMessagesFromUser: Maybe<
+//     Array<
+//       { __typename?: "Message" } & Pick<
+//         Message,
+//         "id" | "message" | "created_at"
+//       > & {
+//           sentBy: { __typename?: "User" } & Pick<
+//             User,
+//             "id" | "firstName" | "lastName"
+//           >;
+//         }
+//     >
+//   >;
+// };
 
 export type NewMessageSubscriptionVariables = {
   message: Scalars["String"];
   sentTo: Scalars["String"];
 };
 
-export type NewMessageSubscription = { __typename?: "Subscription" } & {
-  newMessage: { __typename?: "MessageSubType" } & Pick<
-    MessageSubType,
-    "id" | "message" | "created_at" | "updated_at"
-  > & {
-      sentBy: { __typename?: "User" } & Pick<
-        User,
-        "id" | "firstName" | "lastName"
-      >;
-      user: { __typename?: "User" } & Pick<
-        User,
-        "id" | "firstName" | "lastName"
-      >;
-    };
-};
+// export type NewMessageSubscription = { __typename?: "Subscription" } & {
+//   newMessage: { __typename?: "MessageSubType" } & Pick<
+//     MessageSubType,
+//     "id" | "message" | "created_at" | "updated_at"
+//   > & {
+//       sentBy: { __typename?: "User" } & Pick<
+//         User,
+//         "id" | "firstName" | "lastName"
+//       >;
+//       user: { __typename?: "User" } & Pick<
+//         User,
+//         "id" | "firstName" | "lastName"
+//       >;
+//     };
+// };
 
 export type ChangePasswordMutationVariables = {
   data: ChangePasswordInput;
 };
 
-export type ChangePasswordMutation = { __typename?: "Mutation" } & {
-  changePassword: Maybe<
-    { __typename?: "User" } & Pick<
-      User,
-      "id" | "firstName" | "lastName" | "email" | "name"
-    >
-  >;
-};
+// export type ChangePasswordMutation = { __typename?: "Mutation" } & {
+//   changePassword: Maybe<
+//     { __typename?: "User" } & Pick<
+//       User,
+//       "id" | "firstName" | "lastName" | "email" | "name"
+//     >
+//   >;
+// };
 
 export type ConfirmUserMutationVariables = {
   token: Scalars["String"];
 };
 
-export type ConfirmUserMutation = { __typename?: "Mutation" } & Pick<
-  Mutation,
-  "confirmUser"
->;
+// export type ConfirmUserMutation = { __typename?: "Mutation" } & Pick<
+//   Mutation,
+//   "confirmUser"
+// >;
 
 export type CreatePostMutationVariables = {
   data: PostInput;
 };
 
-export type CreatePostMutation = { __typename?: "Mutation" } & {
-  createPost: { __typename?: "Post" } & Pick<Post, "id" | "title" | "text"> & {
-      images: Maybe<
-        Array<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>
-      >;
-    };
-};
+// export type CreatePostMutation = { __typename?: "Mutation" } & {
+//   createPost: { __typename?: "Post" } & Pick<Post, "id" | "title" | "text">;
+// };
 
 export type FollowUserMutationVariables = {
   data: FollowUserInput;
 };
 
-export type FollowUserMutation = { __typename?: "Mutation" } & Pick<
-  Mutation,
-  "followUser"
->;
+// export type FollowUserMutation = { __typename?: "Mutation" } & Pick<
+//   Mutation,
+//   "followUser"
+// >;
 
 export type ForgotPasswordMutationVariables = {
   email: Scalars["String"];
 };
 
-export type ForgotPasswordMutation = { __typename?: "Mutation" } & Pick<
-  Mutation,
-  "forgotPassword"
->;
+// export type ForgotPasswordMutation = { __typename?: "Mutation" } & Pick<
+//   Mutation,
+//   "forgotPassword"
+// >;
 
 export type LoginMutationVariables = {
   email: Scalars["String"];
   password: Scalars["String"];
 };
 
-export type LoginMutation = { __typename?: "Mutation" } & {
-  login: Maybe<
-    { __typename?: "User" } & Pick<
-      User,
-      "id" | "firstName" | "lastName" | "email" | "name"
-    >
-  >;
-};
+// export type LoginMutation = { __typename?: "Mutation" } & {
+//   login: Maybe<
+//     { __typename?: "User" } & Pick<
+//       User,
+//       "id" | "firstName" | "lastName" | "email" | "name"
+//     >
+//   >;
+// };
 
 export type LogoutMutationVariables = {};
 
-export type LogoutMutation = { __typename?: "Mutation" } & Pick<
-  Mutation,
-  "logout"
->;
+// export type LogoutMutation = { __typename?: "Mutation" } & Pick<
+//   Mutation,
+//   "logout"
+// >;
 
 export type RegisterMutationVariables = {
   data: RegisterInput;
 };
 
-export type RegisterMutation = { __typename?: "Mutation" } & {
-  register: { __typename?: "User" } & Pick<
-    User,
-    "id" | "firstName" | "lastName" | "email" | "name"
-  >;
-};
+// export type RegisterMutation = { __typename?: "Mutation" } & {
+//   register: { __typename?: "User" } & Pick<
+//     User,
+//     "id" | "firstName" | "lastName" | "email" | "name"
+//   >;
+// };
 
 export type UnFollowUserMutationVariables = {
   data: UnFollowUserInput;
 };
 
-export type UnFollowUserMutation = { __typename?: "Mutation" } & Pick<
-  Mutation,
-  "unFollowUser"
->;
+// export type UnFollowUserMutation = { __typename?: "Mutation" } & Pick<
+//   Mutation,
+//   "unFollowUser"
+// >;
 
 export type GetAllMyImagesQueryVariables = {};
 
-export type GetAllMyImagesQuery = { __typename?: "Query" } & {
-  GetAllMyImages: Array<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>;
-};
+// export type GetAllMyImagesQuery = { __typename?: "Query" } & {
+//   GetAllMyImages: Array<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>;
+// };
 
 export type GetGlobalPostsQueryVariables = {};
 
-export type GetGlobalPostsQuery = { __typename?: "Query" } & {
-  getGlobalPosts: Maybe<
-    Array<
-      { __typename?: "Post" } & Pick<
-        Post,
-        "id" | "title" | "text" | "created_at"
-      > & {
-          images: Maybe<
-            Array<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>
-          >;
-          user: Maybe<
-            { __typename?: "User" } & Pick<
-              User,
-              "id" | "firstName" | "lastName"
-            >
-          >;
-        }
-    >
-  >;
-};
+// export type GetGlobalPostsQuery = { __typename?: "Query" } & {
+//   getGlobalPosts: Maybe<
+//     Array<
+//       { __typename?: "Post" } & Pick<
+//         Post,
+//         "id" | "title" | "text" | "created_at"
+//       > & {
+//           images: Maybe<
+//             Array<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>
+//           >;
+//           user: Maybe<{ __typename?: "User" } & Pick<User, "id" | "firstName">>;
+//         }
+//     >
+//   >;
+// };
 
 export type GetThoseIFollowAndTheirPostsResolverQueryVariables = {};
 
-export type GetThoseIFollowAndTheirPostsResolverQuery = {
-  __typename?: "Query";
-} & {
-  getThoseIFollowAndTheirPostsResolver: Maybe<
-    { __typename?: "User" } & Pick<
-      User,
-      "id" | "firstName" | "lastName" | "email" | "name"
-    > & {
-        following: Maybe<
-          Array<
-            Maybe<
-              { __typename?: "User" } & Pick<
-                User,
-                "id" | "firstName" | "lastName"
-              > & {
-                  posts: Maybe<
-                    Array<
-                      { __typename?: "Post" } & Pick<
-                        Post,
-                        "id" | "title" | "text"
-                      > & {
-                          images: Maybe<
-                            Array<
-                              { __typename?: "Image" } & Pick<
-                                Image,
-                                "id" | "uri"
-                              >
-                            >
-                          >;
-                        }
-                    >
-                  >;
-                }
-            >
-          >
-        >;
-      }
-  >;
-};
+// export type GetThoseIFollowAndTheirPostsResolverQuery = {
+//   __typename?: "Query";
+// } & {
+//   getThoseIFollowAndTheirPostsResolver: Maybe<
+//     { __typename?: "User" } & Pick<
+//       User,
+//       "id" | "firstName" | "lastName" | "email" | "name"
+//     > & {
+//         following: Maybe<
+//           Array<
+//             Maybe<
+//               { __typename?: "User" } & Pick<
+//                 User,
+//                 "id" | "firstName" | "lastName"
+//               > & {
+//                   posts: Maybe<
+//                     Array<
+//                       { __typename?: "Post" } & Pick<
+//                         Post,
+//                         "id" | "title" | "text"
+//                       > & {
+//                           images: Maybe<
+//                             Array<
+//                               { __typename?: "Image" } & Pick<
+//                                 Image,
+//                                 "id" | "uri"
+//                               >
+//                             >
+//                           >;
+//                         }
+//                     >
+//                   >;
+//                 }
+//             >
+//           >
+//         >;
+//       }
+//   >;
+// };
 
 export type HelloWorldQueryVariables = {};
 
-export type HelloWorldQuery = { __typename?: "Query" } & Pick<
-  Query,
-  "helloWorld"
->;
+// export type HelloWorldQuery = { __typename?: "Query" } & Pick<
+//   Query,
+//   "helloWorld"
+// >;
 
 export type MeQueryVariables = {};
 
-export type MeQuery = { __typename?: "Query" } & {
-  me: Maybe<
-    { __typename?: "User" } & Pick<
-      User,
-      "firstName" | "lastName" | "email" | "name" | "id"
-    >
-  >;
-};
+// export type MeQuery = { __typename?: "Query" } & {
+//   me: Maybe<
+//     { __typename?: "User" } & Pick<
+//       User,
+//       "firstName" | "lastName" | "email" | "name" | "id"
+//     >
+//   >;
+// };
 
 export type MyFollowingPostsQueryVariables = {};
 
-export type MyFollowingPostsQuery = { __typename?: "Query" } & {
-  myFollowingPosts: Maybe<
-    Array<
-      { __typename?: "Post" } & Pick<
-        Post,
-        "id" | "title" | "text" | "created_at"
-      > & {
-          images: Maybe<
-            Array<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>
-          >;
-          user: Maybe<
-            { __typename?: "User" } & Pick<
-              User,
-              "id" | "firstName" | "lastName"
-            >
-          >;
-        }
-    >
-  >;
-};
+// export type MyFollowingPostsQuery = { __typename?: "Query" } & {
+//   myFollowingPosts: Maybe<
+//     Array<
+//       { __typename?: "Post" } & Pick<
+//         Post,
+//         "id" | "title" | "text" | "created_at"
+//       > & {
+//           images: Maybe<
+//             Array<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>
+//           >;
+//           user: Maybe<
+//             { __typename?: "User" } & Pick<
+//               User,
+//               "id" | "firstName" | "lastName"
+//             >
+//           >;
+//         }
+//     >
+//   >;
+// };
 
 export type FollowingPostsSubscriptionVariables = {
-  data: PostSubInput;
+  data: QuickPostSubsInput;
 };
 
-export type FollowingPostsSubscription = { __typename?: "Subscription" } & {
-  followingPosts: { __typename?: "PostSubType" } & Pick<
-    PostSubType,
-    "id" | "title" | "text" | "created_at"
-  > & {
-      images: Array<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>;
-      user: { __typename?: "User" } & Pick<
-        User,
-        "id" | "firstName" | "lastName"
-      >;
-    };
-};
+// export type FollowingPostsSubscription = { __typename?: "Subscription" } & {
+//   followingPosts: { __typename?: "PostSubType" } & Pick<
+//     PostSubType,
+//     "id" | "title" | "text" | "created_at"
+//   > & {
+//       images: Array<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>;
+//       user: { __typename?: "User" } & Pick<
+//         User,
+//         "id" | "firstName" | "lastName"
+//       >;
+//     };
+// };
 
 export type GlobalPostsSubscriptionVariables = {};
 
-export type GlobalPostsSubscription = { __typename?: "Subscription" } & {
-  globalPosts: Maybe<
-    { __typename?: "Post" } & Pick<
-      Post,
-      "id" | "title" | "text" | "created_at"
-    > & {
-        images: Maybe<
-          Array<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>
-        >;
-        user: Maybe<
-          { __typename?: "User" } & Pick<User, "id" | "firstName" | "lastName">
-        >;
-      }
-  >;
-};
+// export type GlobalPostsSubscription = { __typename?: "Subscription" } & {
+//   globalPosts: Maybe<
+//     { __typename?: "Post" } & Pick<Post, "id" | "title" | "text"> & {
+//         images: Maybe<
+//           Array<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>
+//         >;
+//         user: Maybe<
+//           { __typename?: "User" } & Pick<User, "id" | "firstName" | "lastName">
+//         >;
+//       }
+//   >;
+// };
 
 export type MessageThreadsSubscriptionVariables = {
   data: AddMessageToThreadInput_V2;
 };
 
-export type MessageThreadsSubscription = { __typename?: "Subscription" } & {
-  messageThreads: { __typename?: "AddMessagePayload" } & Pick<
-    AddMessagePayload,
-    "success" | "threadId"
-  > & {
-      message: { __typename?: "Message" } & Pick<
-        Message,
-        "id" | "created_at" | "message"
-      > & {
-          images: Maybe<
-            Array<Maybe<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>>
-          >;
-          sentBy: { __typename?: "User" } & Pick<
-            User,
-            "id" | "firstName" | "lastName"
-          >;
-          user: { __typename?: "User" } & Pick<
-            User,
-            "id" | "firstName" | "lastName"
-          >;
-        };
-    };
-};
+// export type MessageThreadsSubscription = { __typename?: "Subscription" } & {
+//   messageThreads: { __typename?: "AddMessagePayload" } & Pick<
+//     AddMessagePayload,
+//     "success"
+//   > & {
+//       message: { __typename?: "Message" } & Pick<
+//         Message,
+//         "id" | "created_at" | "message"
+//       > & {
+//           images: Maybe<
+//             Array<Maybe<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>>
+//           >;
+//           sentBy: { __typename?: "User" } & Pick<
+//             User,
+//             "id" | "firstName" | "lastName"
+//           >;
+//           user: { __typename?: "User" } & Pick<
+//             User,
+//             "id" | "firstName" | "lastName"
+//           >;
+//         };
+//     };
+// };
 
 export const AddMessageToThreadDocument = gql`
   mutation AddMessageToThread(
@@ -2271,12 +2079,10 @@ export type CreateMessageThreadMutationHookResult = ReturnType<
   typeof useCreateMessageThreadMutation
 >;
 export const SignS3Document = gql`
-  mutation SignS3($files: [ImageSubInput!]!) {
-    signS3(files: $files) {
-      signatures {
-        url
-        signedRequest
-      }
+  mutation SignS3($filename: String!, $filetype: String!) {
+    signS3(filename: $filename, filetype: $filetype) {
+      url
+      signedRequest
     }
   }
 `;
@@ -2478,85 +2284,6 @@ export function useGetListToCreateThreadQuery(
 export type GetListToCreateThreadQueryHookResult = ReturnType<
   typeof useGetListToCreateThreadQuery
 >;
-export const GetMessagesByThreadIdDocument = gql`
-  query GetMessagesByThreadId($input: GetMessagesByThreadIdInput!) {
-    getMessagesByThreadId(input: $input) {
-      id
-      created_at
-      message
-      user {
-        id
-        firstName
-      }
-      sentBy {
-        id
-        firstName
-      }
-    }
-  }
-`;
-export type GetMessagesByThreadIdComponentProps = Omit<
-  ReactApollo.QueryProps<
-    GetMessagesByThreadIdQuery,
-    GetMessagesByThreadIdQueryVariables
-  >,
-  "query"
-> &
-  (
-    | { variables: GetMessagesByThreadIdQueryVariables; skip?: false }
-    | { skip: true });
-
-export const GetMessagesByThreadIdComponent = (
-  props: GetMessagesByThreadIdComponentProps
-) => (
-  <ReactApollo.Query<
-    GetMessagesByThreadIdQuery,
-    GetMessagesByThreadIdQueryVariables
-  >
-    query={GetMessagesByThreadIdDocument}
-    {...props}
-  />
-);
-
-export type GetMessagesByThreadIdProps<TChildProps = {}> = Partial<
-  ReactApollo.DataProps<
-    GetMessagesByThreadIdQuery,
-    GetMessagesByThreadIdQueryVariables
-  >
-> &
-  TChildProps;
-export function withGetMessagesByThreadId<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
-    GetMessagesByThreadIdQuery,
-    GetMessagesByThreadIdQueryVariables,
-    GetMessagesByThreadIdProps<TChildProps>
-  >
-) {
-  return ReactApollo.withQuery<
-    TProps,
-    GetMessagesByThreadIdQuery,
-    GetMessagesByThreadIdQueryVariables,
-    GetMessagesByThreadIdProps<TChildProps>
-  >(GetMessagesByThreadIdDocument, {
-    alias: "withGetMessagesByThreadId",
-    ...operationOptions
-  });
-}
-
-export function useGetMessagesByThreadIdQuery(
-  baseOptions?: ReactApolloHooks.QueryHookOptions<
-    GetMessagesByThreadIdQueryVariables
-  >
-) {
-  return ReactApolloHooks.useQuery<
-    GetMessagesByThreadIdQuery,
-    GetMessagesByThreadIdQueryVariables
-  >(GetMessagesByThreadIdDocument, baseOptions);
-}
-export type GetMessagesByThreadIdQueryHookResult = ReturnType<
-  typeof useGetMessagesByThreadIdQuery
->;
 export const GetMessageThreadsDocument = gql`
   query GetMessageThreads {
     getMessageThreads {
@@ -2716,66 +2443,6 @@ export function useGetMyMessagesFromUserQuery(
 }
 export type GetMyMessagesFromUserQueryHookResult = ReturnType<
   typeof useGetMyMessagesFromUserQuery
->;
-export const GetOnlyThreadsDocument = gql`
-  query GetOnlyThreads {
-    getOnlyThreads {
-      id
-      user {
-        id
-        firstName
-      }
-      created_at
-    }
-  }
-`;
-export type GetOnlyThreadsComponentProps = Omit<
-  ReactApollo.QueryProps<GetOnlyThreadsQuery, GetOnlyThreadsQueryVariables>,
-  "query"
->;
-
-export const GetOnlyThreadsComponent = (
-  props: GetOnlyThreadsComponentProps
-) => (
-  <ReactApollo.Query<GetOnlyThreadsQuery, GetOnlyThreadsQueryVariables>
-    query={GetOnlyThreadsDocument}
-    {...props}
-  />
-);
-
-export type GetOnlyThreadsProps<TChildProps = {}> = Partial<
-  ReactApollo.DataProps<GetOnlyThreadsQuery, GetOnlyThreadsQueryVariables>
-> &
-  TChildProps;
-export function withGetOnlyThreads<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
-    GetOnlyThreadsQuery,
-    GetOnlyThreadsQueryVariables,
-    GetOnlyThreadsProps<TChildProps>
-  >
-) {
-  return ReactApollo.withQuery<
-    TProps,
-    GetOnlyThreadsQuery,
-    GetOnlyThreadsQueryVariables,
-    GetOnlyThreadsProps<TChildProps>
-  >(GetOnlyThreadsDocument, {
-    alias: "withGetOnlyThreads",
-    ...operationOptions
-  });
-}
-
-export function useGetOnlyThreadsQuery(
-  baseOptions?: ReactApolloHooks.QueryHookOptions<GetOnlyThreadsQueryVariables>
-) {
-  return ReactApolloHooks.useQuery<
-    GetOnlyThreadsQuery,
-    GetOnlyThreadsQueryVariables
-  >(GetOnlyThreadsDocument, baseOptions);
-}
-export type GetOnlyThreadsQueryHookResult = ReturnType<
-  typeof useGetOnlyThreadsQuery
 >;
 export const NewMessageDocument = gql`
   subscription NewMessage($message: String!, $sentTo: String!) {
@@ -2988,10 +2655,6 @@ export const CreatePostDocument = gql`
       id
       title
       text
-      images {
-        id
-        uri
-      }
     }
   }
 `;
@@ -3483,7 +3146,6 @@ export const GetGlobalPostsDocument = gql`
       user {
         id
         firstName
-        lastName
       }
     }
   }
@@ -3796,7 +3458,7 @@ export type MyFollowingPostsQueryHookResult = ReturnType<
   typeof useMyFollowingPostsQuery
 >;
 export const FollowingPostsDocument = gql`
-  subscription FollowingPosts($data: PostSubInput!) {
+  subscription FollowingPosts($data: QuickPostSubsInput!) {
     followingPosts(data: $data) {
       id
       title
@@ -3880,7 +3542,6 @@ export const GlobalPostsDocument = gql`
       id
       title
       text
-      created_at
       images {
         id
         uri
@@ -3955,7 +3616,6 @@ export const MessageThreadsDocument = gql`
   subscription MessageThreads($data: AddMessageToThreadInput_v2!) {
     messageThreads(data: $data) {
       success
-      threadId
       message {
         id
         created_at
@@ -4038,3 +3698,601 @@ export function useMessageThreadsSubscription(
 export type MessageThreadsSubscriptionHookResult = ReturnType<
   typeof useMessageThreadsSubscription
 >;
+
+export type ResolverTypeWrapper<T> = Promise<T> | T;
+
+export type ResolverFn<TResult, TParent, TContext, TArgs> = (
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => Promise<TResult> | TResult;
+
+export type StitchingResolver<TResult, TParent, TContext, TArgs> = {
+  fragment: string;
+  resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
+};
+
+export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> =
+  | ResolverFn<TResult, TParent, TContext, TArgs>
+  | StitchingResolver<TResult, TParent, TContext, TArgs>;
+
+export type SubscriptionSubscribeFn<TResult, TParent, TContext, TArgs> = (
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => AsyncIterator<TResult> | Promise<AsyncIterator<TResult>>;
+
+export type SubscriptionResolveFn<TResult, TParent, TContext, TArgs> = (
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => TResult | Promise<TResult>;
+
+export interface SubscriptionResolverObject<TResult, TParent, TContext, TArgs> {
+  subscribe: SubscriptionSubscribeFn<TResult, TParent, TContext, TArgs>;
+  resolve?: SubscriptionResolveFn<TResult, TParent, TContext, TArgs>;
+}
+
+export type SubscriptionResolver<
+  TResult,
+  TParent = {},
+  TContext = {},
+  TArgs = {}
+> =
+  | ((
+      ...args: any[]
+    ) => SubscriptionResolverObject<TResult, TParent, TContext, TArgs>)
+  | SubscriptionResolverObject<TResult, TParent, TContext, TArgs>;
+
+export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
+  parent: TParent,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => Maybe<TTypes>;
+
+export type NextResolverFn<T> = () => Promise<T>;
+
+export type DirectiveResolverFn<
+  TResult = {},
+  TParent = {},
+  TContext = {},
+  TArgs = {}
+> = (
+  next: NextResolverFn<TResult>,
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => TResult | Promise<TResult>;
+
+/** Mapping between all available schema types and the resolvers types */
+export type ResolversTypes = {
+  Query: ResolverTypeWrapper<{}>;
+  User: ResolverTypeWrapper<User>;
+  ID: ResolverTypeWrapper<Scalars["ID"]>;
+  String: ResolverTypeWrapper<Scalars["String"]>;
+  Message: ResolverTypeWrapper<Message>;
+  DateTime: ResolverTypeWrapper<Scalars["DateTime"]>;
+  Image: ResolverTypeWrapper<Image>;
+  Post: ResolverTypeWrapper<Post>;
+  Thread: ResolverTypeWrapper<Thread>;
+  Boolean: ResolverTypeWrapper<Scalars["Boolean"]>;
+  GetMessagesFromUserInput: GetMessagesFromUserInput;
+  TransUserReturn: ResolverTypeWrapper<TransUserReturn>;
+  Mutation: ResolverTypeWrapper<{}>;
+  ProductInput: ProductInput;
+  Product: ResolverTypeWrapper<Product>;
+  RegisterInput: RegisterInput;
+  ChangePasswordInput: ChangePasswordInput;
+  Upload: ResolverTypeWrapper<Scalars["Upload"]>;
+  PostInput: PostInput;
+  FollowUserInput: FollowUserInput;
+  UnFollowUserInput: UnFollowUserInput;
+  AddMessagePayload: ResolverTypeWrapper<AddMessagePayload>;
+  SignedS3Payload: ResolverTypeWrapper<SignedS3Payload>;
+  Subscription: ResolverTypeWrapper<{}>;
+  QuickPostSubsInput: QuickPostSubsInput;
+  PostSubType: ResolverTypeWrapper<PostSubType>;
+  MessageSubType: ResolverTypeWrapper<MessageSubType>;
+  AddMessageToThreadInput_v2: AddMessageToThreadInput_V2;
+  GetAllMyMessagesInput: GetAllMyMessagesInput;
+  GetAllMyMessageThreadsInput: GetAllMyMessageThreadsInput;
+  GetMessageThreadsFromUserInput: GetMessageThreadsFromUserInput;
+  MessageOutput: ResolverTypeWrapper<MessageOutput>;
+  MessageThreadOutput: ResolverTypeWrapper<MessageThreadOutput>;
+  PasswordInput: PasswordInput;
+};
+
+/** Mapping between all available schema types and the resolvers parents */
+export type ResolversParentTypes = {
+  Query: {};
+  User: User;
+  ID: Scalars["ID"];
+  String: Scalars["String"];
+  Message: Message;
+  DateTime: Scalars["DateTime"];
+  Image: Image;
+  Post: Post;
+  Thread: Thread;
+  Boolean: Scalars["Boolean"];
+  GetMessagesFromUserInput: GetMessagesFromUserInput;
+  TransUserReturn: TransUserReturn;
+  Mutation: {};
+  ProductInput: ProductInput;
+  Product: Product;
+  RegisterInput: RegisterInput;
+  ChangePasswordInput: ChangePasswordInput;
+  Upload: Scalars["Upload"];
+  PostInput: PostInput;
+  FollowUserInput: FollowUserInput;
+  UnFollowUserInput: UnFollowUserInput;
+  AddMessagePayload: AddMessagePayload;
+  SignedS3Payload: SignedS3Payload;
+  Subscription: {};
+  QuickPostSubsInput: QuickPostSubsInput;
+  PostSubType: PostSubType;
+  MessageSubType: MessageSubType;
+  AddMessageToThreadInput_v2: AddMessageToThreadInput_V2;
+  GetAllMyMessagesInput: GetAllMyMessagesInput;
+  GetAllMyMessageThreadsInput: GetAllMyMessageThreadsInput;
+  GetMessageThreadsFromUserInput: GetMessageThreadsFromUserInput;
+  MessageOutput: MessageOutput;
+  MessageThreadOutput: MessageThreadOutput;
+  PasswordInput: PasswordInput;
+};
+
+export type AddMessagePayloadResolvers<
+  ContextType = any,
+  ParentType = ResolversParentTypes["AddMessagePayload"]
+> = {
+  success?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  threadId?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  message?: Resolver<ResolversTypes["Message"], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
+  invitees?: Resolver<Array<ResolversTypes["User"]>, ParentType, ContextType>;
+};
+
+export interface DateTimeScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes["DateTime"], any> {
+  name: "DateTime";
+}
+
+export type ImageResolvers<
+  ContextType = any,
+  ParentType = ResolversParentTypes["Image"]
+> = {
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  uri?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  post?: Resolver<ResolversTypes["Post"], ParentType, ContextType>;
+  message?: Resolver<Maybe<ResolversTypes["Message"]>, ParentType, ContextType>;
+  user?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
+};
+
+export type MessageResolvers<
+  ContextType = any,
+  ParentType = ResolversParentTypes["Message"]
+> = {
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  created_at?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >;
+  updated_at?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >;
+  message?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  images?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["Image"]>>>,
+    ParentType,
+    ContextType
+  >;
+  sentBy?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
+  thread?: Resolver<Maybe<ResolversTypes["Thread"]>, ParentType, ContextType>;
+};
+
+export type MessageOutputResolvers<
+  ContextType = any,
+  ParentType = ResolversParentTypes["MessageOutput"]
+> = {
+  message?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+};
+
+export type MessageSubTypeResolvers<
+  ContextType = any,
+  ParentType = ResolversParentTypes["MessageSubType"]
+> = {
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  message?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  sentBy?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
+  created_at?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >;
+  updated_at?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >;
+};
+
+export type MessageThreadOutputResolvers<
+  ContextType = any,
+  ParentType = ResolversParentTypes["MessageThreadOutput"]
+> = {
+  message?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+};
+
+export type MutationResolvers<
+  ContextType = any,
+  ParentType = ResolversParentTypes["Mutation"]
+> = {
+  createProduct?: Resolver<
+    ResolversTypes["Product"],
+    ParentType,
+    ContextType,
+    Mutation_CreateProductArgs
+  >;
+  createUser?: Resolver<
+    ResolversTypes["User"],
+    ParentType,
+    ContextType,
+    Mutation_CreateUserArgs
+  >;
+  changePassword?: Resolver<
+    Maybe<ResolversTypes["User"]>,
+    ParentType,
+    ContextType,
+    Mutation_ChangePasswordArgs
+  >;
+  confirmUser?: Resolver<
+    ResolversTypes["Boolean"],
+    ParentType,
+    ContextType,
+    Mutation_ConfirmUserArgs
+  >;
+  forgotPassword?: Resolver<
+    ResolversTypes["Boolean"],
+    ParentType,
+    ContextType,
+    Mutation_ForgotPasswordArgs
+  >;
+  login?: Resolver<
+    Maybe<ResolversTypes["User"]>,
+    ParentType,
+    ContextType,
+    Mutation_LoginArgs
+  >;
+  logout?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  register?: Resolver<
+    ResolversTypes["User"],
+    ParentType,
+    ContextType,
+    Mutation_RegisterArgs
+  >;
+  addProfilePicture?: Resolver<
+    ResolversTypes["Boolean"],
+    ParentType,
+    ContextType,
+    Mutation_AddProfilePictureArgs
+  >;
+  createPost?: Resolver<
+    ResolversTypes["Post"],
+    ParentType,
+    ContextType,
+    Mutation_CreatePostArgs
+  >;
+  followUser?: Resolver<
+    ResolversTypes["Boolean"],
+    ParentType,
+    ContextType,
+    Mutation_FollowUserArgs
+  >;
+  addNewMessage?: Resolver<
+    ResolversTypes["Boolean"],
+    ParentType,
+    ContextType,
+    Mutation_AddNewMessageArgs
+  >;
+  unFollowUser?: Resolver<
+    ResolversTypes["Boolean"],
+    ParentType,
+    ContextType,
+    Mutation_UnFollowUserArgs
+  >;
+  createMessageThread?: Resolver<
+    ResolversTypes["Thread"],
+    ParentType,
+    ContextType,
+    Mutation_CreateMessageThreadArgs
+  >;
+  addMessageToThread?: Resolver<
+    ResolversTypes["AddMessagePayload"],
+    ParentType,
+    ContextType,
+    Mutation_AddMessageToThreadArgs
+  >;
+  signS3?: Resolver<
+    ResolversTypes["SignedS3Payload"],
+    ParentType,
+    ContextType,
+    Mutation_SignS3Args
+  >;
+};
+
+export type PostResolvers<
+  ContextType = any,
+  ParentType = ResolversParentTypes["Post"]
+> = {
+  id?: Resolver<Maybe<ResolversTypes["ID"]>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  text?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  images?: Resolver<
+    Maybe<Array<ResolversTypes["Image"]>>,
+    ParentType,
+    ContextType
+  >;
+  user?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
+  created_at?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >;
+  updated_at?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >;
+};
+
+export type PostSubTypeResolvers<
+  ContextType = any,
+  ParentType = ResolversParentTypes["PostSubType"]
+> = {
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  text?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  images?: Resolver<Array<ResolversTypes["Image"]>, ParentType, ContextType>;
+  user?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
+  created_at?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
+  updated_at?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
+};
+
+export type ProductResolvers<
+  ContextType = any,
+  ParentType = ResolversParentTypes["Product"]
+> = {
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+};
+
+export type QueryResolvers<
+  ContextType = any,
+  ParentType = ResolversParentTypes["Query"]
+> = {
+  me?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
+  helloWorld?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  GetAllMyImages?: Resolver<
+    Array<ResolversTypes["Image"]>,
+    ParentType,
+    ContextType
+  >;
+  getThoseIFollowAndTheirPostsResolver?: Resolver<
+    Maybe<ResolversTypes["User"]>,
+    ParentType,
+    ContextType
+  >;
+  getMyMessagesFromUser?: Resolver<
+    Maybe<Array<ResolversTypes["Message"]>>,
+    ParentType,
+    ContextType,
+    Query_GetMyMessagesFromUserArgs
+  >;
+  getGlobalPosts?: Resolver<
+    Maybe<Array<ResolversTypes["Post"]>>,
+    ParentType,
+    ContextType
+  >;
+  meAndAllFollowers?: Resolver<
+    Maybe<ResolversTypes["User"]>,
+    ParentType,
+    ContextType
+  >;
+  myFollowingPosts?: Resolver<
+    Maybe<Array<ResolversTypes["Post"]>>,
+    ParentType,
+    ContextType
+  >;
+  getAllMyMessages?: Resolver<
+    Maybe<ResolversTypes["User"]>,
+    ParentType,
+    ContextType
+  >;
+  getMessageThreads?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["Thread"]>>>,
+    ParentType,
+    ContextType
+  >;
+  getListToCreateThread?: Resolver<
+    Maybe<ResolversTypes["TransUserReturn"]>,
+    ParentType,
+    ContextType
+  >;
+};
+
+export type SignedS3PayloadResolvers<
+  ContextType = any,
+  ParentType = ResolversParentTypes["SignedS3Payload"]
+> = {
+  url?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  signedRequest?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+};
+
+export type SubscriptionResolvers<
+  ContextType = any,
+  ParentType = ResolversParentTypes["Subscription"]
+> = {
+  followingPosts?: SubscriptionResolver<
+    ResolversTypes["PostSubType"],
+    ParentType,
+    ContextType,
+    Subscription_FollowingPostsArgs
+  >;
+  newMessage?: SubscriptionResolver<
+    ResolversTypes["MessageSubType"],
+    ParentType,
+    ContextType,
+    Subscription_NewMessageArgs
+  >;
+  globalPosts?: SubscriptionResolver<
+    Maybe<ResolversTypes["Post"]>,
+    ParentType,
+    ContextType
+  >;
+  messageThreads?: SubscriptionResolver<
+    ResolversTypes["AddMessagePayload"],
+    ParentType,
+    ContextType,
+    Subscription_MessageThreadsArgs
+  >;
+};
+
+export type ThreadResolvers<
+  ContextType = any,
+  ParentType = ResolversParentTypes["Thread"]
+> = {
+  id?: Resolver<Maybe<ResolversTypes["ID"]>, ParentType, ContextType>;
+  messages?: Resolver<
+    Array<ResolversTypes["Message"]>,
+    ParentType,
+    ContextType
+  >;
+  user?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
+  invitees?: Resolver<Array<ResolversTypes["User"]>, ParentType, ContextType>;
+  created_at?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >;
+  updated_at?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >;
+};
+
+export type TransUserReturnResolvers<
+  ContextType = any,
+  ParentType = ResolversParentTypes["TransUserReturn"]
+> = {
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  firstName?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  lastName?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  thoseICanMessage?: Resolver<
+    Maybe<Array<ResolversTypes["User"]>>,
+    ParentType,
+    ContextType
+  >;
+};
+
+export interface UploadScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes["Upload"], any> {
+  name: "Upload";
+}
+
+export type UserResolvers<
+  ContextType = any,
+  ParentType = ResolversParentTypes["User"]
+> = {
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  firstName?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  mappedMessages?: Resolver<
+    Array<ResolversTypes["Message"]>,
+    ParentType,
+    ContextType
+  >;
+  lastName?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  email?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  threads?: Resolver<
+    Maybe<Array<ResolversTypes["Thread"]>>,
+    ParentType,
+    ContextType
+  >;
+  name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  confirmed?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  posts?: Resolver<
+    Maybe<Array<ResolversTypes["Post"]>>,
+    ParentType,
+    ContextType
+  >;
+  images?: Resolver<
+    Maybe<Array<ResolversTypes["Image"]>>,
+    ParentType,
+    ContextType
+  >;
+  profileImgUrl?: Resolver<
+    Maybe<ResolversTypes["Image"]>,
+    ParentType,
+    ContextType
+  >;
+  messages?: Resolver<
+    Maybe<Array<ResolversTypes["Message"]>>,
+    ParentType,
+    ContextType
+  >;
+  sent_messages?: Resolver<
+    Maybe<Array<ResolversTypes["Message"]>>,
+    ParentType,
+    ContextType
+  >;
+  followers?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["User"]>>>,
+    ParentType,
+    ContextType
+  >;
+  thread_invitations?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["Thread"]>>>,
+    ParentType,
+    ContextType
+  >;
+  following?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["User"]>>>,
+    ParentType,
+    ContextType
+  >;
+};
+
+export type Resolvers<ContextType = any> = {
+  AddMessagePayload?: AddMessagePayloadResolvers<ContextType>;
+  DateTime?: GraphQLScalarType;
+  Image?: ImageResolvers<ContextType>;
+  Message?: MessageResolvers<ContextType>;
+  MessageOutput?: MessageOutputResolvers<ContextType>;
+  MessageSubType?: MessageSubTypeResolvers<ContextType>;
+  MessageThreadOutput?: MessageThreadOutputResolvers<ContextType>;
+  Mutation?: MutationResolvers<ContextType>;
+  Post?: PostResolvers<ContextType>;
+  PostSubType?: PostSubTypeResolvers<ContextType>;
+  Product?: ProductResolvers<ContextType>;
+  Query?: QueryResolvers<ContextType>;
+  SignedS3Payload?: SignedS3PayloadResolvers<ContextType>;
+  Subscription?: SubscriptionResolvers<ContextType>;
+  Thread?: ThreadResolvers<ContextType>;
+  TransUserReturn?: TransUserReturnResolvers<ContextType>;
+  Upload?: GraphQLScalarType;
+  User?: UserResolvers<ContextType>;
+};
+
+/**
+ * @deprecated
+ * Use "Resolvers" root object instead. If you wish to get "IResolvers", add "typesPrefix: I" to your config.
+ */
+export type IResolvers<ContextType = any> = Resolvers<ContextType>;

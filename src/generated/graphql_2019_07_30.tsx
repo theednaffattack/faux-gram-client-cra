@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 import * as ReactApollo from "react-apollo";
 import * as React from "react";
 import * as ReactApolloHooks from "react-apollo-hooks";
-// export type Maybe<T> = T | null;
+export type Maybe<T> = T | null;
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -49,12 +49,6 @@ export type AddMessageToThreadInput_V2 = {
 
 // export type GetAllMyMessageThreadsInput = {
 //   user: Scalars["String"];
-// };
-
-// export type GetMessagesByThreadIdInput = {
-//   threadId: Scalars["String"];
-//   skip?: Maybe<Scalars["Int"]>;
-//   take?: Maybe<Scalars["Int"]>;
 // };
 
 // export type GetMessagesFromUserInput = {
@@ -270,16 +264,10 @@ export type Query = {
   getAllMyMessages?: Maybe<User>;
   getMessageThreads?: Maybe<Array<Maybe<Thread>>>;
   getListToCreateThread?: Maybe<TransUserReturn>;
-  getOnlyThreads?: Maybe<Array<Maybe<Thread>>>;
-  getMessagesByThreadId?: Maybe<Array<Maybe<Message>>>;
 };
 
 export type Query_GetMyMessagesFromUserArgs = {
   input: GetMessagesFromUserInput;
-};
-
-export type Query_GetMessagesByThreadIdArgs = {
-  input: GetMessagesByThreadIdInput;
 };
 
 // export type RegisterInput = {
@@ -326,7 +314,7 @@ export type Subscription_MessageThreadsArgs = {
 export type Thread = {
   __typename?: "Thread";
   id?: Maybe<Scalars["ID"]>;
-  messages?: Maybe<Array<Maybe<Message>>>;
+  messages: Array<Message>;
   user: User;
   invitees: Array<User>;
   created_at?: Maybe<Scalars["DateTime"]>;
@@ -364,20 +352,12 @@ export type User = {
   thread_invitations?: Maybe<Array<Maybe<Thread>>>;
   following?: Maybe<Array<Maybe<User>>>;
 };
-export type Maybe<T> = T | null;
+// export type Maybe<T> = T | null;
 
 export interface GetMessagesFromUserInput {
   sentBy: string;
 
   user: string;
-}
-
-export interface GetMessagesByThreadIdInput {
-  threadId: string;
-
-  skip?: number;
-
-  take?: number;
 }
 
 export interface ProductInput {
@@ -599,7 +579,7 @@ export type CreateMessageThreadCreateMessageThread = {
 
   invitees: CreateMessageThreadInvitees[];
 
-  messages: Maybe<(Maybe<CreateMessageThreadMessages>)[]>;
+  messages: CreateMessageThreadMessages[];
 };
 
 export type CreateMessageThreadInvitees = {
@@ -764,48 +744,6 @@ export type GetListToCreateThreadThoseICanMessage = {
   lastName: string;
 };
 
-export type GetMessagesByThreadIdVariables = {
-  input: GetMessagesByThreadIdInput;
-};
-
-// export type GetMessagesByThreadIdQuery = {
-//   __typename?: "Query";
-
-//   getMessagesByThreadId: Maybe<
-//     (Maybe<GetMessagesByThreadIdGetMessagesByThreadId>)[]
-//   >;
-// };
-
-export type GetMessagesByThreadIdGetMessagesByThreadId = {
-  __typename?: "Message";
-
-  id: string;
-
-  created_at: Maybe<DateTime>;
-
-  message: string;
-
-  user: GetMessagesByThreadIdUser;
-
-  sentBy: GetMessagesByThreadIdSentBy;
-};
-
-export type GetMessagesByThreadIdUser = {
-  __typename?: "User";
-
-  id: string;
-
-  firstName: string;
-};
-
-export type GetMessagesByThreadIdSentBy = {
-  __typename?: "User";
-
-  id: string;
-
-  firstName: string;
-};
-
 export type GetMessageThreadsVariables = {};
 
 // export type GetMessageThreadsQuery = {
@@ -821,7 +759,7 @@ export type GetMessageThreadsGetMessageThreads = {
 
   invitees: GetMessageThreadsInvitees[];
 
-  messages: Maybe<(Maybe<GetMessageThreadsMessages>)[]>;
+  messages: GetMessageThreadsMessages[];
 };
 
 export type GetMessageThreadsInvitees = {
@@ -908,32 +846,6 @@ export type GetMyMessagesFromUserSentBy = {
   firstName: string;
 
   lastName: string;
-};
-
-export type GetOnlyThreadsVariables = {};
-
-// export type GetOnlyThreadsQuery = {
-//   __typename?: "Query";
-
-//   getOnlyThreads: Maybe<(Maybe<GetOnlyThreadsGetOnlyThreads>)[]>;
-// };
-
-export type GetOnlyThreadsGetOnlyThreads = {
-  __typename?: "Thread";
-
-  id: Maybe<string>;
-
-  user: GetOnlyThreadsUser;
-
-  created_at: Maybe<DateTime>;
-};
-
-export type GetOnlyThreadsUser = {
-  __typename?: "User";
-
-  id: string;
-
-  firstName: string;
 };
 
 export type NewMessageVariables = {
@@ -1035,16 +947,6 @@ export type CreatePostCreatePost = {
   title: Maybe<string>;
 
   text: Maybe<string>;
-
-  images: Maybe<CreatePostImages[]>;
-};
-
-export type CreatePostImages = {
-  __typename?: "Image";
-
-  id: string;
-
-  uri: string;
 };
 
 export type FollowUserVariables = {
@@ -1188,19 +1090,17 @@ export type GetGlobalPostsUser = {
   id: string;
 
   firstName: string;
-
-  lastName: string;
 };
 
 export type GetThoseIFollowAndTheirPostsResolverVariables = {};
 
-// export type GetThoseIFollowAndTheirPostsResolverQuery = {
-//   __typename?: "Query";
+export type GetThoseIFollowAndTheirPostsResolverQuery = {
+  __typename?: "Query";
 
-//   getThoseIFollowAndTheirPostsResolver: Maybe<
-//     GetThoseIFollowAndTheirPostsResolverGetThoseIFollowAndTheirPostsResolver
-//   >;
-// };
+  getThoseIFollowAndTheirPostsResolver: Maybe<
+    GetThoseIFollowAndTheirPostsResolverGetThoseIFollowAndTheirPostsResolver
+  >;
+};
 
 export type GetThoseIFollowAndTheirPostsResolverGetThoseIFollowAndTheirPostsResolver = {
   __typename?: "User";
@@ -1252,11 +1152,11 @@ export type GetThoseIFollowAndTheirPostsResolverImages = {
 
 export type HelloWorldVariables = {};
 
-// export type HelloWorldQuery = {
-//   __typename?: "Query";
+export type HelloWorldQuery = {
+  __typename?: "Query";
 
-//   helloWorld: string;
-// };
+  helloWorld: string;
+};
 
 export type MeVariables = {};
 
@@ -1322,50 +1222,6 @@ export type MyFollowingPostsUser = {
   lastName: string;
 };
 
-export type FollowingPostsVariables = {
-  data: PostSubInput;
-};
-
-// export type FollowingPostsSubscription = {
-//   __typename?: "Subscription";
-
-//   followingPosts: FollowingPostsFollowingPosts;
-// };
-
-export type FollowingPostsFollowingPosts = {
-  __typename?: "PostSubType";
-
-  id: string;
-
-  title: string;
-
-  text: string;
-
-  created_at: DateTime;
-
-  images: FollowingPostsImages[];
-
-  user: FollowingPostsUser;
-};
-
-export type FollowingPostsImages = {
-  __typename?: "Image";
-
-  id: string;
-
-  uri: string;
-};
-
-export type FollowingPostsUser = {
-  __typename?: "User";
-
-  id: string;
-
-  firstName: string;
-
-  lastName: string;
-};
-
 export type GlobalPostsVariables = {};
 
 // export type GlobalPostsSubscription = {
@@ -1382,8 +1238,6 @@ export type GlobalPostsGlobalPosts = {
   title: Maybe<string>;
 
   text: Maybe<string>;
-
-  created_at: Maybe<DateTime>;
 
   images: Maybe<GlobalPostsImages[]>;
 
@@ -1422,8 +1276,6 @@ export type MessageThreadsMessageThreads = {
   __typename?: "AddMessagePayload";
 
   success: boolean;
-
-  threadId: string;
 
   message: MessageThreadsMessage;
 };
@@ -1521,29 +1373,23 @@ export type CreateMessageThreadMutation = { __typename?: "Mutation" } & {
       invitees: Array<
         { __typename?: "User" } & Pick<User, "id" | "firstName" | "lastName">
       >;
-      messages: Maybe<
-        Array<
-          Maybe<
-            { __typename?: "Message" } & Pick<
-              Message,
-              "id" | "created_at" | "message"
-            > & {
-                images: Maybe<
-                  Array<
-                    Maybe<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>
-                  >
-                >;
-                sentBy: { __typename?: "User" } & Pick<
-                  User,
-                  "id" | "firstName" | "lastName"
-                >;
-                user: { __typename?: "User" } & Pick<
-                  User,
-                  "id" | "firstName" | "lastName"
-                >;
-              }
-          >
-        >
+      messages: Array<
+        { __typename?: "Message" } & Pick<
+          Message,
+          "id" | "created_at" | "message"
+        > & {
+            images: Maybe<
+              Array<Maybe<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>>
+            >;
+            sentBy: { __typename?: "User" } & Pick<
+              User,
+              "id" | "firstName" | "lastName"
+            >;
+            user: { __typename?: "User" } & Pick<
+              User,
+              "id" | "firstName" | "lastName"
+            >;
+          }
       >;
     };
 };
@@ -1607,26 +1453,6 @@ export type GetListToCreateThreadQuery = { __typename?: "Query" } & {
   >;
 };
 
-export type GetMessagesByThreadIdQueryVariables = {
-  input: GetMessagesByThreadIdInput;
-};
-
-export type GetMessagesByThreadIdQuery = { __typename?: "Query" } & {
-  getMessagesByThreadId: Maybe<
-    Array<
-      Maybe<
-        { __typename?: "Message" } & Pick<
-          Message,
-          "id" | "created_at" | "message"
-        > & {
-            user: { __typename?: "User" } & Pick<User, "id" | "firstName">;
-            sentBy: { __typename?: "User" } & Pick<User, "id" | "firstName">;
-          }
-      >
-    >
-  >;
-};
-
 export type GetMessageThreadsQueryVariables = {};
 
 export type GetMessageThreadsQuery = { __typename?: "Query" } & {
@@ -1640,31 +1466,27 @@ export type GetMessageThreadsQuery = { __typename?: "Query" } & {
                 "id" | "firstName" | "lastName"
               >
             >;
-            messages: Maybe<
-              Array<
-                Maybe<
-                  { __typename?: "Message" } & Pick<
-                    Message,
-                    "id" | "created_at" | "message"
-                  > & {
-                      images: Maybe<
-                        Array<
-                          Maybe<
-                            { __typename?: "Image" } & Pick<Image, "id" | "uri">
-                          >
-                        >
-                      >;
-                      sentBy: { __typename?: "User" } & Pick<
-                        User,
-                        "id" | "firstName" | "lastName"
-                      >;
-                      user: { __typename?: "User" } & Pick<
-                        User,
-                        "id" | "firstName" | "lastName"
-                      >;
-                    }
-                >
-              >
+            messages: Array<
+              { __typename?: "Message" } & Pick<
+                Message,
+                "id" | "created_at" | "message"
+              > & {
+                  images: Maybe<
+                    Array<
+                      Maybe<
+                        { __typename?: "Image" } & Pick<Image, "id" | "uri">
+                      >
+                    >
+                  >;
+                  sentBy: { __typename?: "User" } & Pick<
+                    User,
+                    "id" | "firstName" | "lastName"
+                  >;
+                  user: { __typename?: "User" } & Pick<
+                    User,
+                    "id" | "firstName" | "lastName"
+                  >;
+                }
             >;
           }
       >
@@ -1688,20 +1510,6 @@ export type GetMyMessagesFromUserQuery = { __typename?: "Query" } & {
             "id" | "firstName" | "lastName"
           >;
         }
-    >
-  >;
-};
-
-export type GetOnlyThreadsQueryVariables = {};
-
-export type GetOnlyThreadsQuery = { __typename?: "Query" } & {
-  getOnlyThreads: Maybe<
-    Array<
-      Maybe<
-        { __typename?: "Thread" } & Pick<Thread, "id" | "created_at"> & {
-            user: { __typename?: "User" } & Pick<User, "id" | "firstName">;
-          }
-      >
     >
   >;
 };
@@ -1754,11 +1562,7 @@ export type CreatePostMutationVariables = {
 };
 
 export type CreatePostMutation = { __typename?: "Mutation" } & {
-  createPost: { __typename?: "Post" } & Pick<Post, "id" | "title" | "text"> & {
-      images: Maybe<
-        Array<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>
-      >;
-    };
+  createPost: { __typename?: "Post" } & Pick<Post, "id" | "title" | "text">;
 };
 
 export type FollowUserMutationVariables = {
@@ -1838,12 +1642,7 @@ export type GetGlobalPostsQuery = { __typename?: "Query" } & {
           images: Maybe<
             Array<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>
           >;
-          user: Maybe<
-            { __typename?: "User" } & Pick<
-              User,
-              "id" | "firstName" | "lastName"
-            >
-          >;
+          user: Maybe<{ __typename?: "User" } & Pick<User, "id" | "firstName">>;
         }
     >
   >;
@@ -1851,52 +1650,52 @@ export type GetGlobalPostsQuery = { __typename?: "Query" } & {
 
 export type GetThoseIFollowAndTheirPostsResolverQueryVariables = {};
 
-export type GetThoseIFollowAndTheirPostsResolverQuery = {
-  __typename?: "Query";
-} & {
-  getThoseIFollowAndTheirPostsResolver: Maybe<
-    { __typename?: "User" } & Pick<
-      User,
-      "id" | "firstName" | "lastName" | "email" | "name"
-    > & {
-        following: Maybe<
-          Array<
-            Maybe<
-              { __typename?: "User" } & Pick<
-                User,
-                "id" | "firstName" | "lastName"
-              > & {
-                  posts: Maybe<
-                    Array<
-                      { __typename?: "Post" } & Pick<
-                        Post,
-                        "id" | "title" | "text"
-                      > & {
-                          images: Maybe<
-                            Array<
-                              { __typename?: "Image" } & Pick<
-                                Image,
-                                "id" | "uri"
-                              >
-                            >
-                          >;
-                        }
-                    >
-                  >;
-                }
-            >
-          >
-        >;
-      }
-  >;
-};
+// export type GetThoseIFollowAndTheirPostsResolverQuery = {
+//   __typename?: "Query";
+// } & {
+//   getThoseIFollowAndTheirPostsResolver: Maybe<
+//     { __typename?: "User" } & Pick<
+//       User,
+//       "id" | "firstName" | "lastName" | "email" | "name"
+//     > & {
+//         following: Maybe<
+//           Array<
+//             Maybe<
+//               { __typename?: "User" } & Pick<
+//                 User,
+//                 "id" | "firstName" | "lastName"
+//               > & {
+//                   posts: Maybe<
+//                     Array<
+//                       { __typename?: "Post" } & Pick<
+//                         Post,
+//                         "id" | "title" | "text"
+//                       > & {
+//                           images: Maybe<
+//                             Array<
+//                               { __typename?: "Image" } & Pick<
+//                                 Image,
+//                                 "id" | "uri"
+//                               >
+//                             >
+//                           >;
+//                         }
+//                     >
+//                   >;
+//                 }
+//             >
+//           >
+//         >;
+//       }
+//   >;
+// };
 
 export type HelloWorldQueryVariables = {};
 
-export type HelloWorldQuery = { __typename?: "Query" } & Pick<
-  Query,
-  "helloWorld"
->;
+// export type HelloWorldQuery = { __typename?: "Query" } & Pick<
+//   Query,
+//   "helloWorld"
+// >;
 
 export type MeQueryVariables = {};
 
@@ -1932,31 +1731,11 @@ export type MyFollowingPostsQuery = { __typename?: "Query" } & {
   >;
 };
 
-export type FollowingPostsSubscriptionVariables = {
-  data: PostSubInput;
-};
-
-export type FollowingPostsSubscription = { __typename?: "Subscription" } & {
-  followingPosts: { __typename?: "PostSubType" } & Pick<
-    PostSubType,
-    "id" | "title" | "text" | "created_at"
-  > & {
-      images: Array<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>;
-      user: { __typename?: "User" } & Pick<
-        User,
-        "id" | "firstName" | "lastName"
-      >;
-    };
-};
-
 export type GlobalPostsSubscriptionVariables = {};
 
 export type GlobalPostsSubscription = { __typename?: "Subscription" } & {
   globalPosts: Maybe<
-    { __typename?: "Post" } & Pick<
-      Post,
-      "id" | "title" | "text" | "created_at"
-    > & {
+    { __typename?: "Post" } & Pick<Post, "id" | "title" | "text"> & {
         images: Maybe<
           Array<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>
         >;
@@ -1974,7 +1753,7 @@ export type MessageThreadsSubscriptionVariables = {
 export type MessageThreadsSubscription = { __typename?: "Subscription" } & {
   messageThreads: { __typename?: "AddMessagePayload" } & Pick<
     AddMessagePayload,
-    "success" | "threadId"
+    "success"
   > & {
       message: { __typename?: "Message" } & Pick<
         Message,
@@ -2478,85 +2257,6 @@ export function useGetListToCreateThreadQuery(
 export type GetListToCreateThreadQueryHookResult = ReturnType<
   typeof useGetListToCreateThreadQuery
 >;
-export const GetMessagesByThreadIdDocument = gql`
-  query GetMessagesByThreadId($input: GetMessagesByThreadIdInput!) {
-    getMessagesByThreadId(input: $input) {
-      id
-      created_at
-      message
-      user {
-        id
-        firstName
-      }
-      sentBy {
-        id
-        firstName
-      }
-    }
-  }
-`;
-export type GetMessagesByThreadIdComponentProps = Omit<
-  ReactApollo.QueryProps<
-    GetMessagesByThreadIdQuery,
-    GetMessagesByThreadIdQueryVariables
-  >,
-  "query"
-> &
-  (
-    | { variables: GetMessagesByThreadIdQueryVariables; skip?: false }
-    | { skip: true });
-
-export const GetMessagesByThreadIdComponent = (
-  props: GetMessagesByThreadIdComponentProps
-) => (
-  <ReactApollo.Query<
-    GetMessagesByThreadIdQuery,
-    GetMessagesByThreadIdQueryVariables
-  >
-    query={GetMessagesByThreadIdDocument}
-    {...props}
-  />
-);
-
-export type GetMessagesByThreadIdProps<TChildProps = {}> = Partial<
-  ReactApollo.DataProps<
-    GetMessagesByThreadIdQuery,
-    GetMessagesByThreadIdQueryVariables
-  >
-> &
-  TChildProps;
-export function withGetMessagesByThreadId<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
-    GetMessagesByThreadIdQuery,
-    GetMessagesByThreadIdQueryVariables,
-    GetMessagesByThreadIdProps<TChildProps>
-  >
-) {
-  return ReactApollo.withQuery<
-    TProps,
-    GetMessagesByThreadIdQuery,
-    GetMessagesByThreadIdQueryVariables,
-    GetMessagesByThreadIdProps<TChildProps>
-  >(GetMessagesByThreadIdDocument, {
-    alias: "withGetMessagesByThreadId",
-    ...operationOptions
-  });
-}
-
-export function useGetMessagesByThreadIdQuery(
-  baseOptions?: ReactApolloHooks.QueryHookOptions<
-    GetMessagesByThreadIdQueryVariables
-  >
-) {
-  return ReactApolloHooks.useQuery<
-    GetMessagesByThreadIdQuery,
-    GetMessagesByThreadIdQueryVariables
-  >(GetMessagesByThreadIdDocument, baseOptions);
-}
-export type GetMessagesByThreadIdQueryHookResult = ReturnType<
-  typeof useGetMessagesByThreadIdQuery
->;
 export const GetMessageThreadsDocument = gql`
   query GetMessageThreads {
     getMessageThreads {
@@ -2716,66 +2416,6 @@ export function useGetMyMessagesFromUserQuery(
 }
 export type GetMyMessagesFromUserQueryHookResult = ReturnType<
   typeof useGetMyMessagesFromUserQuery
->;
-export const GetOnlyThreadsDocument = gql`
-  query GetOnlyThreads {
-    getOnlyThreads {
-      id
-      user {
-        id
-        firstName
-      }
-      created_at
-    }
-  }
-`;
-export type GetOnlyThreadsComponentProps = Omit<
-  ReactApollo.QueryProps<GetOnlyThreadsQuery, GetOnlyThreadsQueryVariables>,
-  "query"
->;
-
-export const GetOnlyThreadsComponent = (
-  props: GetOnlyThreadsComponentProps
-) => (
-  <ReactApollo.Query<GetOnlyThreadsQuery, GetOnlyThreadsQueryVariables>
-    query={GetOnlyThreadsDocument}
-    {...props}
-  />
-);
-
-export type GetOnlyThreadsProps<TChildProps = {}> = Partial<
-  ReactApollo.DataProps<GetOnlyThreadsQuery, GetOnlyThreadsQueryVariables>
-> &
-  TChildProps;
-export function withGetOnlyThreads<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
-    GetOnlyThreadsQuery,
-    GetOnlyThreadsQueryVariables,
-    GetOnlyThreadsProps<TChildProps>
-  >
-) {
-  return ReactApollo.withQuery<
-    TProps,
-    GetOnlyThreadsQuery,
-    GetOnlyThreadsQueryVariables,
-    GetOnlyThreadsProps<TChildProps>
-  >(GetOnlyThreadsDocument, {
-    alias: "withGetOnlyThreads",
-    ...operationOptions
-  });
-}
-
-export function useGetOnlyThreadsQuery(
-  baseOptions?: ReactApolloHooks.QueryHookOptions<GetOnlyThreadsQueryVariables>
-) {
-  return ReactApolloHooks.useQuery<
-    GetOnlyThreadsQuery,
-    GetOnlyThreadsQueryVariables
-  >(GetOnlyThreadsDocument, baseOptions);
-}
-export type GetOnlyThreadsQueryHookResult = ReturnType<
-  typeof useGetOnlyThreadsQuery
 >;
 export const NewMessageDocument = gql`
   subscription NewMessage($message: String!, $sentTo: String!) {
@@ -3483,7 +3123,6 @@ export const GetGlobalPostsDocument = gql`
       user {
         id
         firstName
-        lastName
       }
     }
   }
@@ -3795,92 +3434,12 @@ export function useMyFollowingPostsQuery(
 export type MyFollowingPostsQueryHookResult = ReturnType<
   typeof useMyFollowingPostsQuery
 >;
-export const FollowingPostsDocument = gql`
-  subscription FollowingPosts($data: PostSubInput!) {
-    followingPosts(data: $data) {
-      id
-      title
-      text
-      created_at
-      images {
-        id
-        uri
-      }
-      user {
-        id
-        firstName
-        lastName
-      }
-    }
-  }
-`;
-export type FollowingPostsComponentProps = Omit<
-  ReactApollo.SubscriptionProps<
-    FollowingPostsSubscription,
-    FollowingPostsSubscriptionVariables
-  >,
-  "subscription"
->;
-
-export const FollowingPostsComponent = (
-  props: FollowingPostsComponentProps
-) => (
-  <ReactApollo.Subscription<
-    FollowingPostsSubscription,
-    FollowingPostsSubscriptionVariables
-  >
-    subscription={FollowingPostsDocument}
-    {...props}
-  />
-);
-
-export type FollowingPostsProps<TChildProps = {}> = Partial<
-  ReactApollo.DataProps<
-    FollowingPostsSubscription,
-    FollowingPostsSubscriptionVariables
-  >
-> &
-  TChildProps;
-export function withFollowingPosts<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
-    FollowingPostsSubscription,
-    FollowingPostsSubscriptionVariables,
-    FollowingPostsProps<TChildProps>
-  >
-) {
-  return ReactApollo.withSubscription<
-    TProps,
-    FollowingPostsSubscription,
-    FollowingPostsSubscriptionVariables,
-    FollowingPostsProps<TChildProps>
-  >(FollowingPostsDocument, {
-    alias: "withFollowingPosts",
-    ...operationOptions
-  });
-}
-
-export function useFollowingPostsSubscription(
-  baseOptions?: ReactApolloHooks.SubscriptionHookOptions<
-    FollowingPostsSubscription,
-    FollowingPostsSubscriptionVariables
-  >
-) {
-  return ReactApolloHooks.useSubscription<
-    FollowingPostsSubscription,
-    FollowingPostsSubscriptionVariables
-  >(FollowingPostsDocument, baseOptions);
-}
-export type FollowingPostsSubscriptionHookResult = ReturnType<
-  typeof useFollowingPostsSubscription
->;
 export const GlobalPostsDocument = gql`
   subscription GlobalPosts {
     globalPosts {
       id
       title
       text
-      created_at
       images {
         id
         uri
@@ -3955,7 +3514,6 @@ export const MessageThreadsDocument = gql`
   subscription MessageThreads($data: AddMessageToThreadInput_v2!) {
     messageThreads(data: $data) {
       success
-      threadId
       message {
         id
         created_at
