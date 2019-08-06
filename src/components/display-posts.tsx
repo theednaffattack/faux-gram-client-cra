@@ -1,7 +1,15 @@
 import React from "react";
 import posed, { PoseGroup } from "react-pose";
 
-import { Box, Card, Flex, Heading, Text } from "./styled-rebass";
+import {
+  Box,
+  Card,
+  Flex,
+  Heading,
+  Icon,
+  Text,
+  FlexUserProfileWrap
+} from "./styled-rebass";
 
 import FollowButton from "./follow-button";
 
@@ -52,16 +60,15 @@ export const DisplayCards = ({
       } else {
         return (
           <PosedCard
-            key={`${index} - ${data.__typename}`}
+            key={`${index} - ${post.__typename}`}
             bg="white"
             my={[3, 3, 3]}
             mx={[3, 3, 3]}
             borderRadius="15px"
             width={[1, "350px", "350px"]}
-            // border="lime"
             boxShadow="0 0 16px rgba(0, 0, 0, .25)"
             display="flex"
-            overflow="hidden"
+            style={{ overflow: "hidden" }}
           >
             <Flex width={[1, 1, 1]} flexDirection="column">
               <Box
@@ -70,9 +77,7 @@ export const DisplayCards = ({
                   minHeight: "250px",
                   maxHeight: "250px",
                   overflow: "hidden", // `url(${Background})`
-                  backgroundImage: `url(http://192.168.1.10:4000/temp/${
-                    post.images[0].uri
-                  })`,
+                  backgroundImage: `url(${post.images[0].uri})`,
                   backgroundPosition: "center",
                   backgroundSize: "cover",
                   backgroundRepeat: "no-repeat"
@@ -86,7 +91,21 @@ export const DisplayCards = ({
                     alignItems="center"
                     flexDirection="column"
                   >
-                    {post.user.firstName}
+                    <FlexUserProfileWrap
+                      maxHeight="40px"
+                      width="40px"
+                      overflow="hidden"
+                      borderRadius="50%"
+                      bg="thread_footer"
+                      alignItems="center"
+                      justifyContent="center"
+                      boxShadow="0 2px 16px rgba(0, 0, 0, 0.25)"
+                    >
+                      <Icon mt={3} size="2em" name="user" fill="white" />
+                    </FlexUserProfileWrap>
+                    <Text color="text">
+                      {post.user.firstName} {post.user.lastName}
+                    </Text>
                     <FollowButton
                       me={me}
                       postUserId={post.user.id}
