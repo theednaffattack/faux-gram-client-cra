@@ -93,8 +93,8 @@ export const ChatField = ({
         my={2}
         letterSpacing=".1em"
         {...field}
-        // onChange={onChange}
-        onChange={e => console.log(e.target.value)}
+        onChange={onChange}
+        // onChange={e => console.log(e.target.value)}
         {...props}
       />
       {errorMessage && <div style={{ color: "red" }}>{errorMessage}</div>}
