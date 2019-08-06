@@ -21,6 +21,7 @@
     "date-fns": "^1.30.1",
     "emoji-mart": "^2.11.1",
     "formik": "^1.5.8",
+    "framer-motion": "^1.4.2",
     "graphql": "^14.4.2",
     "graphql-tag": "^2.10.1",
     "react": "^16.8.6",
@@ -30,12 +31,14 @@
     "react-geomicons": "^3.0.0-0",
     "react-pose": "^4.0.8",
     "react-scripts": "3.0.1",
+    "react-window": "^1.8.5",
     "rebass": "^3.1.1",
     "serve": "^11.1.0",
     "styled-components": "^4.3.2",
     "subscriptions-transport-ws": "^0.9.16",
     "typescript": "3.5.3",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "yup": "^0.27.0"
   },
   "scripts": {
     "dev": "react-scripts start",
@@ -63,17 +66,21 @@
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^1.4.0",
-    "@graphql-codegen/typescript": "1.0.6",
-    "@graphql-codegen/typescript-operations": "1.0.6",
-    "@graphql-codegen/typescript-react-apollo": "1.0.6",
+    "@graphql-codegen/typescript": "^1.4.0",
+    "@graphql-codegen/typescript-operations": "^1.4.0",
+    "@graphql-codegen/typescript-react-apollo": "^1.4.0",
+    "@graphql-codegen/typescript-resolvers": "^1.4.0",
     "@types/apollo-upload-client": "^8.1.2",
     "@types/cookie": "^0.3.3",
     "@types/emoji-mart": "^2.8.4",
+    "@types/graphql": "^14.2.3",
     "@types/reach__router": "^1.2.4",
+    "@types/react-window": "^1.8.0",
     "@types/rebass": "^3.0.4",
     "@types/styled-components": "^4.1.18",
     "@types/styled-system": "^5.0.0",
     "@types/uuid": "^3.4.5",
+    "@types/yup": "^0.26.22",
     "graphql-codegen-typescript-client": "^0.18.2",
     "graphql-codegen-typescript-common": "^0.18.2"
   }
