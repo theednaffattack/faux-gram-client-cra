@@ -6,6 +6,7 @@ import {
   Flex as FlexBase,
   Card as CardBase,
   Heading,
+  Image,
   Text
 } from "rebass";
 import {
@@ -33,6 +34,7 @@ import {
 } from "styled-system";
 import styled from "styled-components";
 import IconBase from "react-geomicons";
+import posed from "react-pose";
 
 import {
   TFlexProps,
@@ -45,17 +47,62 @@ import {
   ICardProps,
   IAbFlexProps,
   IMinButtonProps,
-  IFlexShadowProps
+  IFlexShadowProps,
+  IFlexUserProfileWrapProps
 } from "./types";
 
 import EmailIconBase from "../components/check-email-icon";
+import { sidebarPoses, sidebarListPoses } from "./posed-configs";
 
 interface IisPartiallyActiveProps {
   isPartiallyCurrent: boolean;
 }
 
-const StyledLink = styled(Link)`
+const StyledLinkV1 = styled(Link)`
   ${color}
+  text-decoration: none;
+  :hover {
+    color: crimson;
+  }
+`;
+
+export const TabList = styled.ol`
+  ${space}
+  ${width}
+`;
+
+interface ITablLIstItem {
+  active: boolean;
+  onClick: any;
+}
+export const TabListItem = styled.li<ITablLIstItem>`
+  display: inline-block;
+  list-style: none;
+  margin-bottom: -1px;
+  padding: 0.5rem 0.75rem;
+  border-bottom: ${props =>
+    props.active ? "2px rebeccapurple solid" : "none"};
+`;
+
+export const TabListActive = styled.div`
+  background-color: white;
+  border: solid #ccc;
+  border-width: 1px 1px 0 1px;
+`;
+
+export const StyledLinkV2 = styled(Link)`
+  ${color}
+
+  padding: 10px 20px;
+  font-size: 1.1em;
+  display: block;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+
+  /* :hover {
+    color: inherit;
+    text-decoration: none;
+    transition: all 0.3s;
+  } */
 `;
 
 const isPartiallyActive = ({ isPartiallyCurrent }: IisPartiallyActiveProps) => {
@@ -80,14 +127,16 @@ const isActive = ({ isCurrent }: IisActiveProps) => {
     : { style: { color: "white" } };
 };
 
-export const NavLink = ({ children, style, ...props }: any) => (
-  <StyledLink getProps={isActive} style={style} {...props}>
+export const NavLink = ({ children, ...props }: any) => (
+  <StyledLinkV2 getProps={isActive} {...props}>
     {children}
-  </StyledLink>
+  </StyledLinkV2>
 );
 
 export const LinkLink = ({ children, style, ...props }: any) => (
-  <StyledLink {...props}>{children}</StyledLink>
+  <StyledLinkV1 color="white" {...props}>
+    {children}
+  </StyledLinkV1>
 );
 
 export const Icon = styled(IconBase)`
@@ -96,6 +145,16 @@ export const Icon = styled(IconBase)`
 
 export const FlexShadow: React.FC<IFlexShadowProps> = styled(FlexBase)`
   ${boxShadow}
+`;
+
+export const FlexUserProfileWrap: React.FC<IFlexUserProfileWrapProps> = styled(
+  FlexBase
+)`
+${borderRadius}
+${boxShadow}
+${overflow}
+${maxHeight}
+${maxWidth}
 `;
 
 export const MinButton: React.FC<IMinButtonProps> = styled(Button)`
@@ -168,7 +227,17 @@ export const FlexGradient = styled(Flex)`
   );
 `;
 
-export const StyledUl: React.FC<TStyledUl> = styled.ul`
+export const StyledUl_v1: React.FC<TStyledUl> = styled.ul`
+  ${color}
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  /* position: absolute;
+  top: 0; */
+`;
+
+export const StyledUl_v2: React.FC<TStyledUl> = styled.ul`
   list-style-type: none;
   margin: 0;
   padding: 0;
@@ -176,8 +245,19 @@ export const StyledUl: React.FC<TStyledUl> = styled.ul`
 `;
 
 export const StyledLi: React.FC<TStyledLi> = styled.li`
+  ${color}
   ${space}
   display: inline;
+`;
+
+export const SidebarLi: React.FC<TStyledLi> = styled.li`
+  ${space}
+  /* background: limegreen; */
+  display: block;
+  list-style: none;
+  :hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
 `;
 
 export const IconEmail: React.FC<IIconEmailProps> = styled(EmailIconBase)`
@@ -212,4 +292,28 @@ export const Label = styled.label`
   border-radius: 4px;
 `;
 
-export { Box, Button, Heading, Text };
+export const Sidebar = styled.ul`
+  width: 255px;
+  height: 100vh;
+  background: #7386d5;
+  /* padding: 30px; */
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  color: #fff;
+  background: linear-gradient(5deg, #745fb5, #9066b8);
+  z-index: 999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+`;
+
+export const PSidebar = posed(Sidebar)(sidebarPoses);
+
+export const PSidebarList = posed(SidebarLi)(sidebarListPoses);
+
+export { Box, Button, Heading, Image, Text };
