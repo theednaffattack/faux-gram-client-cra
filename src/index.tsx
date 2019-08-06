@@ -35,7 +35,7 @@ interface IEnvironmentConfig {
 
 const homeHost = "192.168.1.10:4000";
 
-const genericHost = "0.0.0.0:4000";
+// const genericHost = "0.0.0.0:4000";
 
 interface IConfigurations {
   [key: string]: IEnvironmentConfig;
@@ -53,17 +53,17 @@ const configurations: IConfigurations = {
     httpProtocol: ["http", "ws"],
     ssl: false,
     port: 4000,
-    hostname: homeHost
+    hostname: "192.168.1.10:4000"
   }
 };
 
 const environment = (process.env.NODE_ENV as string) || "production";
 
-const prodGraphqlUrl = `${configurations[environment].httpProtocol[0]}://${
+const graphqlUrl = `${configurations[environment].httpProtocol[0]}://${
   configurations[environment].hostname
 }/graphql`;
 
-const prodWebsocketsUrl = `${configurations[environment].httpProtocol[1]}://${
+const websocketsUrl = `${configurations[environment].httpProtocol[1]}://${
   configurations[environment].hostname
 }/subscriptions`;
 
@@ -77,15 +77,13 @@ const prodWebsocketsUrl = `${configurations[environment].httpProtocol[1]}://${
 // const getToken = (req: Request) => parseCookies(req).qid;
 
 const uploadLink = createUploadLink({
-  // uri: `http://${myIpAddress}:4000/graphql`,
-  uri: prodGraphqlUrl,
+  uri: graphqlUrl,
   credentials: "include"
 });
 
 // Create a WebSocket link:
 const wsLink = new WebSocketLink({
-  // uri: `ws://${myIpAddress}:4000/subscriptions`,
-  uri: prodWebsocketsUrl,
+  uri: websocketsUrl,
   options: {
     reconnect: true
     // connectionParams: {
@@ -133,7 +131,6 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 const authLink = setContext((request, previousContext) => {
   // const token = getToken(request.session);
   const token = null;
-  console.log("view authlink vlues", { request, previousContext });
   return {
     headers: {
       ...previousContext.headers,
