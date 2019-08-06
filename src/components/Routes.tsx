@@ -25,6 +25,8 @@ import HelloWorld from "../pages/hello";
 import Messages from "../pages/messages";
 import Post from "../pages/post";
 import Profile from "../pages/profile";
+import TabViewer from "./tab-viewer";
+import { Example } from "../pages/example";
 
 const RouteContainer = posed(Flex)({
   enter: { opacity: 1, delay: 300, beforeChildren: 300 },
@@ -37,6 +39,19 @@ const StyledRouter: React.FC<IPosedRouterProps> = styled(Router)`
   ${flexbox}
 `;
 
+export interface INotFoundProps {
+  default: any;
+}
+
+const NotFound = (props: any) => {
+  return (
+    <Flex alignItems="center" justifyContent="center" width={1}>
+      {" "}
+      Whoops, the app can't find that page
+    </Flex>
+  );
+};
+
 const PosedRouter = ({ children }: IPosedRouterProps) => (
   <Location>
     {({ location }) => (
@@ -47,12 +62,7 @@ const PosedRouter = ({ children }: IPosedRouterProps) => (
           style={{ overflowX: "hidden" }}
           flex="1 1 auto"
         >
-          <StyledRouter
-            location={location}
-            width={1}
-            flex="1 1 auto"
-            // style={{ border: "2px crimson solid" }}
-          >
+          <StyledRouter location={location} width={1} flex="1 1 auto">
             {children}
           </StyledRouter>
         </RouteContainer>
@@ -63,23 +73,26 @@ const PosedRouter = ({ children }: IPosedRouterProps) => (
 
 function Routes() {
   return (
-    <PosedRouter>
-      <Home path="/" />
-      <About path="/about" />
-      <Login path="/login" />
-      <Welcome path="/welcome" />
-      <CheckEmail path="/check-email" />
-      <Register path="/register" />
-      <TermsAndConditions path="/terms_and_conditions" />
-      <ChangePassword path="change-password" />
-      <ConfirmUser path="/confirm" />
-      <DropZone path="/dropzone" />
-      <Feed path="/feed" />
-      <ForgotPassword path="/forgot-password" />
-      <HelloWorld path="/hello-world" />
-      <Post path="/post" />
-      <Profile path="/profile" />
-      <Messages path="/messages" />
+    <PosedRouter flex="1 1 auto">
+      <NotFound primary={false} default />
+      <Home primary={false} path="/" />
+      <About primary={false} path="/about" />
+      <Login primary={false} path="/login" />
+      <Welcome primary={false} path="/welcome" />
+      <CheckEmail primary={false} path="/check-email" />
+      <Register primary={false} path="/register" />
+      <TermsAndConditions primary={false} path="/terms_and_conditions" />
+      <ChangePassword primary={false} path="change-password" />
+      <ConfirmUser primary={false} path="/confirm" />
+      <DropZone primary={false} path="/dropzone" />
+      <Feed primary={false} path="/feed" />
+      <ForgotPassword primary={false} path="/forgot-password" />
+      <HelloWorld primary={false} path="/hello-world" />
+      <Post primary={false} path="/post" />
+      <Profile primary={false} path="/profile" />
+      <Messages primary={false} path="/messages" />
+      <TabViewer primary={false} path="/tabs" />
+      <Example primary={false} path="/example" />
     </PosedRouter>
   );
 }
