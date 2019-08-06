@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { borders, minHeight } from "styled-system";
 
 import CreatePostForm from "./create-post-form";
+import { SignS3Component } from "../generated/graphql";
 
 const Flex = styled(FlexBase)`
   ${borders}
@@ -271,14 +272,28 @@ class FileListBase extends Component<IFileListProps, FileListState> {
       <Flex flexDirection="column">
         <Text>{this.props.me}</Text>
         <Text>{this.props.me}</Text>
-        <CreatePostForm
-          handlePost={this.handlePost}
-          handleDrop={this.handleDrop}
-          me={this.props.me}
-          // createPost={this.props.mutate}
-          fileInputKey={this.state.fileInputKey}
-          setPreviewImageRef={this.setPreviewImageRef}
-        />
+        <SignS3Component>
+          {(
+            signS3,
+            { data: dataSignS3, error: errorSignS3, loading: loadingSignS3 }
+          ) => {
+            return (
+              <div>Fake something</div>
+              // <CreatePostForm
+              //   mutationSignS3={signS3}
+              //   dataSignS3={dataSignS3}
+              //   errorSignS3={errorSignS3}
+              //   loadingSignS3={loadingSignS3}
+              //   handlePost={this.handlePost}
+              //   handleDrop={this.handleDrop}
+              //   me={this.props.me}
+              //   // createPost={this.props.mutate}
+              //   fileInputKey={this.state.fileInputKey}
+              //   setPreviewImageRef={this.setPreviewImageRef}
+              // />
+            );
+          }}
+        </SignS3Component>
       </Flex>
     );
   }
