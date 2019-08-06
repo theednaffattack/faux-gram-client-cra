@@ -10,10 +10,13 @@ import ChatForm from "./chat-form";
 import { IChatBodyProps } from "./types";
 import UserProfileImage from "./user-profile-image";
 import AddressBookMutation from "./address-book-mutation";
+import { MessagesWindow } from "./messages-window";
 
-const breakWidths = [1, 1, 1, 1, 4 / 5];
+const breakWidths = [1, 1, 4 / 5];
+const formWidths = [1, 1, "960px"];
 
 const ChatBody = ({
+  data,
   chatEmoji,
   chatInput,
   disabled,
@@ -71,6 +74,15 @@ const ChatBody = ({
       flexDirection="column"
       alignItems="center"
       flex="1 1 auto"
+      style={{
+        overflowY: "auto",
+        height: "100%"
+        // position: "relative"
+        // position: "absolute",
+        // top: 0,
+        // bottom: 0,
+        // right: 0
+      }}
     >
       {/* <AuthenticatedHeader bg="#5d5c8d" /> */}
       <Flex flex="0 0 auto" bg="chat_header" width={1} alignItems="center">
@@ -90,58 +102,11 @@ const ChatBody = ({
                     isMe={true}
                   />
                 ))
-              : ""}
+              : ""}{" "}
+            {JSON.stringify(dataMessageThreads.getMessageThreads[0].id)}
           </Flex>
 
-          {selectedThreadId === null ? (
-            <>
-              <GetListToCreateThreadComponent>
-                {({
-                  data: dataCreateThread,
-                  loading: loadingCreateThread,
-                  error: errorCreateThread
-                }) => {
-                  // if (error) return <div>some error: {error}</div>;
-                  // if (loading) return <div>loading...</div>;
-                  // return <div>hello data{JSON.stringify(data)}</div>;
-                  return (
-                    <Flex width={[1, 1, 1]} flexDirection="row">
-                      {selectedThreadIndex && dataCreateThread ? (
-                        <ChooseThreadUser
-                          handleAddInviteeToThread={handleAddInviteeToThread}
-                          dataCreateThread={
-                            dataCreateThread.getListToCreateThread &&
-                            dataCreateThread.getListToCreateThread
-                              .thoseICanMessage
-                          }
-                          loadingCreateThread={loadingCreateThread}
-                          errorCreateThread={errorCreateThread}
-                          messages={
-                            dataMessageThreads.getMessageThreads &&
-                            dataMessageThreads.getMessageThreads[
-                              selectedThreadIndex
-                            ]
-                              ? dataMessageThreads.getMessageThreads[
-                                  selectedThreadIndex
-                                ].messages
-                              : []
-                          }
-                        />
-                      ) : (
-                        <>
-                          {newThreadInvitees && newThreadInvitees[0]
-                            ? getNewInvitees
-                            : ""}
-                        </>
-                      )}
-                    </Flex>
-                  );
-                }}
-              </GetListToCreateThreadComponent>
-            </>
-          ) : (
-            ""
-          )}
+          {selectedThreadId === null ? <>some stuff</> : ""}
         </Flex>
 
         <MinButton
@@ -170,6 +135,7 @@ const ChatBody = ({
         bg="chat_bg"
         style={{
           overflowY: "auto"
+          // position: "relative"
         }}
       >
         {selectedThreadIndex !== null &&
@@ -177,16 +143,24 @@ const ChatBody = ({
           dataMessageThreads.getMessageThreads[
             selectedThreadIndex
           ].messages.map((message: any, index: number) => (
-            <MessageBox
-              key={`${index}-${message.id}-${message.__typename}`}
-              message={message}
-              me={me}
-            />
+            <React.Fragment key={`${index}-${message.id}`}>
+              <MessageBox
+                key={`${index}-${message.id}-${message.__typename}`}
+                message={message}
+                me={me}
+              />
+            </React.Fragment>
           ))
         ) : (
           <>
             {!showMessagingAddressBook ? (
-              <Text fontSize="2em">select a thread to view messages</Text>
+              <>
+                <Text fontSize="2em">select a thread to view messages</Text>
+                <MessagesWindow
+                  data={data}
+                  handleThreadSelection={handleThreadSelection}
+                />
+              </>
             ) : (
               <Text fontSize="2em">New Message Thread</Text>
             )}
@@ -204,7 +178,9 @@ const ChatBody = ({
           </>
         )}
         {chatEmoji}
-        <div
+        <Flex
+          alignSelf="flex-end"
+          border="lime"
           style={{
             color: "black",
             float: "left",
@@ -218,14 +194,16 @@ const ChatBody = ({
         />
       </Flex>
       <AbFlex
-        position="absolute"
-        width={breakWidths}
+        position="fixed"
+        width={formWidths}
         bottom={0}
         alignItems="flex-end"
         p={0}
         flexDirection="row"
         bg="white"
         color="thread_text"
+        border="purp"
+        style={{ border: "2px rebeccapurple solid" }}
       >
         <ChatForm
           handleThreadSelection={handleThreadSelection}
