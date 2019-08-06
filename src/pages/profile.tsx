@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Flex, Heading, Text, Image } from "rebass";
+import { Card, Flex, Heading, Image, Text } from "../components/styled-rebass";
 
 // import Layout from "./../components/Layout";
 import { GetAllMyImagesComponent } from "../generated/graphql";
@@ -9,10 +9,15 @@ export const SeeMyImages = (data: any) => (
   <Flex flexDirection="column">
     {data && data.data.GetAllMyImages
       ? data.data.GetAllMyImages.map((image: any, index: number) => (
-          <Card width="450px" key={index}>
-            <Image src={`http://192.168.1.10:4000/temp/${image.uri}`} />
-
-            {image.uri}
+          <Card
+            key={index}
+            borderRadius="15px"
+            boxShadow="0 0 16px rgba(0, 0, 0, .25)"
+            width={[1, "350px", "350px"]}
+            // border="lime"
+            style={{ overflow: "hidden" }}
+          >
+            <Image src={`${image.uri}`} />
           </Card>
         ))
       : ""}
