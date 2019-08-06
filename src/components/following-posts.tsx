@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Flex } from "rebass";
-// import { MyFollowerPosts } from "../../graphql/user/subscriptions/MyFollowerPosts";
+
+import { Flex } from "./styled-rebass";
 import { FollowingList } from "./following-lists-posts-only";
+import { FOLLOWING_POSTS } from "../graphql/user/subscriptions/FollowingPosts";
 
 interface IThoseIFollowProps {
   data: any;
@@ -26,7 +27,29 @@ export default class ThoseIFollow extends Component<
     };
   }
   componentDidMount() {
-    this.props.subscribeToNewPosts();
+    this.props.subscribeToMore({
+      document: FOLLOWING_POSTS,
+      variables: {
+        data: {
+          sentBy: "init",
+          message: "init"
+        }
+      },
+      updateQuery: (prev: any, { subscriptionData }: any) => {
+        console.log("view prev", prev);
+        return Object.assign({}, prev, {
+          // @ts-ignore
+          myFollowingPosts: [
+            // @ts-ignore
+            subscriptionData.data.followingPosts,
+            // @ts-ignore
+            ...prev.myFollowingPosts
+          ]
+        });
+      }
+      // updateFunctionMyFollows(prev, { subscriptionData })
+    });
+    // this.props.subscribeToNewPosts();
     this.setState({
       mounted: true
     });
