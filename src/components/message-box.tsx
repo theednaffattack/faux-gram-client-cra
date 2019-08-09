@@ -5,24 +5,34 @@ import { Card, Flex, Text, Box } from "./styled-rebass";
 import { Image } from "rebass";
 import UserProfileImage from "./user-profile-image";
 
-export function MessageBox(props: any) {
+interface IMessageBox {
+  me: any;
+  message: any;
+  handleRemoveInviteeToThread: any;
+}
+
+export function MessageBox({
+  me,
+  message,
+  handleRemoveInviteeToThread
+}: IMessageBox) {
   return (
     <Flex
       flexDirection="row"
       my={2}
       p={3}
-      ml={props.me !== props.message.sentBy.id ? "auto" : 0}
-      mr={props.me === props.message.sentBy.id ? "auto" : 0}
-      width={4 / 5}
+      ml={me !== message.sentBy.id ? [1, 1, "auto"] : 0}
+      mr={me === message.sentBy.id ? 0 : [1, 1, "auto"]}
+      width={1}
     >
-      {props.me === props.message.sentBy.id ? (
+      {me === message.sentBy.id ? (
         <UserProfileImage
-          isMe={props.me === props.message.sentBy.id}
+          isMe={me === message.sentBy.id}
           flexInstruction="column"
-          user={props.message.sentBy}
+          user={message.sentBy}
           buttonThing={false}
           color="blue"
-          handleRemoveInviteeToThread={props.handleRemoveInviteeToThread}
+          handleRemoveInviteeToThread={handleRemoveInviteeToThread}
         />
       ) : (
         ""
@@ -30,25 +40,23 @@ export function MessageBox(props: any) {
       <Card
         my={2}
         p={3}
-        color={
-          props.me === props.message.sentBy.id ? "white" : "thread_selected"
-        }
+        color={me === message.sentBy.id ? "white" : "thread_selected"}
         bg={
-          props.me === props.message.sentBy.id ? "chat_bubble_me" : "#eee" // "chat_bubble_them"
+          me === message.sentBy.id ? "chat_bubble_me" : "#eee" // "chat_bubble_them"
         }
-        ml={props.me !== props.message.sentBy.id ? "auto" : 0}
-        mr={props.me === props.message.sentBy.id ? "auto" : 0}
+        ml={me !== message.sentBy.id ? [1, 1, "auto"] : 0}
+        mr={me === message.sentBy.id ? 0 : [1, 1, "auto"]}
         width={1}
         boxShadow="0 2px 16px rgba(0, 0, 0, 0.25)"
       >
-        {props.message.images && props.message.images.length > 0 ? (
-          <Image src={`${props.message.images[0].uri}`} />
+        {message.images && message.images.length > 0 ? (
+          <Image src={`${message.images[0].uri}`} />
         ) : (
           ""
         )}
 
         <Box
-          bg="white" // {props.me === props.message.sentBy.id ? "white" : "transparent"}
+          bg="white" // {me === message.sentBy.id ? "white" : "transparent"}
           p={3}
           color="thread_selected"
         >
@@ -57,21 +65,21 @@ export function MessageBox(props: any) {
               {" "}
               {distanceInWords(
                 Date.now(),
-                new Date(Date.parse(props.message.created_at))
+                new Date(Date.parse(message.created_at))
               )}
             </em>
           </Text>
-          <Text>{props.message.message}</Text>
+          <Text>{message.message}</Text>
         </Box>
       </Card>
-      {props.me !== props.message.sentBy.id ? (
+      {me !== message.sentBy.id ? (
         <UserProfileImage
           flexInstruction="column"
-          isMe={props.me === props.message.sentBy.id}
-          user={props.message.sentBy}
+          isMe={me === message.sentBy.id}
+          user={message.sentBy}
           buttonThing={false}
           color="blue"
-          handleRemoveInviteeToThread={props.handleRemoveInviteeToThread}
+          handleRemoveInviteeToThread={handleRemoveInviteeToThread}
         />
       ) : (
         // <Flex ml={3} flexDirection="column" alignItems="center">
@@ -89,7 +97,7 @@ export function MessageBox(props: any) {
         //   >
         //     <Icon size="2em" name="user" fill="white" />
         //   </Flex>
-        //   <Text color="text">{props.message.sentBy.firstName}</Text>
+        //   <Text color="text">{message.sentBy.firstName}</Text>
         // </Flex>
         ""
       )}
