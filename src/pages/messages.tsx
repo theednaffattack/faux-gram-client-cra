@@ -1,7 +1,11 @@
 import { navigate } from "@reach/router";
 import React from "react";
 
-import { MeComponent, HelloWorldComponent } from "../generated/graphql";
+import {
+  MeComponent,
+  HelloWorldComponent,
+  GetOnlyThreadsComponent
+} from "../generated/graphql";
 import { IPageProps } from "./types";
 import GetOnlyThreads from "../components/get-only-threads";
 
@@ -29,7 +33,27 @@ const Messages: React.FC<IPageProps> = ({ path }: IPageProps) => {
               if (loading) return <div>loading...</div>;
               if (error) return <div>error: {error}</div>;
               if (data && data.me) {
-                return <GetOnlyThreads />;
+                return (
+                  <GetOnlyThreadsComponent>
+                    {({
+                      data: dataGetOnlyThreads,
+                      error: errorGetOnlyThreads,
+                      loading: loadingGetOnlyThreads
+                    }) => {
+                      if (errorGetOnlyThreads)
+                        return <div>Error{errorGetOnlyThreads}</div>;
+                      if (loadingGetOnlyThreads) return <div>loading...</div>;
+                      return (
+                        <GetOnlyThreads
+                          dataGetOnlyThreads={dataGetOnlyThreads}
+                          errorGetOnlyThreads={errorGetOnlyThreads}
+                          loadingGetOnlyThreads={loadingGetOnlyThreads}
+                          me={data.me}
+                        />
+                      );
+                    }}
+                  </GetOnlyThreadsComponent>
+                );
               }
             }}
           </MeComponent>

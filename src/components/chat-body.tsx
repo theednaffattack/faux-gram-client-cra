@@ -148,6 +148,7 @@ const ChatBody = ({
                 key={`${index}-${message.id}-${message.__typename}`}
                 message={message}
                 me={me}
+                handleRemoveInviteeToThread={handleRemoveInviteeToThread}
               />
             </React.Fragment>
           ))
