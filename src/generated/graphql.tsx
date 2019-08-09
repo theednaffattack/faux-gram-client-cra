@@ -2726,6 +2726,11 @@ export const GetOnlyThreadsDocument = gql`
         firstName
       }
       created_at
+      updated_at
+      invitees {
+        id
+        firstName
+      }
     }
   }
 `;
