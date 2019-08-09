@@ -22,25 +22,13 @@ function UserProfileImage({
   const isMeRightMargin = isMe ? 3 : 0;
   return (
     <Flex
-      // mr={3}
+      mt={2}
       ml={isMeLeftMargin}
       mr={isMeRightMargin}
       flexDirection={flexInstruction ? flexInstruction : "row"}
       alignItems="center"
+      style={{ minHeight: "40px" }}
     >
-      {/* <FlexShadow
-        className="flex-shadow"
-        height="40px"
-        width="40px"
-        my={2}
-        mx={2}
-        bg="thread_footer"
-        alignItems="center"
-        justifyContent="center"
-        boxShadow="0 2px 16px rgba(0, 0, 0, 0.25)"
-        style={{ borderRadius: "50%", overflow: "hidden" }}
-      > */}
-
       <FlexUserProfileWrap
         maxHeight="40px"
         width="40px"
@@ -53,7 +41,7 @@ function UserProfileImage({
       >
         <Icon mt={3} size="2em" name="user" fill="white" />
       </FlexUserProfileWrap>
-      {/* </FlexShadow> */}
+
       <Text color={color ? color : "text"}>
         {user.firstName} {user.lastName}
       </Text>
