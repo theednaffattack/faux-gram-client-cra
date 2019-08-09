@@ -62,7 +62,15 @@ const PosedRouter = ({ children }: IPosedRouterProps) => (
           style={{ overflowX: "hidden" }}
           flex="1 1 auto"
         >
-          <StyledRouter location={location} width={1} flex="1 1 auto">
+          <StyledRouter
+            location={location}
+            width={1}
+            flex="1 1 auto"
+            style={{
+              display: "flex",
+              position: "relative"
+            }}
+          >
             {children}
           </StyledRouter>
         </RouteContainer>

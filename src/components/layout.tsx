@@ -140,25 +140,6 @@ class Layout extends React.Component<ILayoutProps, ILayoutState> {
                 {children}
               </Flex>
             );
-            // if (location.pathname === "/feed") {
-            //   return (
-            //     <Flex
-            //       flex="1 1 auto"
-            //       width={[1, 1, 1, 1]}
-            //       flexDirection="column"
-            //     >
-            //       {children}
-            //     </Flex>
-            //   );
-            // }
-
-            // if (location.pathname !== "/feed") {
-            //   return (
-            //     <Flex flex="1 1 auto" width={[1, 1, 1, "960px"]}>
-            //       {children}
-            //     </Flex>
-            //   );
-            // }
           }}
         </Location>
         <Location>
