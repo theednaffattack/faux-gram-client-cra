@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 
 import { GetMessagesByThreadIdComponent } from "../generated/graphql";
-import { Button, Flex, Text } from "./styled-rebass";
+import { Button, Flex, Heading, Icon, Text } from "./styled-rebass";
 import { MessageContainer } from "./posed-components";
 import styled from "styled-components";
 import posed from "react-pose";
+import { MessageBox } from "./message-box";
+import MountedProof from "./mounted-proof";
 
 const { log } = console;
 
@@ -15,70 +17,71 @@ const TextItem = posed(Text)({
 
 export interface IThreadIdProps {
   threadId: string;
-  handleCloseThread: any;
   displayMessages: any;
+  me: any;
+  handleCloseThread: any;
+  handleRemoveInviteeToThread: any;
+  handleUpdateMessageState: any;
+  scrollToBottom: any;
+  threadIdSelected: string;
 }
 
-export default class ThreadsOnly extends Component<IThreadIdProps, object> {
-  render() {
-    const { displayMessages, handleCloseThread, threadId } = this.props;
-    return (
-      <div>
-        <GetMessagesByThreadIdComponent
-          variables={{
-            input: {
-              threadId,
-              skip: 0,
-              take: 25
-            }
-          }}
-        >
-          {({ data, error, loading }: any) => {
-            if (error) return <div>{error}</div>;
-            if (loading) return <div>loading...</div>;
-            return (
-              <Flex flexDirection="column">
+const ThreadsOnly: React.FC<IThreadIdProps> = ({
+  displayMessages,
+  threadId,
+  scrollToBottom,
+  me,
+  handleCloseThread,
+  handleRemoveInviteeToThread,
+  handleUpdateMessageState,
+  threadIdSelected
+}) => {
+  return (
+    <div>
+      <GetMessagesByThreadIdComponent
+        variables={{
+          input: {
+            threadId: threadIdSelected,
+            skip: 0,
+            take: 25
+          }
+        }}
+      >
+        {({ data, error, loading }: any) => {
+          if (error) return <div>{error}</div>;
+          if (loading) return <div>loading...</div>;
+
+          return (
+            <Flex flexDirection="column">
+              <Flex>
+                <Heading as="h1">Messages</Heading>
+
                 <Button
+                  ml="auto"
                   key="justAButton"
                   type="button"
                   onClick={handleCloseThread}
                 >
-                  X
+                  <Icon name="triangleLeft" fill="white" /> Back to Threads
                 </Button>
-                Hello chat body
-                {JSON.stringify(data.getMessagesByThreadId.length)}
-                Messages
-                {data.getMessagesByThreadId.map(
-                  (thread: any, index: number) => (
-                    <MessageContainer
-                      pose={displayMessages ? "open" : "closed"}
-                      initialPose="closed"
-                      key={index}
-                      flexDirection="column"
-                      my={2}
-                      border="crimson"
-                    >
-                      <TextItem>{thread.id}</TextItem>
-                      <TextItem>{thread.message}</TextItem>
-                      <TextItem>{thread.user.firstName}</TextItem>
-                      <TextItem>{thread.user.lastName}</TextItem>
-                      <TextItem>{thread.created_at}</TextItem>
-                      <TextItem>{thread.sentBy.firstName}</TextItem>
-                      <Button
-                        bg="fuchsia"
-                        type="button"
-                        onClick={() => log("hello")}
-                      >
-                        MSG: click me
-                      </Button>
-                    </MessageContainer>
-                  )
-                )}
               </Flex>
-            );
-          }}
-        </GetMessagesByThreadIdComponent>
-      </div>
-    );
-  }
-}
+              {data.getMessagesByThreadId.map((message: any, index: number) => (
+                <MessageBox
+                  key={`${index}-${message.id}-${message.__typename}`}
+                  message={message}
+                  me={me.id}
+                  handleRemoveInviteeToThread={handleRemoveInviteeToThread}
+                />
+              ))}
+              <MountedProof
+                handleUpdateMessageState={handleUpdateMessageState}
+              />
+            </Flex>
+          );
+        }}
+      </GetMessagesByThreadIdComponent>
+    </div>
+  );
+};
+
+export default ThreadsOnly;
