@@ -9,22 +9,33 @@ import {
   GetOnlyThreadsComponent,
   GetMessagesByThreadIdComponent
 } from "../generated/graphql";
-import { Button, Flex, Heading, Icon, Text } from "./styled-rebass";
+import { Button, Flex, Heading, Icon, Text, AbFlex } from "./styled-rebass";
 import GetMessagesByThreadId from "./get-messages-by-thread-id";
 import UserProfileImage from "./user-profile-image";
 import { MessageBox } from "./message-box";
 import MountedProof from "./mounted-proof";
 import { isThisHour } from "date-fns";
+import ChatForm from "./chat-form";
+import AddMessageToThread from "./add-message-to-thread";
+import { SignS3Component } from "../generated/graphql_SAFETY";
+import ThreadWindow from "./threads-user-window";
+import MessagesWindow from "./messages-user-window";
 
 const { log } = console;
 
-const ShowThreads = ({
+interface IShowThreadsProps {
+  data: any;
+  handleDisplayMessages: any;
+  handleRemoveInviteeToThread: any;
+}
+
+const ShowThreads: React.FC<IShowThreadsProps> = ({
   data,
   handleDisplayMessages,
   handleRemoveInviteeToThread
-}: any) => {
-  return data.getOnlyThreads.map((thread: any, index: number) => (
-    <Flex key={index} flexDirection="column">
+}) =>
+  data.getOnlyThreads.map((thread: any, index: number) => (
+    <Flex key={index} flexDirection="column" width={1}>
       <Flex>
         {thread.invitees.map((person: any, index: number) => (
           <UserProfileImage
@@ -37,18 +48,19 @@ const ShowThreads = ({
             handleRemoveInviteeToThread={handleRemoveInviteeToThread}
           />
         ))}
+
+        <Button
+          type="button"
+          onClick={(event: React.MouseEvent) => {
+            handleDisplayMessages(thread.id);
+          }}
+        >
+          View messages
+        </Button>
       </Flex>
-      <Button
-        type="button"
-        onClick={(event: React.MouseEvent) => {
-          handleDisplayMessages(thread.id);
-        }}
-      >
-        View messages
-      </Button>
+      some text
     </Flex>
   ));
-};
 
 interface IGetOnlyThreadsProps {
   me: any;
@@ -61,6 +73,24 @@ interface IGetOnlyThreadsState {
   displayMessages: boolean;
   threadIdSelected: string | null;
   messagesMounted: boolean;
+
+  emojiPickerVisible: boolean;
+  chatInput: string;
+  chatEmoji: string;
+  showMessagingAddressBook: boolean;
+  newThreadInvitees: any[];
+
+  disabled: boolean;
+  newThreadDisabled: boolean;
+
+  lastMessage: string;
+  lastMessenger: any;
+}
+interface IMessengerProps {
+  id: string;
+  firstName: string;
+  lastName: string;
+  __typename: string;
 }
 
 export default class GetOnlyThreads extends Component<
@@ -69,6 +99,7 @@ export default class GetOnlyThreads extends Component<
 > {
   targetRef: React.RefObject<HTMLDivElement>;
   messagesEnd: React.RefObject<HTMLDivElement>;
+  fileInputRef: React.RefObject<HTMLInputElement>;
   targetElement: any;
   targetScrollToElement: any;
   setTextInputRef: any;
@@ -78,6 +109,8 @@ export default class GetOnlyThreads extends Component<
 
     this.targetRef = React.createRef();
     this.messagesEnd = React.createRef();
+    this.fileInputRef = React.createRef();
+
     this.targetElement = null;
     this.targetScrollToElement = null;
 
@@ -88,12 +121,95 @@ export default class GetOnlyThreads extends Component<
     );
     this.handleUpdateMessageState = this.handleUpdateMessageState.bind(this);
 
+    this.handleOpenEmojiMenuClick = this.handleOpenEmojiMenuClick.bind(this);
+
+    this.handleSetLastMessage = this.handleSetLastMessage.bind(this);
+    this.handleSetLastMessenger = this.handleSetLastMessenger.bind(this);
+
     this.state = {
       displayMessages: false,
       threadIdSelected: null,
-      messagesMounted: false
+      messagesMounted: false,
+
+      emojiPickerVisible: false,
+      chatInput: "",
+      chatEmoji: "",
+      showMessagingAddressBook: false,
+      newThreadInvitees: [],
+      disabled: false,
+      newThreadDisabled: false,
+      lastMessage: "",
+      lastMessenger: ""
     };
   }
+
+  handleSetLastMessage(message: string) {
+    this.setState({
+      lastMessage: message
+    });
+  }
+
+  handleSetLastMessenger({
+    id,
+    firstName,
+    lastName,
+    __typename
+  }: IMessengerProps) {
+    this.setState({
+      lastMessenger: {
+        id,
+        firstName,
+        lastName,
+        __typename
+      }
+    });
+  }
+
+  // FENCE
+
+  handleThreadSelection(selection: any) {
+    // const { data } = this.props;
+    // const selectedThreadIndex = this.props.data.getMessageThreads[
+    //   selection.index
+    // ];
+    log("pre setState");
+
+    this.setState(prevState => ({
+      threadIdSelected: selection.index,
+      showMessagingAddressBook: !prevState.showMessagingAddressBook,
+      newThreadInvitees: []
+    }));
+  }
+
+  handleAddInviteeToThread({ user }: any) {
+    this.setState(prevState => ({
+      newThreadInvitees: prevState.newThreadInvitees.concat(user)
+    }));
+  }
+
+  handleRemoveInviteeToThread({ user }: any) {
+    this.setState(prevState => ({
+      newThreadInvitees: prevState.newThreadInvitees.filter(invitee => {
+        return invitee !== user.id;
+      })
+    }));
+  }
+
+  handleThreadAddThreadClick() {
+    this.setState(prevState => ({
+      showMessagingAddressBook: !prevState.showMessagingAddressBook,
+      threadIdSelected: null
+    }));
+  }
+
+  handleOpenEmojiMenuClick() {
+    log("handleOpenEmojiMenuClick CLICKED");
+    this.setState(prevState => ({
+      emojiPickerVisible: !prevState.emojiPickerVisible
+    }));
+  }
+
+  // FENCE
 
   scrollToBottom = () => {
     this.targetScrollToElement.current.scrollIntoView({
@@ -119,10 +235,6 @@ export default class GetOnlyThreads extends Component<
   //     enableBodyScroll(this.targetElement);
   //   }
   // };
-
-  handleRemoveInviteeToThread() {
-    log("handleRemoveInviteeToThread CLICKED");
-  }
 
   handleDisplayMessages(threadId: string) {
     this.setState(prevState => {
@@ -152,9 +264,10 @@ export default class GetOnlyThreads extends Component<
     // 3. Get a target element that you want to persist scrolling for (such as a modal/lightbox/flyout/nav).
     // Specifically, the target element is the one we would like to allow scroll on (NOT a parent of that element).
     // This is also the element to apply the CSS '-webkit-overflow-scrolling: touch;' if desired.
-    this.targetElement = this.targetRef;
 
-    disableBodyScroll(this.targetElement);
+    // this.targetElement = this.targetRef;
+
+    // disableBodyScroll(this.targetElement);
 
     if (this.messagesEnd.current) {
       this.targetScrollToElement = this.messagesEnd;
@@ -194,64 +307,136 @@ export default class GetOnlyThreads extends Component<
     const {
       dataGetOnlyThreads,
       errorGetOnlyThreads,
-      loadingGetOnlyThreads
+      loadingGetOnlyThreads,
+      me
     } = this.props;
-    return (
-      <Flex
-        id="ab-container"
-        width={[1]}
-        flexDirection="column"
-        flex="1 1 auto"
-        ref={node => (this.targetRef = node)}
-        style={{
-          overflowY: "auto",
-          position: "absolute",
-          top: 0,
-          bottom: 0,
-          WebkitOverflowScrolling: "touch"
-        }}
-      >
-        {this.state.displayMessages && this.state.threadIdSelected ? (
-          <GetMessagesByThreadId
-            displayMessages={this.handleDisplayMessages}
-            me={this.props.me}
-            handleCloseThread={this.handleCloseThread}
-            handleRemoveInviteeToThread={this.handleRemoveInviteeToThread}
-            handleUpdateMessageState={this.handleUpdateMessageState}
-            scrollToBottom={this.scrollToBottom}
-            threadId={this.state.threadIdSelected}
-            threadIdSelected={this.state.threadIdSelected}
-          />
-        ) : (
-          ""
-        )}
-        {!this.state.displayMessages && this.state.threadIdSelected === null ? (
-          <Flex id="ab-child" flexDirection="column" flex="1 1 auto">
-            <Flex>
-              <Heading>Threads</Heading>
-              <Button ml="auto">+</Button>
-            </Flex>
-            <ShowThreads
-              data={dataGetOnlyThreads}
-              handleDisplayMessages={this.handleDisplayMessages}
-            />
-          </Flex>
-        ) : (
-          ""
-        )}
 
-        <div
-          id="scrollTarget"
-          ref={this.messagesEnd}
-          style={{
-            border: "2px limegreen dashed",
-            marginTop: "auto",
-            width: "100%"
-          }}
-        >
-          .
-        </div>
-      </Flex>
-    );
+    const { threadIdSelected } = this.state;
+
+    if (errorGetOnlyThreads) {
+      return <Flex>{errorGetOnlyThreads}</Flex>;
+    }
+
+    if (loadingGetOnlyThreads) {
+      return <Flex>loading...</Flex>;
+    }
+
+    if (
+      !this.state.displayMessages &&
+      this.state.threadIdSelected === null &&
+      dataGetOnlyThreads
+    ) {
+      return (
+        <ThreadWindow
+          data={dataGetOnlyThreads.getOnlyThreads}
+          handleDisplayMessages={this.handleDisplayMessages}
+          handleRemoveInviteeToThread={this.handleRemoveInviteeToThread}
+        />
+      );
+    }
+
+    if (this.state.displayMessages && this.state.threadIdSelected) {
+      return (
+        <>
+          <GetMessagesByThreadIdComponent
+            variables={{
+              input: {
+                threadId: this.state.threadIdSelected,
+                skip: 0,
+                take: 25
+              }
+            }}
+          >
+            {({ data, error, loading, subscribeToMore }: any) => {
+              // const lastMessengerHere =
+              //   data.getMessagesByThreadId[
+              //     data.getMessagesByThreadId.length - 1
+              //   ].sentBy;
+              if (error) return <div>{error}</div>;
+              if (loading) return <div>loading...</div>;
+
+              return (
+                <Flex
+                  flexDirection="column"
+                  alignItems="space-between"
+                  width={1}
+                  id="isItMe"
+                  border="crimson"
+                  style={{ overflowY: "hidden", overflowX: "hidden" }}
+                >
+                  <Button
+                    ml="auto"
+                    key="justAButton"
+                    type="button"
+                    onClick={this.handleCloseThread}
+                  >
+                    <Icon name="triangleLeft" fill="white" /> Back to Threads
+                  </Button>
+                  {/* {JSON.stringify(data.getMessagesByThreadId)} */}
+
+                  <Flex flex="1 1 auto">
+                    <MessagesWindow
+                      data={data.getMessagesByThreadId}
+                      me={me}
+                      handleDisplayMessages={this.handleDisplayMessages}
+                      handleRemoveInviteeToThread={
+                        this.handleRemoveInviteeToThread
+                      }
+                      handleCloseThread={this.handleCloseThread}
+                    />
+                  </Flex>
+                  {/* <Flex> */}
+                  <SignS3Component>
+                    {(
+                      signS3,
+                      {
+                        data: dataSignS3,
+                        error: errorSignS3,
+                        loading: loadingSignS3
+                      }
+                    ) => {
+                      return (
+                        <ChatForm
+                          handleChatFieldChange={() =>
+                            log("handleChatFieldChange")
+                          }
+                          handleUploadFileClick={() => log("handleUploadFile")}
+                          handleThreadSelection={() => log("thread selected")}
+                          sentTo={
+                            data.getMessagesByThreadId[0].sentBy.id ===
+                            this.props.me.id
+                              ? data.getMessagesByThreadId[0].user.id
+                              : data.getMessagesByThreadId[0].sentBy.id
+                          }
+                          handleSetLastMessenger={this.handleSetLastMessenger}
+                          handleSetLastMessage={this.handleSetLastMessage}
+                          threadId={threadIdSelected ? threadIdSelected : ""}
+                          selectedThreadId={
+                            threadIdSelected ? threadIdSelected : ""
+                          }
+                          files={[]}
+                          newThreadInvitees={[]}
+                          key="someKey"
+                          chatEmoji=""
+                          emojiPickerVisible={this.state.emojiPickerVisible}
+                          disabled={this.state.disabled}
+                          handleOpenEmojiMenuClick={
+                            this.handleOpenEmojiMenuClick
+                          }
+                          handleEngageMicrophoneClick={() => log}
+                          newThreadDisabled={this.state.newThreadDisabled}
+                          signS3Mutation={signS3}
+                        />
+                      );
+                    }}
+                  </SignS3Component>
+                  {/* </Flex> */}
+                </Flex>
+              );
+            }}
+          </GetMessagesByThreadIdComponent>
+        </>
+      );
+    }
   }
 }
