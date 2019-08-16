@@ -24,6 +24,11 @@ export interface IThreadIdProps {
   handleUpdateMessageState: any;
   scrollToBottom: any;
   threadIdSelected: string;
+
+  handleSetLastMessenger: any;
+  handleSetLastMessage: any;
+  lastMessage: string;
+  lastMessenger: any;
 }
 
 const ThreadsOnly: React.FC<IThreadIdProps> = ({
@@ -34,7 +39,11 @@ const ThreadsOnly: React.FC<IThreadIdProps> = ({
   handleCloseThread,
   handleRemoveInviteeToThread,
   handleUpdateMessageState,
-  threadIdSelected
+  threadIdSelected,
+  handleSetLastMessenger,
+  handleSetLastMessage,
+  lastMessage,
+  lastMessenger
 }) => {
   return (
     <div>
@@ -73,8 +82,23 @@ const ThreadsOnly: React.FC<IThreadIdProps> = ({
                   handleRemoveInviteeToThread={handleRemoveInviteeToThread}
                 />
               ))}
+
               <MountedProof
                 handleUpdateMessageState={handleUpdateMessageState}
+                handleSetLastMessenger={handleSetLastMessenger}
+                handleSetLastMessage={handleSetLastMessage}
+                lastMessageValue={lastMessage}
+                lastMessengerValue={lastMessenger}
+                lastMessage={
+                  data.getMessagesByThreadId[
+                    data.getMessagesByThreadId.length - 1
+                  ].message
+                }
+                lastMessenger={
+                  data.getMessagesByThreadId[
+                    data.getMessagesByThreadId.length - 1
+                  ].user.id
+                }
               />
             </Flex>
           );
