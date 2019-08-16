@@ -30,7 +30,9 @@ import {
   left,
   right,
   top,
-  overflow
+  overflow,
+  SpaceProps,
+  WidthProps
 } from "styled-system";
 import styled from "styled-components";
 import IconBase from "react-geomicons";
@@ -66,7 +68,15 @@ const StyledLinkV1 = styled(Link)`
   }
 `;
 
-export const TabList = styled.ol`
+interface ITabListProps
+  extends React.DetailedHTMLProps<
+      React.OlHTMLAttributes<HTMLOListElement>,
+      HTMLOListElement
+    >,
+    SpaceProps,
+    WidthProps {}
+
+export const TabList: React.FC<ITabListProps> = styled.ol`
   ${space}
   ${width}
 `;
@@ -75,12 +85,24 @@ interface ITablLIstItem {
   active: boolean;
   onClick: any;
 }
-export const TabListItem = styled.li<ITablLIstItem>`
+
+export interface ITabListItemProps
+  extends React.DetailedHTMLProps<
+    React.LiHTMLAttributes<HTMLLIElement>,
+    HTMLLIElement
+  > {
+  label: string;
+  onClick: any;
+  activeTab: string;
+  active?: boolean;
+}
+
+export const TabListItem: React.FC<ITabListItemProps> = styled.li`
   display: inline-block;
   list-style: none;
   margin-bottom: -1px;
   padding: 0.5rem 0.75rem;
-  border-bottom: ${props =>
+  border-bottom: ${(props: any) =>
     props.active ? "2px rebeccapurple solid" : "none"};
 `;
 
