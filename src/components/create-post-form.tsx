@@ -234,7 +234,6 @@ function CreatePostForm({
                                   width={1 / 2}
                                   flexDirection="column"
                                   flex="1 1 auto"
-                                  border="crimson"
                                   style={{
                                     position: "relative"
                                   }}
