@@ -27,7 +27,12 @@ class Tab extends Component<ITabProps, object> {
     // }
 
     return (
-      <TabListItem active={activeTab === label} onClick={onClick}>
+      <TabListItem
+        activeTab={activeTab}
+        label={label}
+        active={activeTab === label}
+        onClick={onClick}
+      >
         {label}
       </TabListItem>
     );
