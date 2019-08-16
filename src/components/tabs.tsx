@@ -33,8 +33,8 @@ class Tabs extends Component<ITabsProps, ITabsState> {
 
     return (
       <Flex flexDirection="column" width={[1]}>
-        <Flex alignSelf="center" width="960px">
-          <TabList>
+        <Flex alignSelf="center" width={[1, 1, "960px"]}>
+          <TabList width={[1]}>
             {children.map((child: any) => {
               const { label } = child.props;
 
