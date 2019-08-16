@@ -161,11 +161,6 @@ export interface ICardProps
 // bg="#f6f6ff"
 // borderRadius={8}
 // boxShadow="0 2px 16px rgba(0, 0, 0, 0.25)"
-
-export interface IImagePreviewProps {
-  files?: string[];
-  imageFiles: string[];
-}
 export interface IImagePreviewSingleProps {
   imageFile: any;
 }
@@ -282,6 +277,10 @@ export interface IChatFormProps {
   selectedThreadId: string;
   sentTo: string;
   threadId: string;
+  signS3Mutation: any;
+
+  handleSetLastMessenger: any;
+  handleSetLastMessage: any;
 }
 
 export interface IChatFormState {
