@@ -145,7 +145,8 @@ class Layout extends React.Component<ILayoutProps, ILayoutState> {
         <Location>
           {({ location }: any) => {
             if (location.pathname === "/messages") {
-              return "";
+              // return "";
+              return <LayoutFooter />;
             }
 
             if (location.pathname !== "/messages") {
