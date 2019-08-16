@@ -1,7 +1,13 @@
 import React, { Component } from "react";
 import { Image } from "rebass";
 
-import { IImagePreviewProps } from "./types";
+interface IImagePreviewProps {
+  errors?: any;
+  touched?: any;
+  files?: string[];
+  imageFiles: string[];
+  values?: any;
+}
 
 export default class ImagePreview extends Component<
   IImagePreviewProps,
