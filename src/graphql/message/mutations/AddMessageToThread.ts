@@ -6,7 +6,7 @@ export const ADD_MESSAGE_TO_THREAD = gql`
     $sentTo: String!
     $message: String!
     $invitees: [ID!]!
-    $images: [Upload]
+    $images: [String]
   ) {
     addMessageToThread(
       threadId: $threadId
