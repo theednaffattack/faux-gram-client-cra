@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 import * as ReactApollo from "react-apollo";
 import * as React from "react";
 import * as ReactApolloHooks from "react-apollo-hooks";
-// export type Maybe<T> = T | null;
+export type Maybe<T> = T | null;
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -31,7 +31,7 @@ export type AddMessageToThreadInput_V2 = {
   sentTo: Scalars["String"];
   invitees: Array<Scalars["ID"]>;
   message: Scalars["String"];
-  images?: Maybe<Array<Maybe<Scalars["Upload"]>>>;
+  images?: Maybe<Array<Maybe<Scalars["String"]>>>;
 };
 
 // export type ChangePasswordInput = {
@@ -133,72 +133,72 @@ export type Mutation = {
   signS3: SignedS3Payload;
 };
 
-export type Mutation_CreateProductArgs = {
+export type MutationCreateProductArgs = {
   data: ProductInput;
 };
 
-export type Mutation_CreateUserArgs = {
+export type MutationCreateUserArgs = {
   data: RegisterInput;
 };
 
-export type Mutation_ChangePasswordArgs = {
+export type MutationChangePasswordArgs = {
   data: ChangePasswordInput;
 };
 
-export type Mutation_ConfirmUserArgs = {
+export type MutationConfirmUserArgs = {
   token: Scalars["String"];
 };
 
-export type Mutation_ForgotPasswordArgs = {
+export type MutationForgotPasswordArgs = {
   email: Scalars["String"];
 };
 
-export type Mutation_LoginArgs = {
+export type MutationLoginArgs = {
   password: Scalars["String"];
   email: Scalars["String"];
 };
 
-export type Mutation_RegisterArgs = {
+export type MutationRegisterArgs = {
   data: RegisterInput;
 };
 
-export type Mutation_AddProfilePictureArgs = {
+export type MutationAddProfilePictureArgs = {
   picture: Scalars["Upload"];
 };
 
-export type Mutation_CreatePostArgs = {
+export type MutationCreatePostArgs = {
   data: PostInput;
 };
 
-export type Mutation_FollowUserArgs = {
+export type MutationFollowUserArgs = {
   data: FollowUserInput;
 };
 
-export type Mutation_AddNewMessageArgs = {
+export type MutationAddNewMessageArgs = {
   sentTo: Scalars["String"];
   message: Scalars["String"];
 };
 
-export type Mutation_UnFollowUserArgs = {
+export type MutationUnFollowUserArgs = {
   data: UnFollowUserInput;
 };
 
-export type Mutation_CreateMessageThreadArgs = {
+export type MutationCreateMessageThreadArgs = {
   sentTo: Scalars["String"];
   invitees: Array<Scalars["ID"]>;
   message: Scalars["String"];
   images?: Maybe<Array<Maybe<Scalars["Upload"]>>>;
 };
 
-export type Mutation_AddMessageToThreadArgs = {
+export type MutationAddMessageToThreadArgs = {
   threadId: Scalars["ID"];
   sentTo: Scalars["String"];
   invitees: Array<Scalars["ID"]>;
   message: Scalars["String"];
-  images?: Maybe<Array<Maybe<Scalars["Upload"]>>>;
+  images?: Maybe<Array<Maybe<Scalars["String"]>>>;
 };
 
-export type Mutation_SignS3Args = {
+export type MutationSignS3Args = {
   files: Array<ImageSubInput>;
 };
 
@@ -274,11 +274,11 @@ export type Query = {
   getMessagesByThreadId?: Maybe<Array<Maybe<Message>>>;
 };
 
-export type Query_GetMyMessagesFromUserArgs = {
+export type QueryGetMyMessagesFromUserArgs = {
   input: GetMessagesFromUserInput;
 };
 
-export type Query_GetMessagesByThreadIdArgs = {
+export type QueryGetMessagesByThreadIdArgs = {
   input: GetMessagesByThreadIdInput;
 };
 
@@ -310,16 +310,16 @@ export type Subscription = {
   messageThreads: AddMessagePayload;
 };
 
-export type Subscription_FollowingPostsArgs = {
+export type SubscriptionFollowingPostsArgs = {
   data: PostSubInput;
 };
 
-export type Subscription_NewMessageArgs = {
+export type SubscriptionNewMessageArgs = {
   sentTo: Scalars["String"];
   message: Scalars["String"];
 };
 
-export type Subscription_MessageThreadsArgs = {
+export type SubscriptionMessageThreadsArgs = {
   data: AddMessageToThreadInput_V2;
 };
 
@@ -364,7 +364,7 @@ export type User = {
   thread_invitations?: Maybe<Array<Maybe<Thread>>>;
   following?: Maybe<Array<Maybe<User>>>;
 };
-export type Maybe<T> = T | null;
+// export type Maybe<T> = T | null;
 
 export interface GetMessagesFromUserInput {
   sentBy: string;
@@ -443,7 +443,7 @@ export interface AddMessageToThreadInputV2 {
 
   message: string;
 
-  images?: Maybe<(Maybe<Upload>)[]>;
+  images?: Maybe<(Maybe<string>)[]>;
 }
 
 export interface GetAllMyMessagesInput {
@@ -489,7 +489,7 @@ export type AddMessageToThreadVariables = {
   sentTo: string;
   message: string;
   invitees: string[];
-  images?: Maybe<(Maybe<Upload>)[]>;
+  images?: Maybe<(Maybe<string>)[]>;
 };
 
 // export type AddMessageToThreadMutation = {
@@ -926,9 +926,21 @@ export type GetOnlyThreadsGetOnlyThreads = {
   user: GetOnlyThreadsUser;
 
   created_at: Maybe<DateTime>;
+
+  updated_at: Maybe<DateTime>;
+
+  invitees: GetOnlyThreadsInvitees[];
 };
 
 export type GetOnlyThreadsUser = {
+  __typename?: "User";
+
+  id: string;
+
+  firstName: string;
+};
+
+export type GetOnlyThreadsInvitees = {
   __typename?: "User";
 
   id: string;
@@ -1477,7 +1489,7 @@ export type AddMessageToThreadMutationVariables = {
   sentTo: Scalars["String"];
   message: Scalars["String"];
   invitees: Array<Scalars["ID"]>;
-  images?: Maybe<Array<Maybe<Scalars["Upload"]>>>;
+  images?: Maybe<Array<Maybe<Scalars["String"]>>>;
 };
 
 export type AddMessageToThreadMutation = { __typename?: "Mutation" } & {
@@ -1698,8 +1710,14 @@ export type GetOnlyThreadsQuery = { __typename?: "Query" } & {
   getOnlyThreads: Maybe<
     Array<
       Maybe<
-        { __typename?: "Thread" } & Pick<Thread, "id" | "created_at"> & {
+        { __typename?: "Thread" } & Pick<
+          Thread,
+          "id" | "created_at" | "updated_at"
+        > & {
             user: { __typename?: "User" } & Pick<User, "id" | "firstName">;
+            invitees: Array<
+              { __typename?: "User" } & Pick<User, "id" | "firstName">
+            >;
           }
       >
     >
@@ -2001,7 +2019,7 @@ export const AddMessageToThreadDocument = gql`
     $sentTo: String!
     $message: String!
     $invitees: [ID!]!
-    $images: [Upload]
+    $images: [String]
   ) {
     addMessageToThread(
       threadId: $threadId
