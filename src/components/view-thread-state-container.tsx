@@ -93,6 +93,19 @@ export class ViewThreadStateContainer extends React.Component<
     }));
   }
 
+  handleThreadAddThreadClick() {
+    this.setState(prevState => ({
+      showMessagingAddressBook: !prevState.showMessagingAddressBook,
+      selectedThread: null
+    }));
+  }
+
+  handleOpenEmojiMenuClick() {
+    this.setState(prevState => ({
+      emojiPickerVisible: !prevState.emojiPickerVisible
+    }));
+  }
+
   scrollToBottom = () => {
     if (this.messagesEnd.current) {
       this.messagesEnd.current.scrollIntoView({
@@ -108,21 +121,8 @@ export class ViewThreadStateContainer extends React.Component<
     console.log("handleThreadMenuClick");
   }
 
-  handleThreadAddThreadClick() {
-    this.setState(prevState => ({
-      showMessagingAddressBook: !prevState.showMessagingAddressBook,
-      selectedThread: null
-    }));
-  }
-
   handleUploadFileClick() {
     console.log("handleUploadFileClick");
-  }
-
-  handleOpenEmojiMenuClick() {
-    this.setState(prevState => ({
-      emojiPickerVisible: !prevState.emojiPickerVisible
-    }));
   }
 
   handleEngageMicrophoneClick() {
