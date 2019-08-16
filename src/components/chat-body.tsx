@@ -207,9 +207,12 @@ const ChatBody = ({
         style={{ border: "2px rebeccapurple solid" }}
       >
         <ChatForm
+          handleSetLastMessage={() => console.log("handlesetLastMessage")}
+          handleSetLastMessenger={() => console.log("handlesetLastMessenger")}
           handleThreadSelection={handleThreadSelection}
           disabled={disabled}
           chatEmoji={chatEmoji}
+          signS3Mutation={console.log("signS3Mutation")}
           // chatInput={chatInput}
           handleChatFieldChange={handleChatFieldChange}
           emojiPickerVisible={emojiPickerVisible}
