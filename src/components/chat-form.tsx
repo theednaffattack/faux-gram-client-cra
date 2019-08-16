@@ -1,5 +1,7 @@
 import React from "react";
 import uuidv4 from "uuid/v4";
+import dFormat from "date-fns/format";
+import axios from "axios";
 
 import CreateThreadAndAddMessageToThread from "./create-thread-and-add-message-to-thread";
 import AddMessageToThread from "./add-message-to-thread";
@@ -25,10 +27,164 @@ class ChatForm extends React.Component<IChatFormProps, IChatFormState> {
     this.makeBlobUrls = this.makeBlobUrls.bind(this);
     this.onFilesAdded = this.onFilesAdded.bind(this);
     this.dataUriToBlob = this.dataUriToBlob.bind(this);
+    this.handleRemoveIndividualImagePreview = this.handleRemoveIndividualImagePreview.bind(
+      this
+    );
+    this.getS3Signature = this.getS3Signature.bind(this);
+
+    this.uploadToS3 = this.uploadToS3.bind(this);
+    this.makeBlobUrlsFromReference = this.makeBlobUrlsFromReference.bind(this);
+    this.formatFilename = this.formatFilename.bind(this);
 
     this.state = {
       files: []
     };
+  }
+
+  formatFilename = (file: any) => {
+    console.log("Filename", file);
+    const filename = file.name;
+
+    const date = dFormat(new Date(), "YYYYMMDD");
+
+    const randomString = Math.random()
+      .toString(36)
+      .substring(2, 7);
+
+    const fileExtension = file.type.substring(
+      file.type.lastIndexOf("/") + 1,
+      file.type.length
+    );
+
+    const cleanFileName = filename.toLowerCase().replace(/[^a-z0-9]/g, "-");
+
+    const restrictedLengthCleanFileName = cleanFileName.substring(0, 40);
+
+    log(
+      "restrictedLengthCleanFileName".toUpperCase(),
+      restrictedLengthCleanFileName
+    );
+    log("randomString & fileExtension".toUpperCase(), {
+      randomString,
+      fileExtension
+    });
+
+    const newFilename = `${date}-${randomString}-${restrictedLengthCleanFileName}.${fileExtension}`;
+
+    return newFilename;
+  };
+
+  async makeBlobUrlsFromReference(myFile: any) {
+    return await fetch(myFile)
+      .then(r => r.blob())
+      .then(blobFile => {
+        console.log({ myFile });
+
+        const getFileName = this.state.files
+          .filter(aFile => aFile.blobUrl === myFile)
+          .map(theFile => theFile.name)[0];
+        console.log({ getFileName });
+
+        console.log({
+          teams: new File([blobFile], getFileName, {
+            type: myFile.type
+          })
+        });
+        return new File([blobFile], getFileName, {
+          type: myFile.type
+        });
+      });
+
+    // return await Promise.all(
+    //   self.state.files.map(async myFile => {
+    //     return await fetch(myFile)
+    //       .then(r => r.blob())
+    //       .then(
+    //         blobFile =>
+    //           new File([blobFile], uuidv4(), {
+    //             type: "image/png"
+    //           })
+    //       );
+    //   })
+    // );
+  }
+
+  uploadToS3 = async ({ file, signedRequest }: any) => {
+    const options = {
+      headers: {
+        "Content-Type": "image/png"
+      }
+    };
+    console.log("look at theFile", file);
+
+    const theFile = await this.makeBlobUrlsFromReference(file);
+
+    console.log("look at theFile", theFile);
+
+    let s3ReturnInfo = await axios
+      .put(signedRequest, theFile, options)
+      .catch(error => console.error({ error }));
+
+    console.log("s3ReturnInfo".toUpperCase(), s3ReturnInfo);
+
+    return s3ReturnInfo;
+  };
+
+  async getS3Signature() {
+    const { files } = this.state;
+    const { signS3Mutation } = this.props;
+
+    const preppedFiles = files.map(file => {
+      return { filename: file.name, filetype: file.type };
+    });
+
+    if (!files || !files[0]) return;
+
+    console.log("Files".toUpperCase(), files);
+    console.log("preppedFiles".toUpperCase(), preppedFiles);
+    const response = await signS3Mutation({
+      variables: {
+        files: [...preppedFiles]
+      }
+    });
+
+    const { signatures } = response.data.signS3;
+    let s3Uploads = await Promise.all(
+      signatures.map(async (signature: any, signatureIndex: number) => {
+        console.log({ signature, signatureIndex });
+        return await this.uploadToS3({
+          file: files[signatureIndex].blobUrl,
+          signedRequest: signature.signedRequest
+        }).catch(error => console.error(JSON.stringify({ ...error }, null, 2)));
+      })
+    );
+
+    console.log("signatures?");
+    console.log(signatures);
+    console.log("s3Uploads?");
+    console.log(s3Uploads);
+
+    return signatures;
+
+    // this needs to be a call to create Post?
+    // probably wrap w/ mutation component from outside and pass in
+    // const graphqlResponse = await this.props.createChampion({
+    //   variables: {
+    //     name,
+    //     pictureUrl: url
+    //   }
+    // });
+  }
+
+  handleRemoveIndividualImagePreview(index: number) {
+    this.setState(prevState => {
+      let newFiles = prevState.files.filter(function(file, fileIndex) {
+        return fileIndex !== index;
+      });
+      return {
+        files: newFiles
+      };
+    });
   }
 
   handleClearFilePreview() {
@@ -53,7 +209,28 @@ class ChatForm extends React.Component<IChatFormProps, IChatFormState> {
   }
 
   makeObjectUrls(someArray: any) {
-    return someArray.map((file: any) => URL.createObjectURL(file));
+    // return someArray.map((file: any) => URL.createObjectURL(file));
+
+    return someArray.map((file: any) => {
+      const {
+        lastModified,
+        lastModifiedDate,
+
+        size,
+        type,
+        webkitRelativePath
+      } = file;
+
+      return {
+        blobUrl: URL.createObjectURL(file),
+        lastModified,
+        lastModifiedDate,
+        name: this.formatFilename(file),
+        size,
+        type,
+        webkitRelativePath
+      };
+    });
   }
 
   async makeBlobUrls() {
@@ -83,6 +260,7 @@ class ChatForm extends React.Component<IChatFormProps, IChatFormState> {
     if (evt && evt.target) {
       array = this.fileListToArray(evt.target.files);
       const previewFiles = this.makeObjectUrls(array);
+
       this.setState({
         files: [...previewFiles]
       });
@@ -145,6 +323,11 @@ class ChatForm extends React.Component<IChatFormProps, IChatFormState> {
     return finalFile;
   }
 
+  // componentDidMount() {
+  //   this.props.handleSetLastMessenger();
+  //   this.props.handleSetLastMessage();
+  // }
+
   render() {
     const {
       chatEmoji,
@@ -157,12 +340,18 @@ class ChatForm extends React.Component<IChatFormProps, IChatFormState> {
       threadId,
       selectedThreadId,
       newThreadInvitees,
-      newThreadDisabled
+      newThreadDisabled,
+
+      handleSetLastMessenger,
+      handleSetLastMessage
     } = this.props;
     return (
       <>
         {selectedThreadId ? (
           <AddMessageToThread
+            handleRemoveIndividualImagePreview={
+              this.handleRemoveIndividualImagePreview
+            }
             handleClearFilePreview={this.handleClearFilePreview}
             disabled={disabled}
             files={this.state.files}
@@ -177,6 +366,7 @@ class ChatForm extends React.Component<IChatFormProps, IChatFormState> {
             sentTo={sentTo}
             threadId={threadId}
             newThreadInvitees={newThreadInvitees}
+            getS3Signature={this.getS3Signature}
           />
         ) : (
           <CreateThreadAndAddMessageToThread

@@ -6,7 +6,8 @@ import "./emoji-mart.css";
 
 import { AddMessageToThreadComponent } from "../generated/graphql";
 import { Flex, AbFlex, MinButton } from "./styled-rebass";
-import ImagePreview from "./image-preview";
+// import ImagePreview from "./messages-image-preview";
+import ImagePreview from "./messages-image-preview_v2";
 import { ChatField } from "../components/fields/chat-input-field";
 import IconAddFile from "./add-file-icon";
 import SmileyIcon from "./custom-icon";
@@ -25,12 +26,14 @@ export interface IAddMessageToThreadProps {
   threadId: string;
 
   handleClearFilePreview: any;
+  handleRemoveIndividualImagePreview: any;
   files: any[];
   openFileDialog: any;
   fileInputRef: any;
   onFilesAdded: any;
   makeBlobUrls: any;
   newThreadInvitees: any[];
+  getS3Signature: any;
 }
 
 const isBrowser = typeof window !== "undefined";
@@ -44,12 +47,14 @@ function AddMessageToThread({
   sentTo,
   threadId,
   handleClearFilePreview,
+  handleRemoveIndividualImagePreview,
   files,
   openFileDialog,
   fileInputRef,
   onFilesAdded,
   makeBlobUrls,
-  newThreadInvitees
+  newThreadInvitees,
+  getS3Signature
 }: IAddMessageToThreadProps) {
   return (
     <AddMessageToThreadComponent>
@@ -64,42 +69,28 @@ function AddMessageToThread({
       ) => {
         return (
           <Formik
-            // enableReinitialize={true}
             validateOnBlur={false}
             validateOnChange={false}
             onSubmit={async (data, { setErrors, resetForm }) => {
-              // let readyImages = this.state.files;
-              // let seeBlobs = [this.dataUriToBlob(readyImages)];
-              // this.dataUriToBlob(this.state.files[0]);
-
-              // let file = await fetch(this.state.files[0])
-              //   .then(r => r.blob())
-              //   .then(
-              //     blobFile =>
-              //       new File([blobFile], "fileNameGoesHere", {
-              //         type: "image/png"
-              //       })
-              //   );
-
-              // let myFiles = await makeBlobUrls();
-              // // log("life".toUpperCase(), file);
-
-              // let dataForSubmit = {
-              //   threadId,
-              //   sentTo,
-              //   message: data.message,
-              //   images: [...myFiles]
-              // };
               let dataForSubmitting;
 
               if (files && files.length > 0) {
-                let someFiles = await makeBlobUrls();
+                const imagesAreUploadedToS3 = await getS3Signature();
+
+                console.log("imagesAreUploadedToS3".toUpperCase());
+                console.log({ imagesAreUploadedToS3 });
+
+                // let preppedImages = imagesAreUploadedToS3.map(
+                //   (image: any) => image.url
+                // );
+
+                // let someFiles = await makeBlobUrls();
                 dataForSubmitting = {
                   threadId,
                   sentTo,
                   invitees: newThreadInvitees.map(person => person.id),
                   message: data.message,
-                  images: [...someFiles]
+                  images: imagesAreUploadedToS3.map((image: any) => image.url)
                 };
               } else {
                 dataForSubmitting = {
@@ -116,40 +107,6 @@ function AddMessageToThread({
                 response = await addMessageToThread({
                   variables: dataForSubmitting
                   // we don't update here because of subscriptions
-
-                  // update: (cache, { data }) => {
-                  //   if (!data || !data.addMessageToThread) {
-                  //     return;
-                  //   }
-                  //   let myStuff = cache.readQuery<GetMessageThreadsQuery>({
-                  //     query: GetMessageThreadsDocument
-                  //   });
-
-                  //   if (myStuff) {
-                  //     myStuff.getMessageThreads.map((thread, threadIndex) => {
-                  //       console.log(
-                  //         "data.addMessageToThread.threadId",
-                  //         data.addMessageToThread
-                  //       );
-                  //       console.log("thread.id", thread.id);
-                  //       if (data.addMessageToThread.threadId === thread.id) {
-                  //         return thread.messages.push(
-                  //           data.addMessageToThread.message
-                  //         );
-                  //       } else {
-                  //         return thread;
-                  //       }
-                  //     });
-
-                  //     cache.writeQuery<GetMessageThreadsQuery>({
-                  //       query: GetMessageThreadsDocument,
-                  //       data: myStuff
-                  //     });
-
-                  //   } else {
-                  //     return;
-                  //   }
-                  // }
                 });
               } catch (error) {
                 const displayErrors: { [key: string]: string } = {};
@@ -167,7 +124,7 @@ function AddMessageToThread({
                 //   );
                 // });
 
-                // return setErrors(displayErrors);
+                return setErrors(displayErrors);
 
                 // return setErrors({
                 //   chat: "invalid character?"
@@ -179,52 +136,56 @@ function AddMessageToThread({
                 //   chat: "invalid character?"
                 // });
 
-                handleClearFilePreview();
                 resetForm({
                   threadId,
                   sentTo,
-                  message: chatEmoji
+                  message: chatEmoji,
+                  images: []
                 });
+
+                handleClearFilePreview();
                 return;
               }
             }}
             initialValues={{
               threadId,
               sentTo,
-              message: ""
+              message: "",
+              images: [...files]
             }}
           >
             {({
               handleChange,
               handleSubmit,
               setFieldValue,
+              resetForm,
               values,
               ...args
             }) => {
               const myChange = (e: any) => {
-                // const targetEl = e.target;
-                // const fieldName = targetEl.name;
-
-                // handleChatFieldChange(values.message);
                 setFieldValue("message", values.message + chatEmoji);
 
-                // setFormValues({
-                //   ...formValues,
-                //   [fieldName]: targetEl.value
-                // });
                 return handleChange(e);
               };
 
               return (
-                <Flex width={[1, 1, 1]}>
+                <Flex width={[1, 1, 1]} border="2px pink dashed">
                   <Flex
                     width={[1, 1, 1]}
                     mr="auto"
-                    alignItems="center"
+                    // alignItems="center"
                     flexDirection="column"
                     style={{ position: "relative" }}
                   >
-                    <ImagePreview imageFiles={files} />
+                    <ImagePreview
+                      values={values}
+                      resetForm={resetForm}
+                      handleClearFilePreview={handleClearFilePreview}
+                      handleRemoveIndividualImagePreview={
+                        handleRemoveIndividualImagePreview
+                      }
+                      imageFiles={files}
+                    />
                     <Flex width={[1, 1, 1]}>
                       <form
                         action=""
