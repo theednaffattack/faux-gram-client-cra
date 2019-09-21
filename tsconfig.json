@@ -15,5 +15,12 @@
     "noEmit": true,
     "jsx": "preserve"
   },
-  "include": ["src", "react-geomicons.d.ts", "styled-system-flexbox.d.ts"]
+  "include": [
+    "src",
+    "react-geomicons.d.ts",
+    "styled-system-flexbox.d.ts",
+    "random-sentence.d.ts",
+    "custom-rebass.d.ts",
+    "temp/threads-user-window-example.js"
+  ]
 }
