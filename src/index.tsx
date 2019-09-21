@@ -33,7 +33,7 @@ interface IEnvironmentConfig {
   httpProtocol: string[];
 }
 
-const homeHost = "192.168.1.10:4000";
+const homeHost = "192.168.1.24:4000";
 
 // const genericHost = "0.0.0.0:4000";
 
@@ -53,19 +53,15 @@ const configurations: IConfigurations = {
     httpProtocol: ["http", "ws"],
     ssl: false,
     port: 4000,
-    hostname: "192.168.1.10:4000"
+    hostname: homeHost
   }
 };
 
 const environment = (process.env.NODE_ENV as string) || "production";
 
-const graphqlUrl = `${configurations[environment].httpProtocol[0]}://${
-  configurations[environment].hostname
-}/graphql`;
+const graphqlUrl = `${configurations[environment].httpProtocol[0]}://${configurations[environment].hostname}/graphql`;
 
-const websocketsUrl = `${configurations[environment].httpProtocol[1]}://${
-  configurations[environment].hostname
-}/subscriptions`;
+const websocketsUrl = `${configurations[environment].httpProtocol[1]}://${configurations[environment].hostname}/subscriptions`;
 
 // function parseCookies(req?: any, options = {}) {
 //   return cookie.parse(
