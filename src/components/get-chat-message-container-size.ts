@@ -265,27 +265,47 @@ function createDummyElement({
 
     const firstSuchAndSuch = images.slice(0, numberOfItems);
 
+    const createImageWrapperObject = {
+      div: document.createElement("div"),
+      outer: document.createElement("div")
+    };
+
     const svgImageToMeasure = {
       svg: document.createElementNS("http://www.w3.org/2000/svg", "svg"),
       rect: document.createElementNS("http://www.w3.org/2000/svg", "rect"),
       div: document.createElement("div")
     };
 
-    firstSuchAndSuch.forEach((preppedElement: any, index: number) => {
-      svgImageToMeasure["svg"].setAttributeNS(null, "width", "175");
-      svgImageToMeasure["svg"].setAttributeNS(null, "height", "131");
-      svgImageToMeasure["svg"].setAttributeNS(null, "class", "my-lil-svg");
-      svgImageToMeasure["svg"].style.width = "175";
-      svgImageToMeasure["svg"].style.height = "131";
+    let tryMappingIt = firstSuchAndSuch.map((element: any, index: number) => {
+      const newDiv = document.createElement("div");
+      const newSvg = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "svg"
+      );
+      const newRect = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "rect"
+      );
 
-      svgImageToMeasure["rect"].setAttributeNS(null, "width", "175");
-      svgImageToMeasure["rect"].setAttributeNS(null, "height", "131");
+      newSvg.setAttributeNS(null, "width", "175");
+      newSvg.setAttributeNS(null, "height", "131");
+      newSvg.setAttributeNS(null, "class", "my-lil-svg");
+      newSvg.style.width = "175";
+      newSvg.style.height = "131";
 
-      DOM_individual_image_wrapper.setAttribute("height", "131px");
-      DOM_individual_image_wrapper.setAttribute("width", "175px");
-      DOM_individual_image_wrapper.setAttribute("class", "individual-wrapper");
-      DOM_imageWrapper.appendChild(DOM_individual_image_wrapper);
-      DOM_individual_image_wrapper.appendChild(svgImageToMeasure.svg);
+      newRect.setAttributeNS(null, "width", "175");
+      newRect.setAttributeNS(null, "height", "131");
+
+      newDiv.setAttribute("height", "131px");
+      newDiv.setAttribute("width", "175px");
+      newDiv.style.overflow = "hidden";
+
+      DOM_imageWrapper.appendChild(newDiv);
+      newDiv.appendChild(newSvg);
+      newSvg.appendChild(newRect);
+
+      console.log(`LOOK OVER HERE PART TWO`, DOM_imageWrapper);
+      return newDiv;
     });
   };
 
@@ -301,12 +321,12 @@ function createDummyElement({
     // measuredElement.style.paddingBottom = "16px";
 
     DOM_imageWrapper.setAttribute("height", "131px");
-    DOM_imageWrapper.setAttribute("width", "175px");
+    DOM_imageWrapper.setAttribute("class", "outer-wrapper");
+    // DOM_imageWrapper.setAttribute("width", "175px");
     messageCardInner.appendChild(DOM_imageWrapper);
 
     ShowAllImages({ images });
   }
-  console.log("WHAT IS MESSAGECARD AFTER IMAGES!!!! 😁", messageCardInner);
 
   // add created at and message text blocks
   messageCardInner.appendChild(DOM_createdAtTextWrapper);
@@ -315,6 +335,7 @@ function createDummyElement({
   // add the text nodes to the text blocks
   DOM_createdAtTextWrapper.appendChild(createdAtTextNode);
   DOM_messageTextWrapper.appendChild(messageTextNode);
+  console.log("WHAT IS MESSAGECARD AFTER IMAGES!!!! 😁", measuredElement);
 
   return measuredElement;
 }
@@ -437,6 +458,11 @@ export default function getSize({
   destroyElement(measuredElement);
 
   cache[cacheKey] = size;
+
+  console.log(
+    "TRY GETBOUNDINGCLIENTRECT",
+    measuredElement.getBoundingClientRect()
+  );
 
   console.log("WHY DOES SIZE NOT CHANGE?", size);
 
