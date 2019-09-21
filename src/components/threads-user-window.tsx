@@ -265,10 +265,10 @@ class ThreadWindow extends React.Component<
             <List
               itemData={{
                 itemData: items,
-                loadMoreItems: loadMoreItems,
-                loadingGetOnlyThreads: loadingGetOnlyThreads,
-                handleThreadSelection: handleThreadSelection,
-                handleDisplayMessages: handleDisplayMessages,
+                loadMoreItems,
+                loadingGetOnlyThreads,
+                handleThreadSelection,
+                handleDisplayMessages,
                 height,
                 width
               }}
