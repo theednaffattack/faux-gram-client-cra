@@ -7,12 +7,10 @@ import { maxWidth, MaxWidthProps } from "styled-system";
 import { Button, Flex, Text } from "../components/styled-rebass";
 import { InputField } from "../components/fields/input-field";
 import { LoginComponent, MeQuery } from "../generated/graphql";
-
 import { meQuery } from "../graphql/user/queries/Me";
 import { SignUpLink } from "../components/sign-up-link";
 import { CheckBox } from "../components/fields/checkbox";
 import { navigate } from "@reach/router";
-import { IPageProps } from "./types";
 import { PosedFlash } from "../components/posed-components";
 
 type TCardProps = CardProps & MaxWidthProps;

@@ -1,6 +1,6 @@
 import React from "react";
+
 import { CreatePostComponent } from "../generated/graphql";
-import FileListBase from "./file-list-create-post";
 import DropZoneContainer from "./dropzone-container";
 import { SignS3Component } from "../generated/graphql";
 
@@ -42,9 +42,3 @@ const CreatePostMutation = ({ me }: IFileListMutation) => {
 };
 
 export default CreatePostMutation;
-
-{
-  /* <CreatePostComponent>
-      {createPost => <FileListBase me={me} mutate={createPost} />}
-    </CreatePostComponent> */
-}

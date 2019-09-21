@@ -242,6 +242,7 @@ export interface IChatBodyProps {
   selectedThreadIndex: number | null;
   showMessagingAddressBook: any;
   messagesEndRef: any;
+  handleCancelNewMessageThread: any;
 }
 
 export interface IMinButtonProps extends MinHeightProps, ButtonProps {}
@@ -294,7 +295,12 @@ export interface IChatFormProps {
 }
 
 export interface IAddressBookMutationProps {
-  dataMessageThreads: any;
-  selectedThreadIndex: number | null;
+  // dataMessageThreads: any;
+  // selectedThreadIndex: number | null;
   handleAddInviteeToThread: any;
+  handleRemoveInviteeToThread: any;
+  handleLocalCancelNewThread: any;
+  newThreadInvitees: any[];
+  handleCancelNewMessageThread: any;
+  handleStartNewThread: any;
 }

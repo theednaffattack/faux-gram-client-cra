@@ -14,30 +14,32 @@ export const CREATE_MESSAGE_THREAD = gql`
       invitees: $invitees
     ) {
       id
+      created_at
+      updated_at
       invitees {
         id
         firstName
         lastName
       }
-      messages {
+      user {
         id
-        created_at
-        message
-        images {
-          id
-          uri
-        }
-        sentBy {
-          id
-          firstName
-          lastName
-        }
-        user {
-          id
-          firstName
-          lastName
-        }
+        firstName
+        lastName
       }
     }
   }
 `;
+
+// # messages {
+//   #   id
+//   #   created_at
+//   #   message
+//   #   images {
+//   #     id
+//   #     uri
+//   #   }
+//   #   sentBy {
+//   #     id
+//   #     firstName
+//   #     lastName
+//   #   }

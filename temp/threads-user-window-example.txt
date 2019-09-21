@@ -1,0 +1,145 @@
+import { FixedSizeList } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
+import InfiniteLoader from "react-window-infinite-loader";
+
+import { IRowProps } from "./threads-user-window";
+import { Button, Flex, Text } from "./styled-rebass";
+import UserProfileImage from "./user-profile-image";
+
+function ExampleWrapper({
+  // Are there more items to load?
+  // (This information comes from the most recent API request.)
+  hasNextPage,
+
+  // Are we currently loading a page of items?
+  // (This may be an in-flight flag in your Redux store for example.)
+  isNextPageLoading,
+
+  // Array of items loaded so far.
+  items,
+
+  // Callback function responsible for loading the next page of items.
+  loadNextPage,
+  ...props
+}: any) {
+  // If there are more items to be loaded then add an extra row to hold a loading indicator.
+  const itemCount = hasNextPage ? items.length + 1 : items.length;
+
+  // Only load 1 page of items at a time.
+  // Pass an empty callback to InfiniteLoader in case it asks us to load more than once.
+  const loadMoreItems = isNextPageLoading ? () => {} : loadNextPage;
+
+  // Every row is loaded except for our loading indicator row.
+  const isItemLoaded = index => !hasNextPage || index < items.length;
+
+  const Row = ({ index, data, style }: IRowProps) => {
+    console.log("ROW DATA", data);
+
+    let content;
+    // <div style={style}>Row {index}</div>
+
+    if (!isItemLoaded(index)) {
+      return <div>"Loading..."</div>;
+    } else {
+      return (
+        <Flex
+          bg={index % 2 === 0 ? "#eee" : "white"}
+          flexDirection="row"
+          alignItems="stretch"
+          width={1}
+          style={style}
+          pr={3}
+        >
+          <Flex
+            bg="transparent"
+            width={1 / 5}
+            pl={3}
+            alignItems="center"
+            style={{ overflowY: "auto" }}
+          >
+            {data.itemData[index].node.invitees.map(
+              (person: any, itemIndex: number) => (
+                <UserProfileImage
+                  key={`${itemIndex}-${person.typename}`}
+                  isMe={true}
+                  flexInstruction="column"
+                  user={person}
+                  buttonThing={false}
+                  color="blue"
+                  handleRemoveInviteeToThread={data.handleRemoveInviteeToThread}
+                />
+              )
+            )}
+          </Flex>
+          <Flex bg="transparent" width={2 / 3} mr="auto">
+            what the hell
+            <Text>{data.height}</Text>
+            <Text>{data.width}</Text>
+          </Flex>
+          <Flex alignItems="center" justifyContent="center">
+            <Button
+              mr={2}
+              type="button"
+              onClick={(event: React.MouseEvent) => {
+                data.handleDisplayMessages(data.itemData[index].id);
+                console.log("blonk");
+              }}
+            >
+              View messages
+            </Button>
+          </Flex>
+        </Flex>
+      );
+    }
+  };
+
+  // Render an item or a loading indicator.
+  const Item = ({ index, style }) => {
+    let content;
+    if (!isItemLoaded(index)) {
+      content = "Loading...";
+    } else {
+      content = items[index].name;
+    }
+
+    return <div style={style}>{content}</div>;
+  };
+
+  return (
+    <AutoSizer>
+      {({ height, width }) => {
+        console.log("WHAT IS THE HEIGHT?????", props.data);
+        return (
+          <InfiniteLoader
+            isItemLoaded={isItemLoaded}
+            // itemCount={itemCount}
+            itemCount={props.data.edges.length}
+            loadMoreItems={loadMoreItems}
+          >
+            {({ onItemsRendered, ref }) => (
+              <FixedSizeList
+                // itemCount={itemCount}
+                onItemsRendered={onItemsRendered}
+                ref={ref}
+                itemData={{
+                  // itemData: props.data.edges,
+                  handleThreadSelection: props.handleThreadSelection,
+                  handleDisplayMessages: props.handleDisplayMessages,
+                  height,
+                  width
+                }}
+                height={height || 300}
+                itemCount={props.data.edges.length}
+                itemSize={85}
+                width={width}
+                {...props}
+              >
+                {Item}
+              </FixedSizeList>
+            )}
+          </InfiniteLoader>
+        );
+      }}
+    </AutoSizer>
+  );
+}

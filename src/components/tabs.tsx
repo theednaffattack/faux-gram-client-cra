@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 import Tab from "./tab";
-import { TabList, TabListActive, TabListItem, Flex } from "./styled-rebass";
+import { TabList, Flex } from "./styled-rebass";
 
 export interface ITabsProps {
   children: any;

@@ -5,6 +5,10 @@ export interface IPageProps {
   state?: any;
   primary?: boolean;
   navigate?: any;
+  showMessagingAddressBook?: boolean;
+  handleCreateNewMessageThread?: any;
+  handleCancelNewMessageThread?: any;
+  handleLoadNewThreadCreated?: any;
 }
 
 export interface MyContext {

@@ -5,8 +5,6 @@ import { FollowUserComponent } from "../generated/graphql";
 import { GetGlobalPostsComponent } from "../generated/graphql";
 import { DisplayPosts } from "./display-posts";
 import { GLOBAL_POSTS } from "../graphql/user/subscriptions/GlobalPosts";
-import { GET_GLOBAL_POSTS } from "../graphql/user/queries/GetGlobalPosts";
-// import InteriorLayout from "../../components/AuthHeader";
 
 export const subscribeFunction = (subscribeGlblPosts: any) => {
   try {

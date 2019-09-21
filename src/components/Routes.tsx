@@ -27,6 +27,7 @@ import Post from "../pages/post";
 import Profile from "../pages/profile";
 import TabViewer from "./tab-viewer";
 import { Example } from "../pages/example";
+import Chat from "../pages/chat";
 
 const RouteContainer = posed(Flex)({
   enter: { opacity: 1, delay: 300, beforeChildren: 300 },
@@ -79,7 +80,7 @@ const PosedRouter = ({ children }: IPosedRouterProps) => (
   </Location>
 );
 
-function Routes() {
+function Routes(props: any) {
   return (
     <PosedRouter flex="1 1 auto">
       <NotFound primary={false} default />
@@ -98,9 +99,17 @@ function Routes() {
       <HelloWorld primary={false} path="/hello-world" />
       <Post primary={false} path="/post" />
       <Profile primary={false} path="/profile" />
-      <Messages primary={false} path="/messages" />
+      <Messages
+        primary={false}
+        path="/messages"
+        handleCreateNewMessageThread={props.handleCreateNewMessageThread}
+        showMessagingAddressBook={props.showMessagingAddressBook}
+        handleCancelNewMessageThread={props.handleCancelNewMessageThread}
+        handleLoadNewThreadCreated={props.handleLoadNewThreadCreated}
+      />
       <TabViewer primary={false} path="/tabs" />
       <Example primary={false} path="/example" />
+      <Chat primary={false} path="/chat" />
     </PosedRouter>
   );
 }

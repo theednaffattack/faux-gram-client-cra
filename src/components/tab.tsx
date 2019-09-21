@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { TabList, TabListActive, TabListItem } from "./styled-rebass";
+import { TabListItem } from "./styled-rebass";
 
 export interface ITabProps {
   label: string;

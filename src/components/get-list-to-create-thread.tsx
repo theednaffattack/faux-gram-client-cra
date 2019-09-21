@@ -39,6 +39,8 @@ export class GetListToCreateThread extends Component<
             <Flex width={[1, 1, 1]} flexDirection="row">
               {selectedThreadIndex && dataCreateThread ? (
                 <ChooseThreadUser
+                  newThreadInvitees={[]}
+                  handleRemoveInviteeToThread={() => console.log}
                   handleAddInviteeToThread={handleAddInviteeToThread}
                   dataCreateThread={
                     dataCreateThread.getListToCreateThread &&

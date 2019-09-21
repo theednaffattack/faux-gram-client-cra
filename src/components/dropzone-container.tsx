@@ -3,18 +3,10 @@ import dFormat from "date-fns/format";
 import axios from "axios";
 import uuidv4 from "uuid/v4";
 
-import FileListBase from "./file-list-create-post";
-
 import { IDropZoneContainerProps, IDropZoneContainerState } from "./types";
-import Dropzone from "./dropzone";
-import { any } from "prop-types";
 import { Flex } from "./styled-rebass";
 import CreatePostForm from "./create-post-form";
 import { SignS3Component } from "../generated/graphql";
-
-// import { Button, Flex, MaxFlex } from "./styled-rebass";
-// import ImagePreview from "./image-preview";
-// import { SignS3Component } from "../../generated/apolloComponents";
 
 const { log } = console;
 

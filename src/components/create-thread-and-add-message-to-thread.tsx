@@ -6,8 +6,7 @@ import { Flex, AbFlex, MinButton } from "./styled-rebass";
 
 import {
   CreateMessageThreadComponent,
-  GetMessageThreadsDocument,
-  GetMessageThreadsQuery
+  GetOnlyThreadsQuery
 } from "../generated/graphql";
 
 import ImagePreview from "./image-preview";
@@ -16,7 +15,7 @@ import IconAddFile from "./add-file-icon";
 import CustomIcon from "./custom-icon";
 
 import "./emoji-mart.css";
-import { GET_MESSAGE_THREADS } from "../graphql/message/queries/GetMessageThreads";
+import { GET_ONLY_THREADS } from "../graphql/user/queries/get-only-threads";
 
 export const inputStyles = {
   display: "none"
@@ -25,20 +24,21 @@ export const inputStyles = {
 export interface ICreateThreadAndAddMessageToThreadProps {
   chatEmoji: string;
   emojiPickerVisible: boolean;
+  fileInputRef: any;
+  files: any[];
+  getS3Signature: any;
+  handleClearFilePreview: any;
   handleEngageMicrophoneClick: any;
   handleOpenEmojiMenuClick: any;
-  sentTo: any;
-  threadId: string | null;
-  newThreadInvitees: any[];
-  // selectedThreadId: string;
+  handleRemoveIndividualImagePreview: any;
   handleThreadSelection: any;
-  handleClearFilePreview: any;
-  files: any[];
-  openFileDialog: any;
-  fileInputRef: any;
-  onFilesAdded: any;
   makeBlobUrls: any;
   newThreadDisabled: boolean;
+  newThreadInvitees: any[];
+  openFileDialog: any;
+  onFilesAdded: any;
+  sentTo: any;
+  threadId: string | null;
 }
 
 const isBrowser = typeof window !== "undefined";
@@ -46,19 +46,21 @@ const isBrowser = typeof window !== "undefined";
 const CreateThreadAndAddMessageToThread = ({
   chatEmoji,
   emojiPickerVisible,
+  fileInputRef,
+  files,
+  getS3Signature,
   handleEngageMicrophoneClick,
   handleOpenEmojiMenuClick,
-  sentTo,
-  threadId,
   newThreadInvitees,
   handleThreadSelection,
   handleClearFilePreview,
-  files,
+  handleRemoveIndividualImagePreview,
   openFileDialog,
-  fileInputRef,
   onFilesAdded,
   makeBlobUrls,
-  newThreadDisabled
+  newThreadDisabled,
+  sentTo,
+  threadId
 }: ICreateThreadAndAddMessageToThreadProps) => {
   return (
     <CreateMessageThreadComponent>
@@ -91,7 +93,7 @@ const CreateThreadAndAddMessageToThread = ({
                 };
               } else {
                 mySentTo = newThreadInvitees[0];
-
+                console.log({ mySentTo });
                 dataForSubmitting = {
                   sentTo: mySentTo.id,
                   invitees: newThreadInvitees.map(person => person.id),
@@ -100,24 +102,38 @@ const CreateThreadAndAddMessageToThread = ({
               }
 
               let response;
-              let myStuff;
+              let myStuff: any;
 
               try {
                 response = await createMessageThread({
                   variables: dataForSubmitting,
                   update: (cache, { data }) => {
+                    console.log("ERROR UPDATING?", data);
+                    console.log("CACHE?", cache);
+
                     if (!data || !data.createMessageThread) {
                       return;
                     }
-                    myStuff = cache.readQuery<GetMessageThreadsQuery>({
-                      query: GET_MESSAGE_THREADS
-                    });
-                    if (myStuff && myStuff.getMessageThreads) {
-                      myStuff.getMessageThreads.push(data.createMessageThread);
+                    // myStuff = cache.readQuery<GetOnlyThreadsQuery>({
+                    //   query: GET_ONLY_THREADS
+                    // });
 
-                      cache.writeQuery<GetMessageThreadsQuery>({
-                        query: GetMessageThreadsDocument,
-                        data: myStuff
+                    let fromCache = cache.readQuery<GetOnlyThreadsQuery>({
+                      query: GET_ONLY_THREADS
+                    });
+
+                    if (fromCache && fromCache.getOnlyThreads) {
+                      console.log("ERROR UPDATING?", data);
+                      console.log("MYSTUFF?", fromCache);
+
+                      // COME BACK TO THIS
+                      // fromCache.getOnlyThreads.push(data.createMessageThread);
+
+                      myStuff = fromCache;
+
+                      cache.writeQuery<GetOnlyThreadsQuery>({
+                        query: GET_ONLY_THREADS,
+                        data: fromCache
                       });
                     } else {
                       return;
@@ -125,6 +141,7 @@ const CreateThreadAndAddMessageToThread = ({
                   }
                 });
               } catch (error) {
+                console.log("A BIG ERROR", error);
                 const displayErrors: { [key: string]: string } = {};
 
                 let myErrors = error.graphQLErrors; //.extensions.exception.validationErrors;
@@ -159,13 +176,14 @@ const CreateThreadAndAddMessageToThread = ({
                   message: chatEmoji
                 });
 
-                let newIndex;
-
                 // @ts-ignore
-                if (myStuff && myStuff.getMessageThreads) {
+                if (myStuff && myStuff.getOnlyThreads) {
                   // @ts-ignore
-                  newIndex = myStuff.getMessageThreads.length - 1;
-                  handleThreadSelection({ index: newIndex });
+                  let newThreadId =
+                    myStuff.getOnlyThreads[myStuff.getOnlyThreads.length - 1]
+                      .id;
+                  console.log("SHOULD BE SUBMITTING PROPERLY");
+                  handleThreadSelection({ threadId: newThreadId });
                 }
                 return;
               }

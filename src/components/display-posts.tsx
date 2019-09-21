@@ -77,7 +77,8 @@ export const DisplayCards = ({
                   minHeight: "250px",
                   maxHeight: "250px",
                   overflow: "hidden", // `url(${Background})`
-                  backgroundImage: `url(${post.images[0].uri})`,
+                  backgroundImage:
+                    post.images.length > 0 ? `url(${post.images[0].uri})` : "",
                   backgroundPosition: "center",
                   backgroundSize: "cover",
                   backgroundRepeat: "no-repeat"

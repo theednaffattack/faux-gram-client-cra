@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 import * as ReactApollo from "react-apollo";
 import * as React from "react";
 import * as ReactApolloHooks from "react-apollo-hooks";
-export type Maybe<T> = T | null;
+// export type Maybe<T> = T | null;
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -39,6 +39,11 @@ export type AddMessageToThreadInput_V2 = {
 //   token: Scalars["String"];
 // };
 
+// export type FeedInput = {
+//   cursor?: Maybe<Scalars["String"]>;
+//   take?: Maybe<Scalars["Int"]>;
+// };
+
 // export type FollowUserInput = {
 //   userIDToFollow: Scalars["String"];
 // };
@@ -52,6 +57,7 @@ export type AddMessageToThreadInput_V2 = {
 // };
 
 // export type GetMessagesByThreadIdInput = {
+//   cursor?: Maybe<Scalars["String"]>;
 //   threadId: Scalars["String"];
 //   skip?: Maybe<Scalars["Int"]>;
 //   take?: Maybe<Scalars["Int"]>;
@@ -91,6 +97,17 @@ export type Message = {
   sentBy: User;
   user: User;
   thread?: Maybe<Thread>;
+};
+
+export type MessageConnection = {
+  __typename?: "MessageConnection";
+  edges: Array<MessageEdge>;
+  pageInfo: PageInfo;
+};
+
+export type MessageEdge = {
+  __typename?: "MessageEdge";
+  node: Message;
 };
 
 export type MessageOutput = {
@@ -202,6 +219,14 @@ export type MutationSignS3Args = {
   files: Array<ImageSubInput>;
 };
 
+export type PageInfo = {
+  __typename?: "PageInfo";
+  startCursor: Scalars["String"];
+  endCursor: Scalars["String"];
+  hasNextPage: Scalars["Boolean"];
+  hasPreviousPage: Scalars["Boolean"];
+};
+
 // export type PasswordInput = {
 //   password: Scalars["String"];
 // };
@@ -270,12 +295,16 @@ export type Query = {
   getAllMyMessages?: Maybe<User>;
   getMessageThreads?: Maybe<Array<Maybe<Thread>>>;
   getListToCreateThread?: Maybe<TransUserReturn>;
-  getOnlyThreads?: Maybe<Array<Maybe<Thread>>>;
-  getMessagesByThreadId?: Maybe<Array<Maybe<Message>>>;
+  getOnlyThreads?: Maybe<ThreadConnection>;
+  getMessagesByThreadId?: Maybe<MessageConnection>;
 };
 
 export type QueryGetMyMessagesFromUserArgs = {
   input: GetMessagesFromUserInput;
+};
+
+export type QueryGetOnlyThreadsArgs = {
+  feedinput: FeedInput;
 };
 
 export type QueryGetMessagesByThreadIdArgs = {
@@ -308,6 +337,8 @@ export type Subscription = {
   newMessage: MessageSubType;
   globalPosts?: Maybe<Post>;
   messageThreads: AddMessagePayload;
+  getMessagesByThreadId: AddMessagePayload;
+  newMessageByThreadId: AddMessagePayload;
 };
 
 export type SubscriptionFollowingPostsArgs = {
@@ -323,14 +354,35 @@ export type SubscriptionMessageThreadsArgs = {
   data: AddMessageToThreadInput_V2;
 };
 
+export type SubscriptionGetMessagesByThreadIdArgs = {
+  input: GetMessagesByThreadIdInput;
+};
+
+export type SubscriptionNewMessageByThreadIdArgs = {
+  data: AddMessageToThreadInput_V2;
+};
+
 export type Thread = {
   __typename?: "Thread";
   id?: Maybe<Scalars["ID"]>;
   messages?: Maybe<Array<Maybe<Message>>>;
+  last_message?: Maybe<Scalars["String"]>;
+  message_count: Scalars["Int"];
   user: User;
   invitees: Array<User>;
   created_at?: Maybe<Scalars["DateTime"]>;
   updated_at?: Maybe<Scalars["DateTime"]>;
+};
+
+export type ThreadConnection = {
+  __typename?: "ThreadConnection";
+  edges: Array<ThreadEdge>;
+  pageInfo: PageInfo;
+};
+
+export type ThreadEdge = {
+  __typename?: "ThreadEdge";
+  node: Thread;
 };
 
 export type TransUserReturn = {
@@ -364,7 +416,7 @@ export type User = {
   thread_invitations?: Maybe<Array<Maybe<Thread>>>;
   following?: Maybe<Array<Maybe<User>>>;
 };
-// export type Maybe<T> = T | null;
+export type Maybe<T> = T | null;
 
 export interface GetMessagesFromUserInput {
   sentBy: string;
@@ -372,7 +424,15 @@ export interface GetMessagesFromUserInput {
   user: string;
 }
 
+export interface FeedInput {
+  cursor?: Maybe<string>;
+
+  take?: Maybe<number>;
+}
+
 export interface GetMessagesByThreadIdInput {
+  cursor?: Maybe<string>;
+
   threadId: string;
 
   skip?: number;
@@ -597,46 +657,16 @@ export type CreateMessageThreadCreateMessageThread = {
 
   id: Maybe<string>;
 
-  invitees: CreateMessageThreadInvitees[];
-
-  messages: Maybe<(Maybe<CreateMessageThreadMessages>)[]>;
-};
-
-export type CreateMessageThreadInvitees = {
-  __typename?: "User";
-
-  id: string;
-
-  firstName: string;
-
-  lastName: string;
-};
-
-export type CreateMessageThreadMessages = {
-  __typename?: "Message";
-
-  id: string;
-
   created_at: Maybe<DateTime>;
 
-  message: string;
+  updated_at: Maybe<DateTime>;
 
-  images: Maybe<(Maybe<CreateMessageThreadImages>)[]>;
-
-  sentBy: CreateMessageThreadSentBy;
+  invitees: CreateMessageThreadInvitees[];
 
   user: CreateMessageThreadUser;
 };
 
-export type CreateMessageThreadImages = {
-  __typename?: "Image";
-
-  id: string;
-
-  uri: string;
-};
-
-export type CreateMessageThreadSentBy = {
+export type CreateMessageThreadInvitees = {
   __typename?: "User";
 
   id: string;
@@ -771,12 +801,36 @@ export type GetMessagesByThreadIdVariables = {
 // export type GetMessagesByThreadIdQuery = {
 //   __typename?: "Query";
 
-//   getMessagesByThreadId: Maybe<
-//     (Maybe<GetMessagesByThreadIdGetMessagesByThreadId>)[]
-//   >;
+//   getMessagesByThreadId: Maybe<GetMessagesByThreadIdGetMessagesByThreadId>;
 // };
 
 export type GetMessagesByThreadIdGetMessagesByThreadId = {
+  __typename?: "MessageConnection";
+
+  pageInfo: GetMessagesByThreadIdPageInfo;
+
+  edges: GetMessagesByThreadIdEdges[];
+};
+
+export type GetMessagesByThreadIdPageInfo = {
+  __typename?: "PageInfo";
+
+  startCursor: string;
+
+  endCursor: string;
+
+  hasNextPage: boolean;
+
+  hasPreviousPage: boolean;
+};
+
+export type GetMessagesByThreadIdEdges = {
+  __typename?: "MessageEdge";
+
+  node: GetMessagesByThreadIdNode;
+};
+
+export type GetMessagesByThreadIdNode = {
   __typename?: "Message";
 
   id: string;
@@ -785,9 +839,19 @@ export type GetMessagesByThreadIdGetMessagesByThreadId = {
 
   message: string;
 
+  images: Maybe<(Maybe<GetMessagesByThreadIdImages>)[]>;
+
   user: GetMessagesByThreadIdUser;
 
   sentBy: GetMessagesByThreadIdSentBy;
+};
+
+export type GetMessagesByThreadIdImages = {
+  __typename?: "Image";
+
+  id: string;
+
+  uri: string;
 };
 
 export type GetMessagesByThreadIdUser = {
@@ -796,6 +860,8 @@ export type GetMessagesByThreadIdUser = {
   id: string;
 
   firstName: string;
+
+  lastName: string;
 };
 
 export type GetMessagesByThreadIdSentBy = {
@@ -804,6 +870,8 @@ export type GetMessagesByThreadIdSentBy = {
   id: string;
 
   firstName: string;
+
+  lastName: string;
 };
 
 export type GetMessageThreadsVariables = {};
@@ -908,44 +976,6 @@ export type GetMyMessagesFromUserSentBy = {
   firstName: string;
 
   lastName: string;
-};
-
-export type GetOnlyThreadsVariables = {};
-
-// export type GetOnlyThreadsQuery = {
-//   __typename?: "Query";
-
-//   getOnlyThreads: Maybe<(Maybe<GetOnlyThreadsGetOnlyThreads>)[]>;
-// };
-
-export type GetOnlyThreadsGetOnlyThreads = {
-  __typename?: "Thread";
-
-  id: Maybe<string>;
-
-  user: GetOnlyThreadsUser;
-
-  created_at: Maybe<DateTime>;
-
-  updated_at: Maybe<DateTime>;
-
-  invitees: GetOnlyThreadsInvitees[];
-};
-
-export type GetOnlyThreadsUser = {
-  __typename?: "User";
-
-  id: string;
-
-  firstName: string;
-};
-
-export type GetOnlyThreadsInvitees = {
-  __typename?: "User";
-
-  id: string;
-
-  firstName: string;
 };
 
 export type NewMessageVariables = {
@@ -1145,6 +1175,68 @@ export type UnFollowUserVariables = {
 
 //   unFollowUser: boolean;
 // };
+
+export type GetOnlyThreadsVariables = {
+  feedinput: FeedInput;
+};
+
+// export type GetOnlyThreadsQuery = {
+//   __typename?: "Query";
+
+//   getOnlyThreads: Maybe<GetOnlyThreadsGetOnlyThreads>;
+// };
+
+export type GetOnlyThreadsGetOnlyThreads = {
+  __typename?: "ThreadConnection";
+
+  edges: GetOnlyThreadsEdges[];
+
+  pageInfo: GetOnlyThreadsPageInfo;
+};
+
+export type GetOnlyThreadsEdges = {
+  __typename?: "ThreadEdge";
+
+  node: GetOnlyThreadsNode;
+};
+
+export type GetOnlyThreadsNode = {
+  __typename?: "Thread";
+
+  created_at: Maybe<DateTime>;
+
+  updated_at: Maybe<DateTime>;
+
+  last_message: Maybe<string>;
+
+  message_count: number;
+
+  id: Maybe<string>;
+
+  invitees: GetOnlyThreadsInvitees[];
+};
+
+export type GetOnlyThreadsInvitees = {
+  __typename?: "User";
+
+  id: string;
+
+  firstName: string;
+
+  lastName: string;
+};
+
+export type GetOnlyThreadsPageInfo = {
+  __typename?: "PageInfo";
+
+  startCursor: string;
+
+  endCursor: string;
+
+  hasNextPage: boolean;
+
+  hasPreviousPage: boolean;
+};
 
 export type GetAllMyImagesVariables = {};
 
@@ -1529,33 +1621,16 @@ export type CreateMessageThreadMutationVariables = {
 };
 
 export type CreateMessageThreadMutation = { __typename?: "Mutation" } & {
-  createMessageThread: { __typename?: "Thread" } & Pick<Thread, "id"> & {
+  createMessageThread: { __typename?: "Thread" } & Pick<
+    Thread,
+    "id" | "created_at" | "updated_at"
+  > & {
       invitees: Array<
         { __typename?: "User" } & Pick<User, "id" | "firstName" | "lastName">
       >;
-      messages: Maybe<
-        Array<
-          Maybe<
-            { __typename?: "Message" } & Pick<
-              Message,
-              "id" | "created_at" | "message"
-            > & {
-                images: Maybe<
-                  Array<
-                    Maybe<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>
-                  >
-                >;
-                sentBy: { __typename?: "User" } & Pick<
-                  User,
-                  "id" | "firstName" | "lastName"
-                >;
-                user: { __typename?: "User" } & Pick<
-                  User,
-                  "id" | "firstName" | "lastName"
-                >;
-              }
-          >
-        >
+      user: { __typename?: "User" } & Pick<
+        User,
+        "id" | "firstName" | "lastName"
       >;
     };
 };
@@ -1625,17 +1700,34 @@ export type GetMessagesByThreadIdQueryVariables = {
 
 export type GetMessagesByThreadIdQuery = { __typename?: "Query" } & {
   getMessagesByThreadId: Maybe<
-    Array<
-      Maybe<
-        { __typename?: "Message" } & Pick<
-          Message,
-          "id" | "created_at" | "message"
-        > & {
-            user: { __typename?: "User" } & Pick<User, "id" | "firstName">;
-            sentBy: { __typename?: "User" } & Pick<User, "id" | "firstName">;
-          }
-      >
-    >
+    { __typename?: "MessageConnection" } & {
+      pageInfo: { __typename?: "PageInfo" } & Pick<
+        PageInfo,
+        "startCursor" | "endCursor" | "hasNextPage" | "hasPreviousPage"
+      >;
+      edges: Array<
+        { __typename?: "MessageEdge" } & {
+          node: { __typename?: "Message" } & Pick<
+            Message,
+            "id" | "created_at" | "message"
+          > & {
+              images: Maybe<
+                Array<
+                  Maybe<{ __typename?: "Image" } & Pick<Image, "id" | "uri">>
+                >
+              >;
+              user: { __typename?: "User" } & Pick<
+                User,
+                "id" | "firstName" | "lastName"
+              >;
+              sentBy: { __typename?: "User" } & Pick<
+                User,
+                "id" | "firstName" | "lastName"
+              >;
+            };
+        }
+      >;
+    }
   >;
 };
 
@@ -1700,26 +1792,6 @@ export type GetMyMessagesFromUserQuery = { __typename?: "Query" } & {
             "id" | "firstName" | "lastName"
           >;
         }
-    >
-  >;
-};
-
-export type GetOnlyThreadsQueryVariables = {};
-
-export type GetOnlyThreadsQuery = { __typename?: "Query" } & {
-  getOnlyThreads: Maybe<
-    Array<
-      Maybe<
-        { __typename?: "Thread" } & Pick<
-          Thread,
-          "id" | "created_at" | "updated_at"
-        > & {
-            user: { __typename?: "User" } & Pick<User, "id" | "firstName">;
-            invitees: Array<
-              { __typename?: "User" } & Pick<User, "id" | "firstName">
-            >;
-          }
-      >
     >
   >;
 };
@@ -1837,6 +1909,40 @@ export type UnFollowUserMutation = { __typename?: "Mutation" } & Pick<
   Mutation,
   "unFollowUser"
 >;
+
+export type GetOnlyThreadsQueryVariables = {
+  feedinput: FeedInput;
+};
+
+export type GetOnlyThreadsQuery = { __typename?: "Query" } & {
+  getOnlyThreads: Maybe<
+    { __typename?: "ThreadConnection" } & {
+      edges: Array<
+        { __typename?: "ThreadEdge" } & {
+          node: { __typename?: "Thread" } & Pick<
+            Thread,
+            | "created_at"
+            | "updated_at"
+            | "last_message"
+            | "message_count"
+            | "id"
+          > & {
+              invitees: Array<
+                { __typename?: "User" } & Pick<
+                  User,
+                  "id" | "firstName" | "lastName"
+                >
+              >;
+            };
+        }
+      >;
+      pageInfo: { __typename?: "PageInfo" } & Pick<
+        PageInfo,
+        "startCursor" | "endCursor" | "hasNextPage" | "hasPreviousPage"
+      >;
+    }
+  >;
+};
 
 export type GetAllMyImagesQueryVariables = {};
 
@@ -2197,29 +2303,17 @@ export const CreateMessageThreadDocument = gql`
       invitees: $invitees
     ) {
       id
+      created_at
+      updated_at
       invitees {
         id
         firstName
         lastName
       }
-      messages {
+      user {
         id
-        created_at
-        message
-        images {
-          id
-          uri
-        }
-        sentBy {
-          id
-          firstName
-          lastName
-        }
-        user {
-          id
-          firstName
-          lastName
-        }
+        firstName
+        lastName
       }
     }
   }
@@ -2499,16 +2593,32 @@ export type GetListToCreateThreadQueryHookResult = ReturnType<
 export const GetMessagesByThreadIdDocument = gql`
   query GetMessagesByThreadId($input: GetMessagesByThreadIdInput!) {
     getMessagesByThreadId(input: $input) {
-      id
-      created_at
-      message
-      user {
-        id
-        firstName
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
       }
-      sentBy {
-        id
-        firstName
+      edges {
+        node {
+          id
+          created_at
+          message
+          images {
+            id
+            uri
+          }
+          user {
+            id
+            firstName
+            lastName
+          }
+          sentBy {
+            id
+            firstName
+            lastName
+          }
+        }
       }
     }
   }
@@ -2734,71 +2844,6 @@ export function useGetMyMessagesFromUserQuery(
 }
 export type GetMyMessagesFromUserQueryHookResult = ReturnType<
   typeof useGetMyMessagesFromUserQuery
->;
-export const GetOnlyThreadsDocument = gql`
-  query GetOnlyThreads {
-    getOnlyThreads {
-      id
-      user {
-        id
-        firstName
-      }
-      created_at
-      updated_at
-      invitees {
-        id
-        firstName
-      }
-    }
-  }
-`;
-export type GetOnlyThreadsComponentProps = Omit<
-  ReactApollo.QueryProps<GetOnlyThreadsQuery, GetOnlyThreadsQueryVariables>,
-  "query"
->;
-
-export const GetOnlyThreadsComponent = (
-  props: GetOnlyThreadsComponentProps
-) => (
-  <ReactApollo.Query<GetOnlyThreadsQuery, GetOnlyThreadsQueryVariables>
-    query={GetOnlyThreadsDocument}
-    {...props}
-  />
-);
-
-export type GetOnlyThreadsProps<TChildProps = {}> = Partial<
-  ReactApollo.DataProps<GetOnlyThreadsQuery, GetOnlyThreadsQueryVariables>
-> &
-  TChildProps;
-export function withGetOnlyThreads<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
-    GetOnlyThreadsQuery,
-    GetOnlyThreadsQueryVariables,
-    GetOnlyThreadsProps<TChildProps>
-  >
-) {
-  return ReactApollo.withQuery<
-    TProps,
-    GetOnlyThreadsQuery,
-    GetOnlyThreadsQueryVariables,
-    GetOnlyThreadsProps<TChildProps>
-  >(GetOnlyThreadsDocument, {
-    alias: "withGetOnlyThreads",
-    ...operationOptions
-  });
-}
-
-export function useGetOnlyThreadsQuery(
-  baseOptions?: ReactApolloHooks.QueryHookOptions<GetOnlyThreadsQueryVariables>
-) {
-  return ReactApolloHooks.useQuery<
-    GetOnlyThreadsQuery,
-    GetOnlyThreadsQueryVariables
-  >(GetOnlyThreadsDocument, baseOptions);
-}
-export type GetOnlyThreadsQueryHookResult = ReturnType<
-  typeof useGetOnlyThreadsQuery
 >;
 export const NewMessageDocument = gql`
   subscription NewMessage($message: String!, $sentTo: String!) {
@@ -3435,6 +3480,81 @@ export function useUnFollowUserMutation(
 }
 export type UnFollowUserMutationHookResult = ReturnType<
   typeof useUnFollowUserMutation
+>;
+export const GetOnlyThreadsDocument = gql`
+  query GetOnlyThreads($feedinput: FeedInput!) {
+    getOnlyThreads(feedinput: $feedinput) {
+      edges {
+        node {
+          created_at
+          updated_at
+          last_message
+          message_count
+          id
+          invitees {
+            id
+            firstName
+            lastName
+          }
+        }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+      }
+    }
+  }
+`;
+export type GetOnlyThreadsComponentProps = Omit<
+  ReactApollo.QueryProps<GetOnlyThreadsQuery, GetOnlyThreadsQueryVariables>,
+  "query"
+> &
+  ({ variables: GetOnlyThreadsQueryVariables; skip?: false } | { skip: true });
+
+export const GetOnlyThreadsComponent = (
+  props: GetOnlyThreadsComponentProps
+) => (
+  <ReactApollo.Query<GetOnlyThreadsQuery, GetOnlyThreadsQueryVariables>
+    query={GetOnlyThreadsDocument}
+    {...props}
+  />
+);
+
+export type GetOnlyThreadsProps<TChildProps = {}> = Partial<
+  ReactApollo.DataProps<GetOnlyThreadsQuery, GetOnlyThreadsQueryVariables>
+> &
+  TChildProps;
+export function withGetOnlyThreads<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    GetOnlyThreadsQuery,
+    GetOnlyThreadsQueryVariables,
+    GetOnlyThreadsProps<TChildProps>
+  >
+) {
+  return ReactApollo.withQuery<
+    TProps,
+    GetOnlyThreadsQuery,
+    GetOnlyThreadsQueryVariables,
+    GetOnlyThreadsProps<TChildProps>
+  >(GetOnlyThreadsDocument, {
+    alias: "withGetOnlyThreads",
+    ...operationOptions
+  });
+}
+
+export function useGetOnlyThreadsQuery(
+  baseOptions?: ReactApolloHooks.QueryHookOptions<GetOnlyThreadsQueryVariables>
+) {
+  return ReactApolloHooks.useQuery<
+    GetOnlyThreadsQuery,
+    GetOnlyThreadsQueryVariables
+  >(GetOnlyThreadsDocument, baseOptions);
+}
+export type GetOnlyThreadsQueryHookResult = ReturnType<
+  typeof useGetOnlyThreadsQuery
 >;
 export const GetAllMyImagesDocument = gql`
   query GetAllMyImages {

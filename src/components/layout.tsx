@@ -9,18 +9,15 @@ import {
   NavLink
 } from "./styled-rebass";
 import LayoutFooter from "./layout-footer";
-import LayoutHeader from "./layout-header";
-import { pages } from "./layout-header";
-import MenuButton from "./menu-button";
+import HeaderDropdown, { pages } from "./header-dropdown";
 
 interface ILayoutProps {
   title?: string;
 }
 
-const { log } = console;
-
 export interface ILayoutState {
   sidebarStatus: string;
+  showMessagingAddressBook: boolean;
 }
 
 class Layout extends React.Component<ILayoutProps, ILayoutState> {
@@ -30,9 +27,20 @@ class Layout extends React.Component<ILayoutProps, ILayoutState> {
     this.toggleSidebarOpenOrClosed = this.toggleSidebarOpenOrClosed.bind(this);
     this.handleCloseSideBar = this.handleCloseSideBar.bind(this);
     this.handleClickOutsideSidebar = this.handleClickOutsideSidebar.bind(this);
+    this.handleCreateNewMessageThread = this.handleCreateNewMessageThread.bind(
+      this
+    );
+    this.handleCancelNewMessageThread = this.handleCancelNewMessageThread.bind(
+      this
+    );
+
+    this.handleLoadNewThreadCreated = this.handleLoadNewThreadCreated.bind(
+      this
+    );
 
     this.state = {
-      sidebarStatus: "closed"
+      sidebarStatus: "closed",
+      showMessagingAddressBook: false
     };
 
     this.sidebarContainerRef = React.createRef();
@@ -65,9 +73,6 @@ class Layout extends React.Component<ILayoutProps, ILayoutState> {
       // @ts-ignore
       this.sidebarContainerRef.contains(event.target)
     ) {
-      // @ts-ignore
-      log("WHY", this.sidebarContainerRef.contains(event.target));
-      log(this.sidebarContainerRef);
       return;
     }
     if (
@@ -83,6 +88,30 @@ class Layout extends React.Component<ILayoutProps, ILayoutState> {
     return;
   }
 
+  handleCreateNewMessageThread() {
+    this.setState(prevState => {
+      return {
+        showMessagingAddressBook: !prevState.showMessagingAddressBook
+      };
+    });
+  }
+
+  handleCancelNewMessageThread() {
+    this.setState(prevState => {
+      return {
+        showMessagingAddressBook: false
+      };
+    });
+  }
+
+  handleLoadNewThreadCreated({ threadId }: any) {
+    this.setState(prevState => {
+      return {
+        showMessagingAddressBook: false
+      };
+    });
+  }
+
   componentDidMount() {
     // @ts-ignore
     document.addEventListener("mousedown", this.handleClickOutsideSidebar);
@@ -92,8 +121,21 @@ class Layout extends React.Component<ILayoutProps, ILayoutState> {
     // @ts-ignore
     document.removeEventListener("mousedown", this.handleClickOutsideSidebar);
   }
+
   render() {
-    const { children } = this.props;
+    // const { children } = this.props;
+
+    const children = React.Children.map(this.props.children, (child: any) => {
+      let newElement = React.cloneElement(child, {
+        showMessagingAddressBook: this.state.showMessagingAddressBook,
+        handleCreateNewMessageThread: this.handleCreateNewMessageThread,
+        handleCancelNewMessageThread: this.handleCancelNewMessageThread,
+        handleLoadNewThreadCreated: this.handleLoadNewThreadCreated
+      });
+
+      return newElement;
+    });
+
     return (
       <AbFlex
         id="layout"
@@ -129,24 +171,30 @@ class Layout extends React.Component<ILayoutProps, ILayoutState> {
           <title>{title}</title>
           <meta charSet="utf-8" />
           <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-        </Head> */}
+        </Head>
         <LayoutHeader
           toggleSidebarOpenOrClosed={this.toggleSidebarOpenOrClosed}
+        /> */}
+        <HeaderDropdown
+          handleCreateNewMessageThread={this.handleCreateNewMessageThread}
+          toggleSidebarOpenOrClosed={this.toggleSidebarOpenOrClosed}
+          handleCancelNewMessageThread={this.handleCancelNewMessageThread}
+          showMessagingAddressBook={this.state.showMessagingAddressBook}
         />
-        <Location>
+        {/* <Location>
           {({ location }: any) => {
-            return (
-              <Flex flex="1 1 auto" width={[1, 1, 1, "960px"]}>
-                {children}
-              </Flex>
-            );
+            return ( */}
+        <Flex flex="1 1 auto" width={[1, 1, 1, "960px"]}>
+          {children}
+        </Flex>
+        {/* );
           }}
-        </Location>
+        </Location> */}
         <Location>
           {({ location }: any) => {
             if (location.pathname === "/messages") {
-              // return "";
-              return <LayoutFooter />;
+              return "";
+              // return <LayoutFooter />;
             }
 
             if (location.pathname !== "/messages") {

@@ -2,8 +2,6 @@ import React from "react";
 import { navigate } from "@reach/router";
 
 import { Flex, Heading, Text } from "../components/styled-rebass";
-import GlobalFeed from "../components/global-feed";
-import MyFeed from "../components/my-feed";
 import { MeComponent } from "../generated/graphql";
 import { IPageProps } from "./types";
 import TabViewer from "../components/tab-viewer";

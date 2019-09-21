@@ -1,10 +1,9 @@
-import React, { Component } from "react";
+import React from "react";
 import { Image } from "rebass";
 import Icon from "react-geomicons";
+import { FieldArray } from "formik";
 
-import { AbFlex, Button, Card, Flex, MaxFlex, Text } from "./styled-rebass";
-import { FieldArray, Field } from "formik";
-// import { InputField } from "./fields/input-field";
+import { AbFlex, Button, Card, Flex, Text } from "./styled-rebass";
 import { PosedFlash } from "./posed-components";
 
 const { log } = console;

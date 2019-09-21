@@ -4,7 +4,6 @@ import { Heading } from "./styled-rebass";
 import { MyFollowingPostsComponent } from "../generated/graphql";
 import { FOLLOWING_POSTS } from "./FollowingPosts";
 import FollowingPosts from "./following-posts";
-import { updateFunctionMyFollows } from "./update-my-follows";
 
 const Feed = ({ me }: any) => (
   <>

@@ -1,13 +1,6 @@
 import React from "react";
 
-import {
-  Button,
-  Flex,
-  Icon,
-  Text,
-  FlexShadow,
-  FlexUserProfileWrap
-} from "./styled-rebass";
+import { Button, Flex, Icon, Text, FlexUserProfileWrap } from "./styled-rebass";
 import { IUserProfileImageCards } from "./types";
 
 function UserProfileImageCards({

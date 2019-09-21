@@ -65,7 +65,9 @@ export const FollowingList = ({ data, mounted }: IFollowingListProps) => (
                   minHeight: "250px",
                   maxHeight: "250px",
                   overflow: "hidden",
-                  backgroundImage: `url(${post.images[0].uri})`,
+                  backgroundImage: post.images[0]
+                    ? `url(${post.images[0].uri})`
+                    : " ",
                   backgroundPosition: "center",
                   backgroundSize: "cover",
                   backgroundRepeat: "no-repeat"
