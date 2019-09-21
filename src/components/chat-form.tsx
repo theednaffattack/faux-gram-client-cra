@@ -340,51 +340,52 @@ class ChatForm extends React.Component<IChatFormProps, IChatFormState> {
       threadId,
       selectedThreadId,
       newThreadInvitees,
-      newThreadDisabled,
-
-      handleSetLastMessenger,
-      handleSetLastMessage
+      newThreadDisabled
     } = this.props;
     return (
       <>
         {selectedThreadId ? (
           <AddMessageToThread
+            chatEmoji={chatEmoji}
+            disabled={disabled}
+            emojiPickerVisible={emojiPickerVisible}
+            files={this.state.files}
+            fileInputRef={this.fileInputRef}
+            getS3Signature={this.getS3Signature}
+            handleClearFilePreview={this.handleClearFilePreview}
+            handleEngageMicrophoneClick={handleEngageMicrophoneClick}
+            handleOpenEmojiMenuClick={handleOpenEmojiMenuClick}
             handleRemoveIndividualImagePreview={
               this.handleRemoveIndividualImagePreview
             }
-            handleClearFilePreview={this.handleClearFilePreview}
-            disabled={disabled}
-            files={this.state.files}
-            openFileDialog={this.openFileDialog}
-            fileInputRef={this.fileInputRef}
-            onFilesAdded={this.onFilesAdded}
             makeBlobUrls={this.makeBlobUrls}
-            chatEmoji={chatEmoji}
-            emojiPickerVisible={emojiPickerVisible}
-            handleEngageMicrophoneClick={handleEngageMicrophoneClick}
-            handleOpenEmojiMenuClick={handleOpenEmojiMenuClick}
+            newThreadInvitees={newThreadInvitees}
+            onFilesAdded={this.onFilesAdded}
+            openFileDialog={this.openFileDialog}
             sentTo={sentTo}
             threadId={threadId}
-            newThreadInvitees={newThreadInvitees}
-            getS3Signature={this.getS3Signature}
           />
         ) : (
           <CreateThreadAndAddMessageToThread
-            handleClearFilePreview={this.handleClearFilePreview}
-            newThreadDisabled={newThreadDisabled}
-            files={this.state.files}
-            handleThreadSelection={handleThreadSelection}
-            openFileDialog={this.openFileDialog}
-            fileInputRef={this.fileInputRef}
-            onFilesAdded={this.onFilesAdded}
-            makeBlobUrls={this.makeBlobUrls}
             chatEmoji={chatEmoji}
             emojiPickerVisible={emojiPickerVisible}
+            fileInputRef={this.fileInputRef}
+            files={this.state.files}
+            getS3Signature={this.getS3Signature}
+            handleClearFilePreview={this.handleClearFilePreview}
             handleEngageMicrophoneClick={handleEngageMicrophoneClick}
             handleOpenEmojiMenuClick={handleOpenEmojiMenuClick}
+            handleRemoveIndividualImagePreview={
+              this.handleRemoveIndividualImagePreview
+            }
+            handleThreadSelection={handleThreadSelection}
+            makeBlobUrls={this.makeBlobUrls}
+            newThreadDisabled={newThreadDisabled}
+            newThreadInvitees={newThreadInvitees}
+            onFilesAdded={this.onFilesAdded}
+            openFileDialog={this.openFileDialog}
             sentTo={sentTo}
             threadId={threadId}
-            newThreadInvitees={newThreadInvitees}
           />
         )}
       </>
