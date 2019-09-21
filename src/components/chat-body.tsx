@@ -37,7 +37,8 @@ const ChatBody = ({
   handleUploadFileClick,
   handleChatFieldChange,
   newThreadDisabled,
-  messagesEndRef
+  messagesEndRef,
+  handleCancelNewMessageThread
 }: IChatBodyProps) => {
   // const getSentby =
   //   selectedThreadIndex &&
@@ -170,8 +171,13 @@ const ChatBody = ({
               {showMessagingAddressBook && (
                 <AddressBookMutation
                   handleAddInviteeToThread={handleAddInviteeToThread}
-                  dataMessageThreads={dataMessageThreads}
-                  selectedThreadIndex={selectedThreadIndex}
+                  handleRemoveInviteeToThread={handleRemoveInviteeToThread}
+                  handleStartNewThread={() => console.log}
+                  handleLocalCancelNewThread={() => console.log}
+                  newThreadInvitees={[]}
+                  handleCancelNewMessageThread={() => console.log}
+                  // dataMessageThreads={dataMessageThreads}
+                  // selectedThreadIndex={selectedThreadIndex}
                   // buttonThing={true}
                 />
               )}
@@ -181,7 +187,6 @@ const ChatBody = ({
         {chatEmoji}
         <Flex
           alignSelf="flex-end"
-          border="lime"
           style={{
             color: "black",
             float: "left",
