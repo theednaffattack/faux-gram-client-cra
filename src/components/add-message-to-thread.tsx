@@ -169,7 +169,7 @@ function AddMessageToThread({
               };
 
               return (
-                <Flex width={[1, 1, 1]} border="2px pink dashed">
+                <Flex width={[1, 1, 1]} borderTop="2px #eee solid">
                   <Flex
                     width={[1, 1, 1]}
                     mr="auto"
