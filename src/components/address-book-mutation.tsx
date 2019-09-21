@@ -1,13 +1,17 @@
 import React from "react";
 
+import { Button, Flex } from "./styled-rebass";
 import { GetListToCreateThreadComponent } from "../generated/graphql";
 import { ChooseThreadUser } from "./choose-thread-user";
 import { IAddressBookMutationProps } from "./types";
 
 function AddressBookMutation({
-  dataMessageThreads,
   handleAddInviteeToThread,
-  selectedThreadIndex
+  handleRemoveInviteeToThread,
+  newThreadInvitees,
+  handleLocalCancelNewThread,
+
+  handleStartNewThread
 }: IAddressBookMutationProps) {
   return (
     <>
@@ -25,27 +29,48 @@ function AddressBookMutation({
 
           if (dataCreateThread) {
             return (
-              <div>
+              <Flex flexDirection="column" width={[1]}>
                 <ChooseThreadUser
                   handleAddInviteeToThread={handleAddInviteeToThread}
+                  handleRemoveInviteeToThread={handleRemoveInviteeToThread}
                   dataCreateThread={
                     dataCreateThread.getListToCreateThread &&
                     dataCreateThread.getListToCreateThread.thoseICanMessage
                   }
+                  newThreadInvitees={newThreadInvitees}
                   loadingCreateThread={loadingCreateThread}
                   errorCreateThread={errorCreateThread}
-                  messages={
-                    dataMessageThreads &&
-                    selectedThreadIndex &&
-                    dataMessageThreads.getMessageThreads &&
-                    dataMessageThreads.getMessageThreads[selectedThreadIndex]
-                      ? dataMessageThreads.getMessageThreads[
-                          selectedThreadIndex
-                        ].messages
-                      : []
-                  }
+                  // messages={
+                  //   dataMessageThreads &&
+                  //   selectedThreadIndex &&
+                  //   dataMessageThreads.getMessageThreads &&
+                  //   dataMessageThreads.getMessageThreads[selectedThreadIndex]
+                  //     ? dataMessageThreads.getMessageThreads[
+                  //         selectedThreadIndex
+                  //       ].messages
+                  //     : []
+                  // }
                 />
-              </div>
+
+                <Button
+                  type="button"
+                  onClick={handleStartNewThread}
+                  bg={newThreadInvitees.length < 1 ? "#eee" : "blue"}
+                  disabled={newThreadInvitees.length < 1 ? true : false}
+                  color={newThreadInvitees.length < 1 ? "text" : "white"}
+                >
+                  start thread
+                </Button>
+                <Button
+                  type="button"
+                  bg="crimson"
+                  onClick={() => {
+                    handleLocalCancelNewThread();
+                  }}
+                >
+                  cancel
+                </Button>
+              </Flex>
             );
           } else {
             return <div>some weirdness</div>;
