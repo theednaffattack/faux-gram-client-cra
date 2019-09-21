@@ -1,7 +1,6 @@
 import React from "react";
 import { Formik, Field, FieldArray } from "formik";
 import * as Yup from "yup";
-// import { Image } from "rebass";
 
 import { InputField } from "./fields/input-field";
 import {
@@ -14,14 +13,9 @@ import {
   Text,
   AbFlex
 } from "./styled-rebass";
-import Thumb from "./thumb";
-import DragAndDrop from "./drag-and-drop";
-import { Label } from "./styled-rebass";
-import DropZone, { inputStyles } from "./dropzone";
-import { SignS3Component } from "../generated/graphql";
-import DropZoneContainer from "./dropzone-container";
-import ImagePreview from "./image-preview";
-import { Container, PosedFlash } from "./posed-components";
+
+import { inputStyles } from "./dropzone";
+import { PosedFlash } from "./posed-components";
 
 const { log } = console;
 
@@ -461,15 +455,3 @@ function CreatePostForm({
 }
 
 export default CreatePostForm;
-
-{
-  /* <DragAndDrop handleDrop={handleDrop}>
-                <Thumb file={values.pic} />
-
-                {setPreviewImageRef ? (
-                  <Image width="100%" ref={setPreviewImageRef} alt="" src="" />
-                ) : (
-                  ""
-                )}
-              </DragAndDrop> */
-}
