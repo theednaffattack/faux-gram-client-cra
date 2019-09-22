@@ -1,11 +1,12 @@
 import React from "react";
-import { Formik, Field } from "formik";
+import { Formik, Field, Form, FieldArray } from "formik";
+import Icon from "react-geomicons";
 
 import { Picker } from "emoji-mart";
 import "./emoji-mart.css";
 
 import { AddMessageToThreadComponent } from "../generated/graphql";
-import { Flex, AbFlex, MinButton } from "./styled-rebass";
+import { Flex, AbFlex, Button, Card, Image, MinButton } from "./styled-rebass";
 // import ImagePreview from "./messages-image-preview";
 import ImagePreview from "./messages-image-preview_v2";
 import { ChatField } from "../components/fields/chat-input-field";
@@ -15,6 +16,8 @@ import SmileyIcon from "./custom-icon";
 export const inputStyles = {
   display: "none"
 };
+
+const { log } = console;
 
 export interface IAddMessageToThreadProps {
   chatEmoji: string;
@@ -76,9 +79,6 @@ function AddMessageToThread({
 
               if (files && files.length > 0) {
                 const imagesAreUploadedToS3 = await getS3Signature();
-
-                console.log("imagesAreUploadedToS3".toUpperCase());
-                console.log({ imagesAreUploadedToS3 });
 
                 // let preppedImages = imagesAreUploadedToS3.map(
                 //   (image: any) => image.url
@@ -151,7 +151,7 @@ function AddMessageToThread({
               threadId,
               sentTo,
               message: "",
-              images: [...files]
+              images: files
             }}
           >
             {({
@@ -170,28 +170,168 @@ function AddMessageToThread({
 
               return (
                 <Flex width={[1, 1, 1]} borderTop="2px #eee solid">
-                  <Flex
-                    width={[1, 1, 1]}
-                    mr="auto"
-                    // alignItems="center"
-                    flexDirection="column"
-                    style={{ position: "relative" }}
+                  <Form
+                    // action=""
+                    // onSubmit={handleSubmit}
+                    style={{ width: "100%" }}
                   >
-                    <ImagePreview
-                      values={values}
-                      resetForm={resetForm}
-                      handleClearFilePreview={handleClearFilePreview}
-                      handleRemoveIndividualImagePreview={
-                        handleRemoveIndividualImagePreview
-                      }
-                      imageFiles={files}
-                    />
-                    <Flex width={[1, 1, 1]}>
-                      <form
-                        action=""
-                        onSubmit={handleSubmit}
-                        style={{ width: "100%" }}
-                      >
+                    <Flex
+                      width={[1, 1, 1]}
+                      mr="auto"
+                      // alignItems="center"
+                      flexDirection="column"
+                      style={{ position: "relative" }}
+                    >
+                      <FieldArray
+                        name="images"
+                        render={arrayHelpers => (
+                          <>
+                            <Flex flexDirection="column" width={1}>
+                              {values.images && values.images.length > 0 ? (
+                                <Button
+                                  width={1}
+                                  color="text"
+                                  id="remove-all"
+                                  className="btn-remove"
+                                  bg="blue"
+                                  // borderRadius="50%"
+                                  fontSize="1.2em"
+                                  type="button"
+                                  onClick={event => {
+                                    event.stopPropagation();
+
+                                    values.images.forEach(
+                                      (image: any, index: number) =>
+                                        arrayHelpers.remove(0)
+                                    );
+                                  }}
+                                  style={{
+                                    cursor: "pointer"
+                                  }}
+                                >
+                                  <span role="img">
+                                    <Icon name="close" fill="crimson" />
+                                  </span>
+                                  Close All
+                                </Button>
+                              ) : (
+                                ""
+                              )}
+                              <Flex width={1} flexWrap="wrap">
+                                {values.images && values.images.length > 0
+                                  ? values.images.map(
+                                      (image: any, index: number) => (
+                                        <Flex
+                                          key={index}
+                                          width={["200px"]}
+                                          flexDirection="column"
+                                          style={{
+                                            position: "relative"
+                                          }}
+                                        >
+                                          <AbFlex
+                                            position="absolute"
+                                            top={0}
+                                            right={0}
+                                          >
+                                            <Button
+                                              width={0.18}
+                                              id={`remove-${index}`}
+                                              className="btn-remove"
+                                              bg="transparent"
+                                              borderRadius="50%"
+                                              fontSize="2em"
+                                              type="button"
+                                              onClick={event => {
+                                                event.stopPropagation();
+
+                                                handleRemoveIndividualImagePreview(
+                                                  index
+                                                );
+                                                arrayHelpers.remove(index);
+                                              }} // remove a friend from the list
+                                              style={{
+                                                cursor: "pointer"
+                                              }}
+                                            >
+                                              <span role="img">
+                                                <Icon
+                                                  name="close"
+                                                  fill="rebeccapurple"
+                                                />
+                                              </span>
+                                            </Button>
+                                          </AbFlex>
+
+                                          <Card
+                                            fontSize={6}
+                                            fontWeight="bold"
+                                            width={[1, 1, 1]}
+                                            // backgroundImage={`url(${files[index].blobUrl})`}
+                                            // p={5}
+                                            my={5}
+                                            // bg="#f6f6ff"
+                                            bg="blue"
+                                            borderRadius={8}
+                                            boxShadow="0 2px 16px rgba(0, 0, 0, 0.25)"
+                                          >
+                                            <Flex
+                                              flexDirection="column"
+                                              width={[1, 1, 1]}
+                                            >
+                                              <Image
+                                                // height="auto"
+                                                width={["200px"]}
+                                                src={image.blobUrl}
+                                                style={{
+                                                  maxHeight: "175px"
+                                                }}
+                                              />
+                                            </Flex>
+                                          </Card>
+                                        </Flex>
+                                      )
+                                    )
+                                  : ""}
+                              </Flex>
+                            </Flex>
+
+                            <Field id="images" name="images">
+                              {({ field, form }: any) => {
+                                return (
+                                  <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    // onChange={onFilesAdded}
+
+                                    onChange={event => {
+                                      if (
+                                        event &&
+                                        event.currentTarget &&
+                                        event.currentTarget.files
+                                      ) {
+                                        let seeSomeFiles = onFilesAdded(event);
+
+                                        setFieldValue(
+                                          "images",
+                                          values.images.concat(seeSomeFiles)
+                                        );
+                                      } else {
+                                        return;
+                                      }
+                                    }}
+                                    style={inputStyles}
+                                    disabled={disabled}
+                                    multiple
+                                  />
+                                );
+                              }}
+                            </Field>
+                          </>
+                        )}
+                      />
+
+                      <Flex width={[1, 1, 1]}>
                         <button type="submit" style={{ display: "none" }} />
                         <Field
                           id="message"
@@ -206,22 +346,8 @@ function AddMessageToThread({
                           disabled={disabled}
                           component={ChatField}
                           onChange={(e: any) => {
-                            // alert(e);
                             myChange(e);
-                            // handleChatFieldChange(values.message);
-                            // setFormValues({
-                            //   ...formValues,
-                            //   [fieldName]: targetEl.value
-                            // });
-                            // return handleChange(e);
                           }}
-                          // onChange={e => {
-                          //   myChange(e);
-                          //   return handleChange(e);
-                          // }}
-
-                          // onChange={onChange}
-                          // InputProps={{ onChange: onChange }}
                         />
 
                         <Field
@@ -251,71 +377,72 @@ function AddMessageToThread({
                           fontSize="1.1em"
                           component={ChatField}
                         />
-                      </form>
-
-                      <Flex style={{ position: "relative" }}>
-                        <AbFlex
-                          width={1}
-                          position="absolute"
-                          right={70}
-                          bottom={"100%"}
+                        <Flex
+                          style={{ position: "relative" }}
+                          flexWrap="nowrap"
                         >
-                          {emojiPickerVisible && isBrowser ? (
-                            <Picker
-                              onSelect={
-                                emoji =>
-                                  setFieldValue(
-                                    "message",
-                                    // @ts-ignore
-                                    values.message + emoji.native
-                                  )
-                                // handleSelectEmojiClick({ item: emoji })
-                              }
-                              title="Pick your emoji..."
+                          <AbFlex
+                            width={1}
+                            position="absolute"
+                            right={70}
+                            bottom={"100%"}
+                          >
+                            {emojiPickerVisible && isBrowser ? (
+                              <Picker
+                                onSelect={
+                                  emoji =>
+                                    setFieldValue(
+                                      "message",
+                                      // @ts-ignore
+                                      values.message + emoji.native
+                                    )
+                                  // handleSelectEmojiClick({ item: emoji })
+                                }
+                                title="Pick your emoji..."
+                              />
+                            ) : (
+                              ""
+                            )}
+                          </AbFlex>
+                          <MinButton
+                            onClick={openFileDialog}
+                            bg="transparent"
+                            minHeight="35px"
+                            width="3.5em"
+                            style={{ padding: 0 }}
+                            // mb={2}
+                          >
+                            {/* <input
+                              ref={fileInputRef}
+                              type="file"
+                              onChange={onFilesAdded}
+                              style={inputStyles}
+                              disabled={disabled}
+                              multiple
+                            /> */}
+                            <IconAddFile
+                              fill="#b2b2d8"
+                              size="1.4em"
+                              name="add-file"
+                              width="1.4em"
                             />
-                          ) : (
-                            ""
-                          )}
-                        </AbFlex>
-                        <MinButton
-                          onClick={openFileDialog}
-                          bg="transparent"
-                          minHeight="35px"
-                          width="3.5em"
-                          style={{ padding: 0 }}
-                          // mb={2}
-                        >
-                          <input
-                            ref={fileInputRef}
-                            type="file"
-                            onChange={onFilesAdded}
-                            style={inputStyles}
-                            disabled={disabled}
-                            multiple
-                          />
-                          <IconAddFile
-                            fill="#b2b2d8"
-                            size="1.4em"
-                            name="add-file"
-                            width="1.4em"
-                          />
-                        </MinButton>
-                        <MinButton
-                          onClick={disabled ? null : handleOpenEmojiMenuClick}
-                          bg="transparent"
-                          minHeight="35px"
-                          ml={[2, 2, 2]}
-                          // mb={2}
-                          width="3.5em"
-                          style={{ padding: 0, position: "relative" }}
-                        >
-                          <SmileyIcon
-                            name="smiley"
-                            width="1.6em"
-                            fill="#b2b2d8"
-                          />
-                        </MinButton>
-                        {/* <MinButton
+                          </MinButton>
+                          <MinButton
+                            onClick={disabled ? null : handleOpenEmojiMenuClick}
+                            bg="transparent"
+                            minHeight="35px"
+                            ml={[2, 2, 2]}
+                            // mb={2}
+                            width="3.5em"
+                            style={{ padding: 0, position: "relative" }}
+                          >
+                            <SmileyIcon
+                              name="smiley"
+                              width="1.6em"
+                              fill="#b2b2d8"
+                            />
+                          </MinButton>
+                          {/* <MinButton
                           onClick={
                             disabled ? null : handleEngageMicrophoneClick
                           }
@@ -329,9 +456,10 @@ function AddMessageToThread({
                         >
                           <IconMic width="1.4em" fill="#b2b2d8" />
                         </MinButton> */}
+                        </Flex>
                       </Flex>
                     </Flex>
-                  </Flex>
+                  </Form>
                 </Flex>
               );
             }}
