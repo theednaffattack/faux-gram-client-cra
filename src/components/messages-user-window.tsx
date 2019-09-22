@@ -197,12 +197,7 @@ class MessagesWindow extends React.Component<
                   ? items[index].node.images
                   : null
               });
-              console.log("CHECK EACH ITEM", {
-                index,
-                height,
-                text: items[index].node.message,
-                messagId: items[index].node.id
-              });
+
               return height;
             }}
             width={width}
