@@ -30,19 +30,6 @@ interface IShowImagesProps extends ImageProps {
   images: CustomImage[];
 }
 
-// function ShowImages({ images }: IShowImagesProps) {
-//   return images.map((image, index: number) => {
-//     return (
-//       <Image
-//         width={["100%", "50%"]}
-//         key={index}
-//         src={image.uri}
-//         style={{ maxHeight: "131px", maxWidth: "175px" }}
-//       />
-//     );
-//   });
-// }
-
 /**
  * This function takes an array of images.
  *
@@ -55,14 +42,14 @@ const ShowAllImages = ({ images }: any) => {
 
   const FirstThreeImages = images
     .slice(0, size)
-    .map((image: any, index: number) => (
+    .map((image: any, index: number, imagesArr: any[]) => (
       <div
         className="message-image"
         key={`customImage-${index}`}
         style={{
           overflow: "hidden",
           minHeight: "131px",
-          width: "175px",
+          width: imagesArr.length > 1 ? "175px" : "350px",
           // minWidth: "175px",
           // maxWidth: "175px",
           // borderRadius: "0.5px",
@@ -73,30 +60,6 @@ const ShowAllImages = ({ images }: any) => {
     ));
 
   return FirstThreeImages;
-  // return images.map((image: CustomImage, index: number, imagesArr: any[]) => {
-  //   return (
-  //     <div
-  //       key={`${index}-customImage`}
-  //       style={{
-  //         overflow: "hidden",
-  //         minHeight: "131px",
-  //         width: "175px",
-  //         // minWidth: "175px",
-  //         // maxWidth: "175px",
-  //         // borderRadius: "0.5px",
-  //         backgroundImage: `url("${image.uri}")`,
-  //         backgroundSize: "cover"
-  //       }}
-  //     >
-  //       {/* <Image
-  //         src={image.uri}
-  //         key={`${index}-customImage`}
-  //         // width={[1, 1, 1, 1]}
-  //         style={{ minHeight: "100%", objectFit: "cover" }}
-  //       /> */}
-  //     </div>
-  //   );
-  // });
 };
 
 export function MessageBox({
@@ -204,7 +167,7 @@ export function MessageBox({
           </Flex>
         ) : (
           <Flex bg="#eee" flexDirection="column" p={0} m={0}>
-            <Flex flexWrap="wrap" width={1}>
+            <Flex flexWrap="wrap" width={1} justifyContent="center">
               {images && images.length > 0 ? (
                 <ShowAllImages images={images} />
               ) : (
