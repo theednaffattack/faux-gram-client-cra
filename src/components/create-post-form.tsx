@@ -31,12 +31,6 @@ const CreatePostSchema = Yup.object().shape({
   images: Yup.array().required("Required")
 });
 
-// text: "",
-// title: "",
-// // pic: null,
-// images: [...imageFiles],
-// user: me
-
 export interface ICreatePostFormProps {
   //   handleFormUpload: any;
   files: any[];
@@ -59,16 +53,6 @@ export interface ICreatePostFormProps {
 
   fileListToArray: any;
 
-  // files={this.state.files}
-  // handlePost={this.handlePost}
-  // me={this.props.me}
-  // fileInputKey={this.state.fileInputKey}
-  // mutationSignS3={signS3}
-  // dataSignS3={dataSignS3}
-  // errorSignS3={errorSignS3}
-  // loadingSignS3={loadingSignS3}
-  // disabled={this.state.disabled}
-  // handleClearFilePreview={this.handleClearFilePreview}
   openFileDialog: any;
   onDragOver: any;
   onDragLeave: any;
@@ -117,8 +101,6 @@ function CreatePostForm({
   errorCreatePost,
   loadingCreatePost
 }: ICreatePostFormProps) {
-  const imageFiles =
-    files.length > 0 ? files.map(imageFile => imageFile.name) : [];
   return (
     <Formik
       validateOnBlur={false}
@@ -128,44 +110,21 @@ function CreatePostForm({
         text: "",
         title: "",
         // pic: null,
-        images: [...imageFiles],
+        images: [],
         user: me
       }}
       validationSchema={CreatePostSchema}
     >
-      {({ errors, handleSubmit, setFieldValue, touched, values }) => {
-        // setFieldValue("images", imageFiles);
-
+      {({
+        errors,
+        handleSubmit,
+        setFieldValue,
+        touched,
+        values,
+        resetForm
+      }) => {
         return (
           <Flex width={1} flexDirection="column" alignItems="center">
-            {/* <Flex minHeight="300px" width="450px">
-              <DropZone
-                // openFileDialog={this.openFileDialog}
-                // onDragOver={this.onDragOver}
-                // onDragLeave={this.onDragLeave}
-                // onDrop={this.onDrop}
-                // fileInputRef={this.fileInputRef}
-                // onFilesAdded={this.onFilesAdded}
-                // highlight={this.state.highlight}
-                // getSignature={this.getSignature}
-
-                // mutationSignS3={mutationSignS3}
-                // dataSignS3={dataSignS3}
-                // errorSignS3={errorSignS3}
-                // loadingSignS3={loadingSignS3}
-                disabled={disabled}
-                files={files}
-                handleClearFilePreview={handleClearFilePreview}
-                openFileDialog={openFileDialog}
-                onDragOver={onDragOver}
-                onDragLeave={onDragLeave}
-                onDrop={onDrop}
-                fileInputRef={fileInputRef}
-                onFilesAdded={onFilesAdded}
-                highlight={highlight}
-                getSignature={getSignature}
-              />
-            </Flex> */}
             <form onSubmit={handleSubmit} style={{ width: "100%" }}>
               <Flex flexDirection="column" width={[1, 1, 1]}>
                 <Flex
@@ -192,172 +151,170 @@ function CreatePostForm({
                           cursor: disabled ? "default" : "pointer"
                         }}
                         onClick={event => {
-                          const { target, currentTarget } = event;
+                          // const { target, currentTarget } = event;
                           // event.preventDefault();
                           openFileDialog();
-                          console.log({ currentTarget, target });
-                          // console.log("opening the file dialog".toUpperCase());
-                          // console.log({ event });
-                          // console.log({ target: event.target });
                         }}
                         onDragOver={onDragOver}
                         onDragLeave={onDragLeave}
                         onDrop={onDrop}
                       >
-                        <label>
-                          <input
-                            onChange={onFilesAdded}
-                            style={inputStyles}
-                            multiple
-                            ref={fileInputRef}
-                            type="file"
-                          />
-                        </label>
-                        <Flex width={1} flexWrap="wrap">
-                          {imageFiles &&
-                          imageFiles.length > 0 &&
-                          values.images.length < imageFiles.length
-                            ? imageFiles.map(imageFile =>
-                                arrayHelpers.push(imageFile)
-                              )
-                            : ""}
-                          {values.images && values.images.length > 0
-                            ? values.images.map((image, index) => (
-                                <Flex
-                                  key={index}
-                                  width={1 / 2}
-                                  flexDirection="column"
-                                  flex="1 1 auto"
-                                  style={{
-                                    position: "relative"
-                                  }}
-                                >
-                                  <AbFlex position="absolute" top={0} right={0}>
-                                    <Button
-                                      width={0.18}
-                                      id={`remove-${index}`}
-                                      className="btn-remove"
-                                      bg="transparent"
-                                      borderRadius="50%"
-                                      fontSize="2em"
-                                      type="button"
-                                      onClick={event => {
-                                        event.stopPropagation();
-                                        log(
-                                          "event.target from button",
-                                          event.target
-                                        );
-                                        log(
-                                          "event.target from button",
-                                          event.currentTarget
-                                        );
-                                        handleRemoveIndividualImagePreview(
-                                          index
-                                        );
-                                        arrayHelpers.remove(index);
-                                      }} // remove a friend from the list
+                        <Field id="images" name="images">
+                          {({ field, form }: any) => {
+                            log({ form });
+                            log("field", { field });
+
+                            return (
+                              <input
+                                id="images"
+                                name="images"
+                                ref={fileInputRef}
+                                type="file"
+                                // onChange={onFilesAdded}
+                                // value={field.value}
+                                onChange={event => {
+                                  if (
+                                    event &&
+                                    event.currentTarget &&
+                                    event.currentTarget.files
+                                  ) {
+                                    let seeSomeFiles = onFilesAdded(event);
+
+                                    console.log(
+                                      "VIEW THE ONCHANGE EVENT and FILES",
+                                      seeSomeFiles
+                                    );
+                                    setFieldValue(
+                                      "images",
+                                      values.images.concat(seeSomeFiles)
+                                    );
+                                  } else {
+                                    return;
+                                  }
+                                }}
+                                style={inputStyles}
+                                multiple
+                              />
+                            );
+                          }}
+                        </Field>
+
+                        <Flex flexDirection="column">
+                          {values.images && values.images.length > 0 ? (
+                            <Button
+                              width={1}
+                              color="text"
+                              id="remove-all"
+                              className="btn-remove"
+                              bg="blue"
+                              // borderRadius="50%"
+                              fontSize="1.2em"
+                              type="button"
+                              onClick={event => {
+                                event.stopPropagation();
+
+                                values.images.forEach(
+                                  (image: any, index: number) =>
+                                    arrayHelpers.remove(0)
+                                );
+                              }}
+                              style={{
+                                cursor: "pointer"
+                              }}
+                            >
+                              <span role="img">
+                                <Icon name="close" fill="crimson" />
+                              </span>
+                              Close All
+                            </Button>
+                          ) : (
+                            ""
+                          )}
+                          <Flex width={1} flexWrap="wrap">
+                            {values.images && values.images.length > 0
+                              ? values.images.map(
+                                  (image: any, index: number) => (
+                                    <Flex
+                                      key={index}
+                                      width={["200px"]}
+                                      flexDirection="column"
                                       style={{
-                                        cursor: "pointer"
+                                        position: "relative"
                                       }}
                                     >
-                                      <span role="img">
-                                        <Icon
-                                          name="close"
-                                          fill="rebeccapurple"
-                                        />
-                                      </span>
-                                    </Button>
-                                  </AbFlex>
+                                      <AbFlex
+                                        position="absolute"
+                                        top={0}
+                                        right={0}
+                                      >
+                                        <Button
+                                          width={0.18}
+                                          id={`remove-${index}`}
+                                          className="btn-remove"
+                                          bg="transparent"
+                                          borderRadius="50%"
+                                          fontSize="2em"
+                                          type="button"
+                                          onClick={event => {
+                                            event.stopPropagation();
+                                            log(
+                                              "event.target from button",
+                                              event.target
+                                            );
+                                            log(
+                                              "event.currentTarget from button",
+                                              event.currentTarget
+                                            );
+                                            handleRemoveIndividualImagePreview(
+                                              index
+                                            );
+                                            arrayHelpers.remove(index);
+                                          }} // remove a friend from the list
+                                          style={{
+                                            cursor: "pointer"
+                                          }}
+                                        >
+                                          <span role="img">
+                                            <Icon
+                                              name="close"
+                                              fill="rebeccapurple"
+                                            />
+                                          </span>
+                                        </Button>
+                                      </AbFlex>
 
-                                  <Card
-                                    fontSize={6}
-                                    fontWeight="bold"
-                                    width={[1, 1, 1]}
-                                    // backgroundImage={`url(${files[index].blobUrl})`}
-                                    // p={5}
-                                    my={5}
-                                    // bg="#f6f6ff"
-                                    bg="blue"
-                                    borderRadius={8}
-                                    boxShadow="0 2px 16px rgba(0, 0, 0, 0.25)"
-                                  >
-                                    <Flex
-                                      flexDirection="column"
-                                      width={[1, 1, 1]}
-                                    >
-                                      {files[index] ? (
-                                        <Image
-                                          height="auto"
-                                          src={files[index].blobUrl}
-                                        />
-                                      ) : (
-                                        ""
-                                      )}
-                                      {/* <ImagePreview imageFiles={files} /> */}
-                                      {/* <Button
-                                  type="button"
-                                  onClick={() => arrayHelpers.insert(index, "")} // insert an empty string at a position
-                                >
-                                  +
-                                </Button> */}
-
-                                      <Text>Alt Text</Text>
-                                      <Flex width={1}>
-                                        <Field
-                                          component={InputField}
-                                          name={`images.${index}`}
-                                        />
-                                      </Flex>
+                                      <Card
+                                        fontSize={6}
+                                        fontWeight="bold"
+                                        width={[1, 1, 1]}
+                                        // backgroundImage={`url(${files[index].blobUrl})`}
+                                        // p={5}
+                                        my={5}
+                                        // bg="#f6f6ff"
+                                        bg="blue"
+                                        borderRadius={8}
+                                        boxShadow="0 2px 16px rgba(0, 0, 0, 0.25)"
+                                      >
+                                        <Flex
+                                          flexDirection="column"
+                                          width={[1, 1, 1]}
+                                        >
+                                          {
+                                            <Image
+                                              // height="auto"
+                                              width={["200px"]}
+                                              src={image.blobUrl}
+                                              style={{ maxHeight: "175px" }}
+                                            />
+                                          }
+                                        </Flex>
+                                      </Card>
                                     </Flex>
-                                  </Card>
-                                </Flex>
-                              ))
-                            : // <Button
-                              //   type="button"
-                              //   onClick={() => arrayHelpers.push("")}
-                              // >
-                              //   {/* show this when user has removed all friends from the list */}
-                              //   Add an image
-                              // </Button>
-                              ""}
+                                  )
+                                )
+                              : ""}
+                          </Flex>
                         </Flex>
-
-                        {/* <Field id="images" name="images">
-                      {({ field, form }: any) => {
-                        log({ form });
-                        log("field", { field });
-                        log({ imageFiles });
-                        return (
-                          <input
-                            id="images"
-                            name="images"
-                            ref={fileInputRef}
-                            type="file"
-                            // onChange={onFilesAdded}
-                            value={field.value}
-                            onChange={event => {
-                              console.log(
-                                "I got the value correctly from my child: ",
-                                event.currentTarget.value
-                              );
-                              const daFiles: string[] = fileListToArray(
-                                event.target.files
-                              ).map((file: any) => file.name);
-
-                              log({ daFiles });
-                              // Manually set Formik values.location and trigger validation
-                              onFilesAdded(event);
-                              // form.handleChange(event);
-                              setFieldValue("images", daFiles);
-                              // onFilesAdded(event);
-                            }}
-                            style={inputStyles}
-                            multiple
-                          />
-                        );
-                      }}
-                    </Field>
-                     */}
                       </MaxFlex>
                     )}
                   />
@@ -369,21 +326,6 @@ function CreatePostForm({
                     </div>
                   ) : null}
                 </Flex>
-                {/* <Button type="button" onClick={getSignature}>
-                  Upload to S3
-                </Button> */}
-                {/* <Flex flexWrap="wrap" width={[1, 1, 1]}>
-                  <ImagePreview imageFiles={files} />
-                </Flex> */}
-                {/* <Button
-                  type="button"
-                  onClick={() => {
-                    setFieldValue("images", []);
-                    handleClearFilePreview();
-                  }}
-                >
-                  Clear `Files` State
-                </Button> */}
               </Flex>
               <Field
                 id="title"
@@ -404,42 +346,6 @@ function CreatePostForm({
                 type="hidden"
                 component={InputField}
               />
-              {/* <Field
-                id="images"
-                name="images" */}
-              {/* // value={imageFiles}
-                // component={InputField} 
-*/}
-
-              {/* 
-              <Label>
-                +
-                <input
-                  key={fileInputKey}
-                  id="pic"
-                  name="pic"
-                  type="file"
-                  placeholder=""
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    if (
-                      event.currentTarget &&
-                      event.currentTarget &&
-                      event.currentTarget.files &&
-                      event.currentTarget.files[0]
-                    ) {
-                      setFieldValue("pic", event.currentTarget.files[0]);
-                    }
-                    return;
-                  }}
-                  style={{
-                    position: "absolute",
-                    height: "1px",
-                    width: "1px",
-                    overflow: "hidden",
-                    clip: "rect(1px 1px 1px 1px)"
-                  }}
-                />
-              </Label> */}
 
               <Button type="submit">submit</Button>
 

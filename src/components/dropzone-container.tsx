@@ -275,15 +275,6 @@ export default class DropZoneContainer extends Component<
 
     const restrictedLengthCleanFileName = cleanFileName.substring(0, 40);
 
-    log(
-      "restrictedLengthCleanFileName".toUpperCase(),
-      restrictedLengthCleanFileName
-    );
-    log("randomString & fileExtension".toUpperCase(), {
-      randomString,
-      fileExtension
-    });
-
     const newFilename = `${date}-${randomString}-${restrictedLengthCleanFileName}.${fileExtension}`;
 
     return newFilename;
@@ -376,6 +367,7 @@ export default class DropZoneContainer extends Component<
       this.setState({
         files: [...previewFiles]
       });
+      return previewFiles;
     } else {
       array = this.fileListToArray(evt);
       const previewFiles = this.makeObjectUrls(array);
@@ -383,6 +375,7 @@ export default class DropZoneContainer extends Component<
       this.setState({
         files: [...previewFiles]
       });
+      return previewFiles;
     }
 
     // if (this.onFilesAdded) {
