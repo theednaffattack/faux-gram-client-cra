@@ -470,7 +470,7 @@ export default class GetOnlyThreads extends Component<
                       files={[]}
                       handleSetLastMessenger={this.handleSetLastMessenger}
                       handleOpenEmojiMenuClick={this.handleOpenEmojiMenuClick}
-                      handleEngageMicrophoneClick={() => log}
+                      handleEngageMicrophoneClick={() => console.log}
                       handleSetLastMessage={this.handleSetLastMessage}
                       key="someOtherKey"
                       newThreadInvitees={this.state.newThreadInvitees}

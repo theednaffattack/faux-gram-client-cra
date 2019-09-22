@@ -304,7 +304,6 @@ function createDummyElement({
       newDiv.appendChild(newSvg);
       newSvg.appendChild(newRect);
 
-      console.log(`LOOK OVER HERE PART TWO`, DOM_imageWrapper);
       return newDiv;
     });
   };
@@ -316,7 +315,6 @@ function createDummyElement({
     // data.edges[itemIndex].node.images &&
     // data.edges[itemIndex].node.images.length > 0
   ) {
-    console.log("IMAGES SENSED!!!!! 😁", images);
     // measuredElement.style.paddingTop = "16px";
     // measuredElement.style.paddingBottom = "16px";
 
@@ -335,7 +333,6 @@ function createDummyElement({
   // add the text nodes to the text blocks
   DOM_createdAtTextWrapper.appendChild(createdAtTextNode);
   DOM_messageTextWrapper.appendChild(messageTextNode);
-  console.log("WHAT IS MESSAGECARD AFTER IMAGES!!!! 😁", measuredElement);
 
   return measuredElement;
 }
@@ -458,13 +455,6 @@ export default function getSize({
   destroyElement(measuredElement);
 
   cache[cacheKey] = size;
-
-  console.log(
-    "TRY GETBOUNDINGCLIENTRECT",
-    measuredElement.getBoundingClientRect()
-  );
-
-  console.log("WHY DOES SIZE NOT CHANGE?", size);
 
   return size;
 }
