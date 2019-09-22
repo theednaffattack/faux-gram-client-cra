@@ -42,7 +42,6 @@ class ChatForm extends React.Component<IChatFormProps, IChatFormState> {
   }
 
   formatFilename = (file: any) => {
-    console.log("Filename", file);
     const filename = file.name;
 
     const date = dFormat(new Date(), "YYYYMMDD");
@@ -60,15 +59,6 @@ class ChatForm extends React.Component<IChatFormProps, IChatFormState> {
 
     const restrictedLengthCleanFileName = cleanFileName.substring(0, 40);
 
-    log(
-      "restrictedLengthCleanFileName".toUpperCase(),
-      restrictedLengthCleanFileName
-    );
-    log("randomString & fileExtension".toUpperCase(), {
-      randomString,
-      fileExtension
-    });
-
     const newFilename = `${date}-${randomString}-${restrictedLengthCleanFileName}.${fileExtension}`;
 
     return newFilename;
@@ -78,18 +68,10 @@ class ChatForm extends React.Component<IChatFormProps, IChatFormState> {
     return await fetch(myFile)
       .then(r => r.blob())
       .then(blobFile => {
-        console.log({ myFile });
-
         const getFileName = this.state.files
           .filter(aFile => aFile.blobUrl === myFile)
           .map(theFile => theFile.name)[0];
-        console.log({ getFileName });
 
-        console.log({
-          teams: new File([blobFile], getFileName, {
-            type: myFile.type
-          })
-        });
         return new File([blobFile], getFileName, {
           type: myFile.type
         });
@@ -115,17 +97,12 @@ class ChatForm extends React.Component<IChatFormProps, IChatFormState> {
         "Content-Type": "image/png"
       }
     };
-    console.log("look at theFile", file);
 
     const theFile = await this.makeBlobUrlsFromReference(file);
-
-    console.log("look at theFile", theFile);
 
     let s3ReturnInfo = await axios
       .put(signedRequest, theFile, options)
       .catch(error => console.error({ error }));
-
-    console.log("s3ReturnInfo".toUpperCase(), s3ReturnInfo);
 
     return s3ReturnInfo;
   };
@@ -140,8 +117,6 @@ class ChatForm extends React.Component<IChatFormProps, IChatFormState> {
 
     if (!files || !files[0]) return;
 
-    console.log("Files".toUpperCase(), files);
-    console.log("preppedFiles".toUpperCase(), preppedFiles);
     const response = await signS3Mutation({
       variables: {
         files: [...preppedFiles]
@@ -151,18 +126,12 @@ class ChatForm extends React.Component<IChatFormProps, IChatFormState> {
     const { signatures } = response.data.signS3;
     let s3Uploads = await Promise.all(
       signatures.map(async (signature: any, signatureIndex: number) => {
-        console.log({ signature, signatureIndex });
         return await this.uploadToS3({
           file: files[signatureIndex].blobUrl,
           signedRequest: signature.signedRequest
         }).catch(error => console.error(JSON.stringify({ ...error }, null, 2)));
       })
     );
-
-    console.log("signatures?");
-    console.log(signatures);
-    console.log("s3Uploads?");
-    console.log(s3Uploads);
 
     return signatures;
 
@@ -181,6 +150,7 @@ class ChatForm extends React.Component<IChatFormProps, IChatFormState> {
       let newFiles = prevState.files.filter(function(file, fileIndex) {
         return fileIndex !== index;
       });
+
       return {
         files: newFiles
       };
@@ -188,8 +158,17 @@ class ChatForm extends React.Component<IChatFormProps, IChatFormState> {
   }
 
   handleClearFilePreview() {
-    this.setState({
-      files: []
+    let filesToClear = this.state.files;
+
+    this.setState(prevState => {
+      if (prevState.files.length === 0) return;
+      // let newFiles = prevState.files.filter(function(file, fileIndex) {
+      //   return fileIndex !== 0;
+      // });
+      let newFiles: any[] = [];
+      return {
+        files: newFiles
+      };
     });
   }
 
@@ -264,6 +243,8 @@ class ChatForm extends React.Component<IChatFormProps, IChatFormState> {
       this.setState({
         files: [...previewFiles]
       });
+
+      return previewFiles;
     } else {
       array = this.fileListToArray(evt);
       const previewFiles = this.makeObjectUrls(array);
@@ -271,6 +252,7 @@ class ChatForm extends React.Component<IChatFormProps, IChatFormState> {
       this.setState({
         files: [...previewFiles]
       });
+      return previewFiles;
     }
 
     // if (this.onFilesAdded) {
@@ -281,7 +263,7 @@ class ChatForm extends React.Component<IChatFormProps, IChatFormState> {
   dataUriToBlob(dataURI: any) {
     // convert base64 to raw binary data held in a string
     // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
-    log("datauri".toUpperCase(), dataURI);
+
     var byteString = atob(dataURI.split(",")[1]);
 
     // separate out the mime component
@@ -306,19 +288,9 @@ class ChatForm extends React.Component<IChatFormProps, IChatFormState> {
     //New Code
     let newBlob = new Blob([ab], { type: mimeString });
 
-    log("view state files and names".toUpperCase());
-    log(this.state.files);
-    // log(this.state.fileNames);
-
     const finalFile = new File([newBlob], this.state.files[0], {
       type: "image/png"
     });
-
-    log("newBlob");
-    log(URL.createObjectURL(newBlob));
-
-    log("finalFile");
-    log(URL.createObjectURL(finalFile));
 
     return finalFile;
   }
